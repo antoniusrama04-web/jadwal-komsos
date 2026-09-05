@@ -170,6 +170,19 @@ main{flex:1; padding:28px 22px 100px; max-width:680px; width:100%; margin:0 auto
   background:var(--paper-card); color:var(--ink); font-weight:600; font-size:15px; cursor:pointer; font-family:'Manrope';
 }
 .saran-trigger:hover{border-color:var(--blue); color:var(--blue-deep); background:#fff;}
+
+.home-menu{display:flex; flex-direction:column; gap:12px; margin-top:4px;}
+.home-menu-btn{
+  display:flex; align-items:center; gap:14px; width:100%; text-align:left;
+  padding:20px; border:1px solid var(--line); border-left:4px solid var(--gold);
+  background:var(--paper-card); border-radius:2px; cursor:pointer; font-family:'Manrope';
+}
+.home-menu-btn:hover{border-left-color:var(--blue);}
+.home-menu-btn .hm-icon{font-size:26px;}
+.home-menu-btn .hm-label{font-family:'Fraunces', serif; font-weight:600; font-size:17px; color:var(--ink);}
+.home-panel{display:none;}
+.home-panel.active{display:block;}
+.panel-back{color:var(--blue-deep); font-size:13.5px; font-weight:600; cursor:pointer; margin-bottom:16px; text-decoration:underline; display:inline-block;}
 .modal-field{
   width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:2px;
   font-family:'Manrope'; font-size:15px; margin-bottom:10px; resize:vertical;
@@ -357,15 +370,42 @@ nav.bottomnav button.active .ic{color:var(--gold);}
         <button class="btn-secondary" id="btnUjiNotif" style="white-space:nowrap;" onclick="kirimNotifikasiUjiCoba()">Kirim Sekarang</button>
       </div>
       <div id="pengingatArea"></div>
-      <div class="section-title">Rekap Jadwal</div>
-      <div class="section-sub">Pilih bulan & tahun untuk melihat jadwal yang sudah dibuat.</div>
-      <div class="filter-row">
-        <select id="filterBulan"></select>
-        <select id="filterTahun"></select>
-      </div>
-      <div id="jadwalListArea"></div>
 
-      <button class="saran-trigger" onclick="openSaranModal()">💬 Kotak Saran</button>
+      <div id="homeMenuWrap">
+        <div class="section-title">Beranda</div>
+        <div class="section-sub">Pilih menu di bawah ini.</div>
+        <div class="home-menu">
+          <button class="home-menu-btn" onclick="showHomePanel('jadwalIni')">
+            <span class="hm-icon">📅</span>
+            <span class="hm-label">Jadwal Bulan Ini</span>
+          </button>
+          <button class="home-menu-btn" onclick="showHomePanel('rekap')">
+            <span class="hm-icon">📊</span>
+            <span class="hm-label">Rekap Jadwal</span>
+          </button>
+          <button class="home-menu-btn" onclick="openSaranModal()">
+            <span class="hm-icon">💬</span>
+            <span class="hm-label">Kotak Saran</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="homePanel-jadwalIni" class="home-panel">
+        <div class="panel-back" onclick="showHomePanel('menu')">← Kembali ke Beranda</div>
+        <div class="section-title" style="font-size:22px; padding-bottom:10px; margin-bottom:14px;">Jadwal Bulan Ini</div>
+        <div id="jadwalIniListArea"></div>
+      </div>
+
+      <div id="homePanel-rekap" class="home-panel">
+        <div class="panel-back" onclick="showHomePanel('menu')">← Kembali ke Beranda</div>
+        <div class="section-title" style="font-size:22px; padding-bottom:10px; margin-bottom:14px;">Rekap Jadwal</div>
+        <div class="section-sub">Pilih bulan & tahun untuk lihat total tugas tiap petugas.</div>
+        <div class="filter-row">
+          <select id="filterBulan"></select>
+          <select id="filterTahun"></select>
+        </div>
+        <div id="rekapListArea"></div>
+      </div>
     </div>
 
     <!-- PETUGAS -->
@@ -646,11 +686,16 @@ async function loadData(){
 
   // Live sync: kalau ada perubahan dari HP lain, tampilan ikut update otomatis.
   db.collection(KOMSOS_COLLECTION).doc('jadwal-list').onSnapshot(doc=>{
-    if(doc.exists){ jadwalList = doc.data().payload || []; populateFilters(); renderJadwalList(); renderPetugas(); renderPengingat(); }
+    if(doc.exists){ jadwalList = doc.data().payload || []; populateFilters(); refreshHomeViews(); renderPetugas(); renderPengingat(); }
   });
   db.collection(KOMSOS_COLLECTION).doc('saran-list').onSnapshot(doc=>{
     if(doc.exists){ saranList = doc.data().payload || []; renderSaranListInModal(); }
   });
+}
+function refreshHomeViews(){
+  renderJadwalBulanIni();
+  const rekapPanel = document.getElementById('homePanel-rekap');
+  if(rekapPanel && rekapPanel.classList.contains('active')) renderRekap();
 }
 async function safeGet(key, fallback){
   try{
@@ -868,7 +913,7 @@ async function enterApp(){
   document.getElementById('app').style.flexDirection = 'column';
   applyRoleUI();
   populateFilters();
-  renderJadwalList();
+  showHomePanel('menu');
   renderPetugas();
   renderPengingat();
   cekTokenTersimpan();
@@ -1008,8 +1053,8 @@ function populateFilters(){
   const years = [now.getFullYear()-1, now.getFullYear(), now.getFullYear()+1];
   ft.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join('');
   ft.value = now.getFullYear();
-  fb.onchange = renderJadwalList;
-  ft.onchange = renderJadwalList;
+  fb.onchange = renderRekap;
+  ft.onchange = renderRekap;
 }
 
 function jadwalUntukBulan(bulan, tahun){
@@ -1024,16 +1069,9 @@ function namaPetugas(id){
   return p ? p.nama : '—';
 }
 
-function renderJadwalList(){
-  const bulan = parseInt(document.getElementById('filterBulan').value);
-  const tahun = parseInt(document.getElementById('filterTahun').value);
-  const list = jadwalUntukBulan(bulan, tahun);
-  const area = document.getElementById('jadwalListArea');
-  if(list.length===0){
-    area.innerHTML = `<div class="empty-note">Belum ada jadwal untuk ${BULAN_NAMA[bulan]} ${tahun}.</div>`;
-    return;
-  }
-  area.innerHTML = list.map(j=>{
+function buildJadwalCardsHtml(list){
+  if(list.length===0) return '';
+  return list.map(j=>{
     const slots = j.slots.map(s=>{
       const tgl = new Date(s.tanggal);
       const tglStr = tgl.toLocaleDateString('id-ID', {day:'2-digit', month:'short'});
@@ -1051,13 +1089,52 @@ function renderJadwalList(){
   }).join('');
 }
 
+function renderJadwalBulanIni(){
+  const area = document.getElementById('jadwalIniListArea');
+  if(!area) return;
+  const now = new Date();
+  const list = jadwalUntukBulan(now.getMonth(), now.getFullYear());
+  area.innerHTML = list.length>0
+    ? buildJadwalCardsHtml(list)
+    : `<div class="empty-note">Belum ada jadwal untuk ${BULAN_NAMA[now.getMonth()]} ${now.getFullYear()}.</div>`;
+}
+
+function renderRekap(){
+  const area = document.getElementById('rekapListArea');
+  if(!area) return;
+  const bulan = parseInt(document.getElementById('filterBulan').value);
+  const tahun = parseInt(document.getElementById('filterTahun').value);
+  if(petugasList.length===0){
+    area.innerHTML = `<div class="empty-note">Belum ada data petugas.</div>`;
+    return;
+  }
+  const sorted = [...petugasList].sort((a,b)=>a.nama.localeCompare(b.nama));
+  area.innerHTML = sorted.map(p=>{
+    const cnt = hitungTugasBulan(p.id, bulan, tahun);
+    const cls = cnt>=3 ? 'full' : (cnt===0 ? 'zero' : '');
+    const label = cnt>=3 ? `⚠️ ${cnt}x` : `${cnt}x`;
+    return `<div class="petugas-row" style="cursor:default;">
+      <span class="nm">${escapeHtml(p.nama)}</span>
+      <span class="count-pill ${cls}">${label}</span>
+    </div>`;
+  }).join('');
+}
+
+function showHomePanel(name){
+  document.getElementById('homeMenuWrap').style.display = (name==='menu') ? 'block' : 'none';
+  document.getElementById('homePanel-jadwalIni').classList.toggle('active', name==='jadwalIni');
+  document.getElementById('homePanel-rekap').classList.toggle('active', name==='rekap');
+  if(name==='jadwalIni') renderJadwalBulanIni();
+  if(name==='rekap') renderRekap();
+}
+
 async function hapusJadwal(jadwalId){
   const j = jadwalList.find(x=>x.id===jadwalId);
   if(!j) return;
   if(!confirm(`Hapus jadwal "${j.namaMisa}"? Tindakan ini tidak bisa dibatalkan.`)) return;
   jadwalList = jadwalList.filter(x=>x.id!==jadwalId);
   await saveList('jadwal-list', jadwalList);
-  renderJadwalList();
+  refreshHomeViews();
   renderPetugas();
   showToast('Jadwal dihapus');
 }
@@ -1264,11 +1341,24 @@ function shuffleArray(arr){
   return a;
 }
 
+function bulanSebelumnya(bulan, tahun){
+  return bulan === 0 ? {bulan: 11, tahun: tahun - 1} : {bulan: bulan - 1, tahun};
+}
+
 function autoFillSlots(){
   const {bulan, tahun} = getFormBulanTahun();
-  // Start from real counts this month, then track picks made during this fill so we spread fairly.
+  const lalu = bulanSebelumnya(bulan, tahun);
+
+  // Start from real counts this month, lalu sesuaikan berdasarkan keadilan bulan lalu:
+  // - Bulan lalu cuma 0-1x (jarang bertugas) -> diprioritaskan (running dikurangi).
+  // - Bulan lalu 2x atau lebih (sudah lumayan/cukup) -> dapat keringanan (running ditambah).
   const running = {};
-  petugasList.forEach(p=> running[p.id] = hitungTugasBulan(p.id, bulan, tahun));
+  petugasList.forEach(p=>{
+    const iniBulan = hitungTugasBulan(p.id, bulan, tahun);
+    const bulanLalu = hitungTugasBulan(p.id, lalu.bulan, lalu.tahun);
+    const penyesuaian = bulanLalu <= 1 ? -1 : (bulanLalu - 1);
+    running[p.id] = iniBulan + penyesuaian;
+  });
   currentSlots.forEach(s=> s.petugas.forEach(pid=>{ if(pid) running[pid] = (running[pid]||0)+1; }));
 
   let filledAny = false;
@@ -1306,9 +1396,10 @@ async function simpanJadwal(){
   showToast('Jadwal tersimpan');
   resetForm();
   populateFilters();
-  renderJadwalList();
+  refreshHomeViews();
   renderPetugas();
   goPage('home');
+  showHomePanel('menu');
 }
 </script>
 </body>
