@@ -366,6 +366,9 @@ nav.bottomnav button.active .ic{color:var(--gold);}
       <div id="jadwalListArea"></div>
 
       <button class="saran-trigger" onclick="openSaranModal()">💬 Kotak Saran</button>
+      <div style="text-align:center; margin-top:14px;">
+        <span onclick="tampilkanTokenSaya()" style="font-size:12px; color:var(--muted); text-decoration:underline; cursor:pointer;">Lihat token notifikasi saya (debug)</span>
+      </div>
     </div>
 
     <!-- PETUGAS -->
@@ -1062,6 +1065,28 @@ function shareWA(jadwalId){
   });
   const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
   window.open(url, '_blank');
+}
+
+async function tampilkanTokenSaya(){
+  if(!currentUser){ showToast('Login dulu ya.'); return; }
+  try{
+    const doc = await db.collection(USERS_COLLECTION).doc(currentUser.uid).get();
+    const tokens = doc.exists ? (doc.data().fcmTokens || []) : [];
+    if(tokens.length===0){
+      showToast('Belum ada token tersimpan. Klik "Aktifkan Notifikasi" dulu.');
+      return;
+    }
+    document.getElementById('modalTitle').textContent = 'Token Notifikasi Kamu';
+    document.getElementById('modalBody').innerHTML = `
+      <div class="section-sub">Ketuk kotak di bawah, tekan agak lama sampai muncul menu, pilih "Select All" lalu "Copy". Kirim hasil copy-nya ke PJ/developer.</div>
+      <textarea class="modal-field" style="min-height:130px; font-size:11px; word-break:break-all;" readonly onclick="this.select()">${escapeHtml(tokens[tokens.length-1])}</textarea>
+      ${tokens.length>1 ? `<div class="section-sub" style="margin-top:8px;">(Ada ${tokens.length} token tersimpan untuk akunmu — ini yang paling baru.)</div>` : ''}
+    `;
+    document.getElementById('modalOverlay').classList.add('open');
+  }catch(e){
+    console.error(e);
+    showToast('Gagal mengambil token.');
+  }
 }
 
 /* ---------------- SARAN ---------------- */
