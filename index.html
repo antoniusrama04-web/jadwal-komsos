@@ -470,16 +470,46 @@ const USERS_COLLECTION = 'komsos-users';
 // Project settings → Cloud Messaging → Web configuration → Generate key pair.
 const VAPID_KEY = "GANTI_DENGAN_VAPID_KEY_KAMU";
 
+// Chrome/Android sering membungkam suara yang diputar dari kode (bukan langsung
+// dari sentuhan tombol) kalau audio-nya belum pernah "dibuka" lewat interaksi user.
+// Trik ini: begitu user menyentuh apa pun di halaman (sekali saja), kita diam-diam
+// putar+pause audio & siapkan AudioContext, supaya pemutaran berikutnya (dipicu oleh
+// notifikasi yang datang lewat kode) tidak lagi dibungkam browser.
+let sharedAudioCtx = null;
+function unlockAudioOnce(){
+  try{
+    const audio = document.getElementById('bellSound');
+    if(audio){
+      audio.play().then(()=>{ audio.pause(); audio.currentTime = 0; }).catch(()=>{});
+    }
+    if(!sharedAudioCtx){
+      sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(sharedAudioCtx.state === 'suspended'){ sharedAudioCtx.resume().catch(()=>{}); }
+  }catch(e){ /* browser lama, abaikan */ }
+  document.removeEventListener('click', unlockAudioOnce);
+  document.removeEventListener('touchend', unlockAudioOnce);
+}
+document.addEventListener('click', unlockAudioOnce);
+document.addEventListener('touchend', unlockAudioOnce);
+
 function beepFallback(){
   try{
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = 'sine'; o.frequency.value = 880;
-    g.gain.setValueAtTime(0.15, ctx.currentTime);
-    o.start();
-    o.stop(ctx.currentTime + 0.25);
+    if(!sharedAudioCtx){
+      sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    const ctx = sharedAudioCtx;
+    const startTone = ()=>{
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine'; o.frequency.value = 880;
+      g.gain.setValueAtTime(0.15, ctx.currentTime);
+      o.start();
+      o.stop(ctx.currentTime + 0.25);
+    };
+    if(ctx.state === 'suspended'){ ctx.resume().then(startTone).catch(()=>{}); }
+    else{ startTone(); }
   }catch(e){ /* browser lama, abaikan */ }
 }
 
@@ -489,7 +519,7 @@ function playNotifSound(){
     if(audio){
       audio.currentTime = 0;
       const p = audio.play();
-      if(p && p.catch) p.catch(()=> beepFallback());
+      if(p && p.catch) p.catch((err)=>{ console.warn('Bell sound blocked:', err); beepFallback(); });
       return;
     }
   }catch(e){}
