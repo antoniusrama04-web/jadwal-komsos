@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KOMSOS — Jadwal Petugas Operator</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Sora:wght@700;800&family=Manrope:wght@400;500;600;700&display=swap');
+
+:root{
+  --ink: #182130;
+  --ink-soft: #242F44;
+  --blue: #3E6FA8;
+  --blue-deep: #26476E;
+  --blue-light: #93B7DE;
+  --gold: #A9803A;
+  --gold-soft: #C7A667;
+  --paper: #F7F1E1;
+  --paper-card: #FFFDF7;
+  --text: #2A2317;
+  --muted: #8B7D5F;
+  --line: #E2D3A9;
+  --maroon: #7C3430;
+  --maroon-bg: #F3E2DD;
+  --green: #3D6B4E;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  font-family:'Manrope', sans-serif;
+  background:var(--paper);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  font-size:15.5px;
+}
+h1,h2,h3,.display{font-family:'Fraunces', serif;}
+
+/* ---------- SPLASH ---------- */
+#splash{
+  position:fixed; inset:0; z-index:100;
+  background:var(--ink);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  transition:opacity 0.7s ease, visibility 0.7s ease;
+}
+#splash.hide{opacity:0; visibility:hidden; pointer-events:none;}
+.splash-mark{
+  display:flex; font-family:'Sora', sans-serif; font-weight:800;
+  font-size:clamp(48px,14vw,88px); letter-spacing:-0.02em;
+  opacity:0; transform:scale(0.88) translateY(8px);
+  animation:markIn 1.1s cubic-bezier(.16,1,.3,1) forwards;
+}
+.splash-mark .kom{color:#fff;}
+.splash-mark .sos{color:var(--blue-light);}
+.splash-sub{
+  margin-top:16px; color:var(--gold-soft); font-size:14px; letter-spacing:0.1em;
+  font-weight:600; text-align:center; line-height:1.7;
+  opacity:0; animation:subIn 1s ease 0.55s forwards;
+}
+@keyframes markIn{
+  to{opacity:1; transform:scale(1) translateY(0);}
+}
+@keyframes subIn{
+  to{opacity:1;}
+}
+
+/* ---------- WATERMARK ---------- */
+.watermark{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Sora', sans-serif; font-weight:800;
+  font-size:26vw; opacity:0.045; white-space:nowrap;
+}
+.watermark .kom{color:var(--ink);}
+.watermark .sos{color:var(--blue);}
+
+/* ---------- ACCESS GATE ---------- */
+#gate{
+  position:fixed; inset:0; z-index:90;
+  background:var(--paper);
+  display:none; align-items:center; justify-content:center; padding:24px;
+}
+.gate-card{
+  background:var(--paper-card); border:1px solid var(--line); border-top:3px solid var(--gold);
+  padding:38px 32px; width:100%; max-width:380px; text-align:center;
+}
+.gate-card .mini-mark{font-family:'Sora'; font-weight:800; font-size:25px; margin-bottom:6px;}
+.mini-mark .kom{color:var(--ink);} .mini-mark .sos{color:var(--blue);}
+.gate-card p{color:var(--muted); font-size:15px; margin:8px 0 24px; line-height:1.6; font-family:'Fraunces', serif;}
+.gate-card input{
+  width:100%; padding:13px 15px; border:1px solid var(--line); border-radius:2px;
+  font-size:16px; font-family:'Manrope'; margin-bottom:14px; letter-spacing:0.04em;
+  background:#fff;
+}
+.gate-card button{
+  width:100%; padding:13px; border:none; border-radius:2px; background:var(--ink);
+  color:#fff; font-weight:600; font-size:15px; cursor:pointer; font-family:'Manrope';
+  transition:background 0.15s; letter-spacing:0.02em;
+}
+.gate-card button:hover{background:var(--blue-deep);}
+.gate-card button:disabled{opacity:0.55; cursor:default;}
+.gate-error{color:var(--maroon); font-size:13px; margin-top:12px; min-height:18px; text-align:left;}
+.gate-card select{
+  width:100%; padding:13px 15px; border:1px solid var(--line); border-radius:2px;
+  font-size:16px; font-family:'Manrope'; margin-bottom:14px; background:#fff; color:var(--text);
+}
+.gate-card p.small-note{font-size:13px; margin:14px 0 0; text-align:left; line-height:1.5;}
+.pw-eye{
+  position:absolute; right:14px; top:50%; transform:translateY(-50%);
+  cursor:pointer; color:var(--muted); font-size:17px; user-select:none;
+}
+.auth-switch{margin-top:18px; font-size:13px; color:var(--muted); text-align:center;}
+.auth-switch a, .gate-card .link{color:var(--blue-deep); cursor:pointer; text-decoration:underline; font-weight:600;}
+.auth-forgot{text-align:right; margin:-4px 0 14px; font-size:12.5px;}
+.auth-forgot span{color:var(--gold-soft); cursor:pointer; text-decoration:underline;}
+
+/* ---------- APP SHELL ---------- */
+#app{display:none; position:relative; z-index:1; min-height:100vh; flex-direction:column;}
+header.appbar{
+  background:var(--ink); color:#fff; padding:18px 22px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:10;
+  border-bottom:3px double var(--gold);
+}
+header.appbar .mark{font-family:'Sora'; font-weight:800; font-size:21px;}
+header.appbar .kom{color:#fff;} header.appbar .sos{color:var(--blue-light);}
+.role-badge{
+  font-size:12.5px; padding:5px 12px; border-radius:20px; font-weight:600;
+  background:rgba(255,255,255,0.1); color:#C7D2E2; letter-spacing:0.03em;
+}
+.role-badge.editor{background:rgba(147,183,222,0.2); color:var(--blue-light);}
+
+main{flex:1; padding:28px 22px 100px; max-width:680px; width:100%; margin:0 auto;}
+.section-title{
+  font-family:'Fraunces', serif; font-size:30px; font-weight:600; letter-spacing:-0.01em;
+  margin-bottom:14px; padding-bottom:16px; border-bottom:3px double var(--line); color:var(--ink);
+}
+.section-sub{color:var(--muted); font-size:15px; margin-bottom:22px; line-height:1.55;}
+
+.pengingat-card{
+  background:var(--maroon-bg); border:1px solid var(--maroon); border-left:4px solid var(--maroon);
+  border-radius:2px; padding:18px 20px; margin-bottom:22px;
+}
+.pengingat-card.info{background:#EAF1FB; border-color:var(--blue); border-left-color:var(--blue);}
+.pengingat-card .judul{font-family:'Fraunces', serif; font-weight:600; font-size:17px; margin-bottom:6px; color:var(--ink);}
+.pengingat-card .isi{font-size:14.5px; line-height:1.6; color:var(--text);}
+.pengingat-card .sub-list{margin-top:10px; padding-top:10px; border-top:1px solid rgba(0,0,0,0.08); font-size:13px; color:var(--muted); line-height:1.7;}
+
+.filter-row{display:flex; gap:10px; margin-bottom:22px;}
+.filter-row select{
+  flex:1; padding:12px 14px; border:1px solid var(--line); border-radius:2px;
+  background:#fff; font-family:'Manrope'; font-size:15.5px; color:var(--text);
+}
+
+.jadwal-card{
+  background:var(--paper-card); border:1px solid var(--line); border-left:4px solid var(--gold);
+  border-radius:2px; padding:20px 22px; margin-bottom:16px;
+}
+.jadwal-card .judul{font-family:'Fraunces', serif; font-weight:600; font-size:19px; margin-bottom:12px; color:var(--ink);}
+.slot-line{
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:9px 0; border-top:1px solid var(--line); font-size:15px;
+}
+.slot-line:first-of-type{border-top:none;}
+.slot-line .waktu{color:var(--muted); min-width:132px;}
+.slot-line .nama{font-weight:600; text-align:right;}
+.empty-note{color:var(--muted); font-size:15px; text-align:center; padding:36px 10px; font-family:'Fraunces', serif; font-style:italic;}
+
+.saran-trigger{
+  width:100%; margin-top:28px; padding:15px; border:1px solid var(--gold); border-radius:2px;
+  background:var(--paper-card); color:var(--ink); font-weight:600; font-size:15px; cursor:pointer; font-family:'Manrope';
+}
+.saran-trigger:hover{border-color:var(--blue); color:var(--blue-deep); background:#fff;}
+.modal-field{
+  width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:2px;
+  font-family:'Manrope'; font-size:15px; margin-bottom:10px; resize:vertical;
+}
+textarea.modal-field{min-height:90px;}
+.btn-primary{
+  padding:12px 20px; border:none; border-radius:2px; background:var(--blue-deep);
+  color:#fff; font-weight:600; font-size:15px; cursor:pointer; font-family:'Manrope';
+}
+.btn-primary:hover{background:var(--ink);}
+.btn-secondary{
+  padding:12px 20px; border:1px solid var(--line); border-radius:2px; background:#fff;
+  color:var(--text); font-weight:600; font-size:15px; cursor:pointer; font-family:'Manrope';
+}
+.saran-list{margin-top:14px; border-top:1px solid var(--line); padding-top:12px;}
+.saran-item{font-size:14px; padding:8px 0; color:var(--text); line-height:1.5;}
+.saran-item b{color:var(--ink); font-family:'Fraunces', serif;}
+.saran-item span{color:var(--muted);}
+
+/* Petugas list */
+.petugas-add{display:flex; gap:10px; margin-bottom:20px;}
+.petugas-add input{
+  flex:1; padding:12px 14px; border:1px solid var(--line); border-radius:2px; font-family:'Manrope'; font-size:15.5px;
+}
+.petugas-row{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:15px 6px; border-bottom:1px solid var(--line); cursor:pointer;
+}
+.petugas-row:hover{background:rgba(169,128,58,0.06);}
+.petugas-row .nm{font-family:'Fraunces', serif; font-weight:600; font-size:18px;}
+.count-pill{
+  font-size:12.5px; font-weight:700; padding:4px 11px; border-radius:20px;
+  background:#EEF2F6; color:var(--muted);
+}
+.count-pill.full{background:var(--maroon-bg); color:var(--maroon);}
+.count-pill.zero{background:#EEF2F6; color:var(--muted);}
+
+/* Modal */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(24,33,48,0.55); z-index:50;
+  display:none; align-items:flex-end; justify-content:center;
+}
+.modal-overlay.open{display:flex;}
+.modal-sheet{
+  background:#fff; width:100%; max-width:520px; border-radius:14px 14px 0 0;
+  padding:28px 24px 32px; max-height:82vh; overflow-y:auto; border-top:3px solid var(--gold);
+}
+.modal-sheet h3{font-family:'Fraunces', serif; font-weight:600; font-size:24px; margin-bottom:16px; color:var(--ink);}
+.close-x{float:right; cursor:pointer; color:var(--muted); font-size:20px;}
+.hist-line{
+  display:flex; justify-content:space-between; padding:11px 0; border-top:1px solid var(--line);
+  font-size:15px;
+}
+.hist-line:first-of-type{border-top:none;}
+
+/* Form (Tambah Jadwal) */
+.form-block{margin-bottom:20px;}
+.form-block label{display:block; font-size:13.5px; font-weight:700; color:var(--muted); margin-bottom:8px; letter-spacing:0.02em;}
+.form-block input[type=text], .form-block input[type=date]{
+  width:100%; padding:13px 14px; border:1px solid var(--line); border-radius:2px; font-family:'Manrope'; font-size:16px;
+}
+.slot-editor{
+  background:var(--paper-card); border:1px solid var(--line); border-radius:2px;
+  padding:16px 18px; margin-bottom:12px;
+}
+.slot-editor .slot-head{
+  display:flex; justify-content:space-between; font-size:14.5px; font-weight:700; color:var(--ink);
+  margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);
+}
+.slot-editor select{
+  width:100%; padding:10px 11px; border:1px solid var(--line); border-radius:2px; margin-bottom:9px;
+  font-family:'Manrope'; font-size:15px; background:#fff;
+}
+.slot-editor .remove-slot{color:var(--maroon); font-size:13px; cursor:pointer; font-weight:600;}
+.add-slot-btn{
+  width:100%; padding:12px; border:1px dashed var(--line); border-radius:2px; background:none;
+  color:var(--muted); font-size:14.5px; cursor:pointer; margin-bottom:20px; font-family:'Manrope';
+}
+
+/* Bottom nav */
+nav.bottomnav{
+  position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--line);
+  display:flex; z-index:10; padding:8px 0;
+}
+nav.bottomnav button{
+  flex:1; background:none; border:none; padding:8px 4px; font-family:'Manrope';
+  font-size:12.5px; font-weight:600; color:var(--muted); cursor:pointer;
+}
+nav.bottomnav button .ic{display:block; font-size:21px; margin-bottom:3px;}
+nav.bottomnav button.active{color:var(--blue-deep);}
+nav.bottomnav button.active .ic{color:var(--gold);}
+
+.page{display:none;}
+.page.active{display:block;}
+
+.toast{
+  position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--ink); color:#fff; padding:11px 20px; border-radius:3px;
+  font-size:14.5px; opacity:0; transition:all 0.25s; z-index:60; pointer-events:none;
+  border-bottom:2px solid var(--gold);
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<body>
+
+<div class="watermark"><span class="kom">KOM</span><span class="sos">SOS</span></div>
+
+<div id="splash">
+  <div class="splash-mark"><span class="kom">KOM</span><span class="sos">SOS</span></div>
+  <div class="splash-sub">PAROKI KELUARGA KUDUS<br>PONTIANAK</div>
+</div>
+
+<div id="gate">
+  <div class="gate-card">
+    <div class="mini-mark"><span class="kom">KOM</span><span class="sos">SOS</span></div>
+
+    <!-- MASUK -->
+    <div id="authLogin">
+      <p>Masuk dengan akun KOMSOS kamu untuk melihat atau mengelola jadwal petugas operator.</p>
+      <input type="email" id="loginEmail" placeholder="Email" autocomplete="username" style="margin-bottom:14px;">
+      <div style="position:relative; margin-bottom:8px;">
+        <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" style="margin-bottom:0; padding-right:44px;">
+        <span class="pw-eye" onclick="togglePw('loginPassword', this)">👁️</span>
+      </div>
+      <div class="auth-forgot"><span onclick="showAuthView('forgot')">Lupa password?</span></div>
+      <button id="loginBtn" onclick="tryLogin()">Masuk</button>
+      <div class="gate-error" id="loginError"></div>
+      <div class="auth-switch">Belum punya akun? <a onclick="showAuthView('register')">Daftar di sini</a></div>
+    </div>
+
+    <!-- DAFTAR -->
+    <div id="authRegister" style="display:none;">
+      <p>Buat akun kamu sebagai petugas operator KOMSOS.</p>
+      <select id="regPetugas"><option value="">— Pilih nama kamu —</option></select>
+      <input type="email" id="regEmail" placeholder="Email" autocomplete="username" style="margin-bottom:14px;">
+      <div style="position:relative; margin-bottom:14px;">
+        <input type="password" id="regPassword" placeholder="Buat password (min. 6 karakter)" autocomplete="new-password" style="margin-bottom:0; padding-right:44px;">
+        <span class="pw-eye" onclick="togglePw('regPassword', this)">👁️</span>
+      </div>
+      <button id="registerBtn" onclick="tryRegister()">Daftar</button>
+      <div class="gate-error" id="registerError"></div>
+      <p class="small-note" style="color:var(--muted);">Semua akun baru mulai sebagai akun biasa (bukan PJ). Kalau kamu PJ, minta admin naikkan status akunmu secara manual.</p>
+      <p class="small-note" style="color:var(--muted);">Simpan baik-baik email &amp; password kamu — kalau lupa, bisa direset lewat email lewat "Lupa password?" di halaman Masuk.</p>
+      <div class="auth-switch">Sudah punya akun? <a onclick="showAuthView('login')">Masuk</a></div>
+    </div>
+
+    <!-- LUPA PASSWORD -->
+    <div id="authForgot" style="display:none;">
+      <p>Masukkan email akun kamu, nanti kami kirimkan link untuk membuat password baru.</p>
+      <input type="email" id="forgotEmail" placeholder="Email" style="margin-bottom:14px;">
+      <button id="forgotBtn" onclick="tryResetPassword()">Kirim Link Reset</button>
+      <div class="gate-error" id="forgotError"></div>
+      <div class="auth-switch"><a onclick="showAuthView('login')">← Kembali ke halaman Masuk</a></div>
+    </div>
+
+    <div id="storageWarning" style="display:none; margin-top:16px; padding:12px 14px; background:var(--maroon-bg); color:var(--maroon); border-radius:2px; font-size:13px; text-align:left; line-height:1.5;">
+      ⚠️ Gagal terhubung ke database. Pastikan HP kamu terkoneksi internet, lalu coba muat ulang halaman ini.
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <header class="appbar">
+    <div class="mark"><span class="kom">KOM</span><span class="sos">SOS</span></div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div class="role-badge" id="roleBadge">Mode Lihat</div>
+      <span onclick="logout()" style="font-size:12.5px; color:var(--gold-soft); cursor:pointer; text-decoration:underline;">Keluar</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div id="notifBanner" style="display:none; background:rgba(169,128,58,0.12); border:1px solid var(--gold-soft); border-radius:12px; padding:12px 14px; margin-bottom:14px; align-items:center; justify-content:space-between; gap:10px;">
+        <span style="font-size:14px;">🔔 Aktifkan notifikasi biar diingatkan otomatis pas mau bertugas.</span>
+        <button class="btn-secondary" style="white-space:nowrap;" onclick="aktifkanNotifikasi()">Aktifkan</button>
+      </div>
+      <div id="pengingatArea"></div>
+      <div class="section-title">Rekap Jadwal</div>
+      <div class="section-sub">Pilih bulan & tahun untuk melihat jadwal yang sudah dibuat.</div>
+      <div class="filter-row">
+        <select id="filterBulan"></select>
+        <select id="filterTahun"></select>
+      </div>
+      <div id="jadwalListArea"></div>
+
+      <button class="saran-trigger" onclick="openSaranModal()">💬 Kotak Saran</button>
+    </div>
+
+    <!-- PETUGAS -->
+    <div class="page" id="page-petugas">
+      <div class="section-title">Nama Petugas</div>
+      <div class="section-sub">Daftar anggota KOMSOS yang bertugas sebagai operator.</div>
+      <div class="petugas-add" id="petugasAddRow" style="display:none;">
+        <input type="text" id="newPetugasName" placeholder="Nama petugas baru">
+        <button class="btn-primary" onclick="tambahPetugas()">Tambah</button>
+      </div>
+      <div id="petugasListArea"></div>
+    </div>
+
+    <!-- TAMBAH JADWAL -->
+    <div class="page" id="page-tambah">
+      <div class="section-title">Tambah Jadwal Baru</div>
+      <div class="section-sub" style="display:flex; justify-content:space-between; align-items:baseline; gap:10px;">
+        <span>Isi nama perayaan/misa, lalu susun petugas di tiap slot.</span>
+        <span onclick="if(confirm('Kosongkan form ini?')) resetForm()" style="color:var(--muted); text-decoration:underline; cursor:pointer; white-space:nowrap; font-size:13px;">Kosongkan form</span>
+      </div>
+
+      <div class="form-block">
+        <label>Nama Hari Raya / Misa</label>
+        <input type="text" id="namaMisa" placeholder="cth: Hari Minggu Biasa ke-XXIII">
+      </div>
+      <div class="form-block">
+        <label>Tanggal Misa Sabtu (18:00)</label>
+        <input type="date" id="tglSabtu" onchange="generateSlots()">
+        <div class="section-sub" style="margin-top:6px; margin-bottom:0;">Slot Minggu otomatis mengikuti tanggal setelah Sabtu ini. Tambah/hapus slot kalau perayaan jatuh di hari kerja.</div>
+      </div>
+
+      <div id="slotEditorArea"></div>
+      <div id="autoFillWrap"></div>
+
+      <button class="btn-primary" style="width:100%; padding:15px; font-size:15.5px;" onclick="simpanJadwal()">Simpan Jadwal</button>
+    </div>
+  </main>
+
+  <nav class="bottomnav">
+    <button class="active" data-page="home" onclick="goPage('home')"><span class="ic">⌂</span>Beranda</button>
+    <button data-page="petugas" onclick="goPage('petugas')"><span class="ic">☺</span>Petugas</button>
+    <button data-page="tambah" onclick="goPage('tambah')" id="navTambah" style="display:none;"><span class="ic">+</span>Jadwal Baru</button>
+  </nav>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal-sheet">
+    <span class="close-x" onclick="closeModal()">✕</span>
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- CONFIG ---------------- */
+const BULAN_NAMA = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+const SLOT_DEFAULT = [
+  {hari:"Sabtu", jam:"18:00", offset:0},
+  {hari:"Minggu", jam:"06:00", offset:1},
+  {hari:"Minggu", jam:"08:00", offset:1},
+  {hari:"Minggu", jam:"16:00", offset:1},
+  {hari:"Minggu", jam:"19:00", offset:1},
+];
+const PETUGAS_AWAL = ["Abet","Agung","Andreas Che","Angel","Anton","Apra","Aris","Bintang","Gege","Gio","Gresia","Hansen","Iren","Jessica","Ko Ferdi","Kristian","Levina","Lica","Maria","Marvetta","Moniq","Nicho","Ruben","Tasya","Tevo"];
+
+let currentRole = null; // 'viewer' | 'editor'
+let currentUser = null;     // objek user dari Firebase Auth
+let currentUserData = null; // {petugasId, nama, email, role} dari koleksi komsos-users
+
+// Selalu bungkus teks bebas dari user (nama, saran, dll) dengan ini sebelum
+// dimasukkan ke innerHTML, biar nggak bisa disusupi kode HTML/JS (XSS).
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, ch=>({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[ch]));
+}
+let petugasList = [];
+let jadwalList = [];
+let saranList = [];
+let currentSlots = [];
+
+/* ---------------- STORAGE HELPERS (Firebase Firestore) ---------------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyAG9tME0DyBqHsZi-rGjolO27NqXD0nanM",
+  authDomain: "komsos-keluarga-kudus.firebaseapp.com",
+  projectId: "komsos-keluarga-kudus",
+  storageBucket: "komsos-keluarga-kudus.firebasestorage.app",
+  messagingSenderId: "579282641548",
+  appId: "1:579282641548:web:f0ec3583d726f650c2d1a9"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+const KOMSOS_COLLECTION = 'komsos-data';
+const USERS_COLLECTION = 'komsos-users';
+
+/* ---------------- NOTIFIKASI PENGINGAT (Firebase Cloud Messaging) ---------------- */
+// GANTI nilai ini dengan kunci VAPID dari Firebase Console →
+// Project settings → Cloud Messaging → Web configuration → Generate key pair.
+const VAPID_KEY = "GANTI_DENGAN_VAPID_KEY_KAMU";
+
+function beepPengingat(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'sine'; o.frequency.value = 880;
+    g.gain.setValueAtTime(0.15, ctx.currentTime);
+    o.start();
+    o.stop(ctx.currentTime + 0.25);
+  }catch(e){ /* browser lama, abaikan */ }
+}
+
+async function aktifkanNotifikasi(){
+  try{
+    if(!('Notification' in window) || !firebase.messaging.isSupported()){
+      showToast('HP/browser kamu belum dukung notifikasi push.');
+      return;
+    }
+    const perm = await Notification.requestPermission();
+    if(perm !== 'granted'){ showToast('Izin notifikasi ditolak/ditutup.'); renderNotifBanner(); return; }
+    await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    const messaging = firebase.messaging();
+    const token = await messaging.getToken({ vapidKey: VAPID_KEY });
+    if(token && currentUser){
+      await db.collection(USERS_COLLECTION).doc(currentUser.uid).update({
+        fcmTokens: firebase.firestore.FieldValue.arrayUnion(token)
+      });
+      showToast('Notifikasi pengingat aktif!');
+    }
+    renderNotifBanner();
+  }catch(e){
+    console.error(e);
+    showToast('Gagal mengaktifkan notifikasi. Coba lagi ya.');
+  }
+}
+
+function renderNotifBanner(){
+  const el = document.getElementById('notifBanner');
+  if(!el) return;
+  const supported = ('Notification' in window) && firebase.messaging.isSupported && firebase.messaging.isSupported();
+  if(!supported || Notification.permission === 'granted'){
+    el.style.display = 'none';
+  }else{
+    el.style.display = 'flex';
+  }
+}
+
+if(firebase.messaging.isSupported()){
+  firebase.messaging().onMessage(payload=>{
+    const title = payload.notification?.title || 'Pengingat KOMSOS';
+    const body = payload.notification?.body || '';
+    beepPengingat();
+    showToast(`${title} — ${body}`);
+    if(Notification.permission === 'granted'){
+      new Notification(title, {body});
+    }
+  });
+}
+
+async function loadPetugasList(){
+  // Ini boleh jalan sebelum login (dipakai buat dropdown nama di form Daftar),
+  // makanya rules Firestore-nya bikin dokumen 'petugas-list' bisa dibaca publik.
+  petugasList = await safeGet('petugas-list', null);
+  if(!petugasList){
+    petugasList = PETUGAS_AWAL.map((n,i)=>({id:'p'+i, nama:n}));
+    // Catatan: kalau dokumennya belum pernah ada sama sekali, write ini butuh login
+    // (rules mewajibkan auth untuk write). Kalau gagal di sini, biarin saja —
+    // list default di atas tetap dipakai buat tampilan sementara.
+    try{ await saveList('petugas-list', petugasList); }catch(e){ console.error(e); }
+  }
+  db.collection(KOMSOS_COLLECTION).doc('petugas-list').onSnapshot(doc=>{
+    if(doc.exists){ petugasList = doc.data().payload || []; renderPetugas(); renderSlotEditor(); }
+  });
+}
+async function loadData(){
+  // Data ini baru boleh dibaca setelah login (sesuai rules Firestore).
+  jadwalList = await safeGet('jadwal-list', []);
+  saranList = await safeGet('saran-list', []);
+
+  // Live sync: kalau ada perubahan dari HP lain, tampilan ikut update otomatis.
+  db.collection(KOMSOS_COLLECTION).doc('jadwal-list').onSnapshot(doc=>{
+    if(doc.exists){ jadwalList = doc.data().payload || []; populateFilters(); renderJadwalList(); renderPetugas(); renderPengingat(); }
+  });
+  db.collection(KOMSOS_COLLECTION).doc('saran-list').onSnapshot(doc=>{
+    if(doc.exists){ saranList = doc.data().payload || []; renderSaranListInModal(); }
+  });
+}
+async function safeGet(key, fallback){
+  try{
+    const doc = await db.collection(KOMSOS_COLLECTION).doc(key).get();
+    return doc.exists ? (doc.data().payload || fallback) : fallback;
+  }catch(e){ console.error(e); throw e; }
+}
+async function saveList(key, data){
+  try{ await db.collection(KOMSOS_COLLECTION).doc(key).set({payload: data}); }catch(e){ console.error(e); }
+}
+
+/* ---------------- SPLASH & AUTH (akun per petugas via Firebase Auth) ---------------- */
+let storageUnavailable = false;
+let petugasUnavailable = false;
+let petugasReady = loadPetugasList().catch(e=>{
+  console.error('loadPetugasList failed', e);
+  petugasUnavailable = true;
+});
+let dataReady = null; // baru dibuat setelah kita tahu user sudah login
+let splashDone = false;
+
+// Firebase Auth yang urus sesi login (nginget orang tetap login walau app ditutup/dibuka lagi),
+// jadi kita nggak perlu simpan apa pun manual di localStorage lagi.
+let authResolved = false;
+let authReady = new Promise(resolve=>{
+  auth.onAuthStateChanged(async (user)=>{
+    if(user){
+      currentUser = user;
+      // Baca data komsos-data cuma dilakukan SETELAH auth berhasil,
+      // karena rules Firestore memang mewajibkan login untuk boleh baca.
+      // Kalau ini dijalankan sebelum login, akan selalu kena permission-denied
+      // dan salah ditampilkan sebagai "gagal terhubung ke database".
+      if(!dataReady){
+        dataReady = loadData().catch(e=>{
+          console.error('loadData failed', e);
+          storageUnavailable = true;
+        });
+      }
+      await dataReady;
+      try{
+        const doc = await db.collection(USERS_COLLECTION).doc(user.uid).get();
+        currentUserData = doc.exists ? doc.data() : {petugasId:null, nama:user.email, role:'viewer'};
+      }catch(e){
+        currentUserData = {petugasId:null, nama:user.email, role:'viewer'};
+      }
+      currentRole = currentUserData.role === 'editor' ? 'editor' : 'viewer';
+    }else{
+      currentUser = null;
+      currentUserData = null;
+      currentRole = null;
+    }
+    if(!authResolved){ authResolved = true; resolve(); }
+    else if(splashDone){ reactToAuthChange(); }
+  });
+});
+
+function reactToAuthChange(){
+  if(currentUser && storageUnavailable){
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('gate').style.display = 'flex';
+    document.getElementById('storageWarning').style.display = 'block';
+  }else if(currentUser){
+    enterApp();
+  }else{
+    document.getElementById('app').style.display = 'none';
+    showAuthView('login');
+    document.getElementById('gate').style.display = 'flex';
+  }
+}
+
+async function hideSplash(){
+  if(splashDone) return;
+  splashDone = true;
+  document.getElementById('splash').classList.add('hide');
+  await authReady;
+  if(currentUser && storageUnavailable){
+    // Sudah login tapi tetap gagal ambil data -> baru ini masalah database beneran.
+    document.getElementById('gate').style.display = 'flex';
+    document.getElementById('storageWarning').style.display = 'block';
+  }else if(currentUser){
+    enterApp();
+  }else{
+    document.getElementById('gate').style.display = 'flex';
+  }
+}
+// Splash hides on its own timer no matter what — never blocks on data loading.
+setTimeout(hideSplash, 1100);
+// Safety net in case the timer above is ever delayed by a slow device.
+window.addEventListener('load', ()=> setTimeout(hideSplash, 1300));
+
+/* --- Tampilan mata buka/tutup, dipakai di semua input password --- */
+function togglePw(inputId, eyeEl){
+  const input = document.getElementById(inputId);
+  if(input.type === 'password'){ input.type = 'text'; eyeEl.textContent = '🙈'; }
+  else{ input.type = 'password'; eyeEl.textContent = '👁️'; }
+}
+
+/* --- Pindah antar tampilan Masuk / Daftar / Lupa Password --- */
+function showAuthView(view){
+  document.getElementById('authLogin').style.display = view==='login' ? 'block' : 'none';
+  document.getElementById('authRegister').style.display = view==='register' ? 'block' : 'none';
+  document.getElementById('authForgot').style.display = view==='forgot' ? 'block' : 'none';
+  document.getElementById('loginError').textContent = '';
+  document.getElementById('registerError').textContent = '';
+  document.getElementById('forgotError').textContent = '';
+  if(view==='register') populateRegisterPetugasSelect();
+}
+
+async function populateRegisterPetugasSelect(){
+  const sel = document.getElementById('regPetugas');
+  sel.innerHTML = '<option value="">Memuat daftar nama...</option>';
+  await petugasReady;
+  if(petugasUnavailable || !petugasList || petugasList.length===0){
+    sel.innerHTML = '<option value="">— Gagal memuat daftar nama —</option>';
+    document.getElementById('registerError').textContent = 'Gagal memuat daftar nama petugas. Cek koneksi internet lalu coba muat ulang halaman.';
+    return;
+  }
+  const sorted = [...petugasList].sort((a,b)=>a.nama.localeCompare(b.nama));
+  sel.innerHTML = '<option value="">— Pilih nama kamu —</option>' + sorted.map(p=>`<option value="${p.id}">${escapeHtml(p.nama)}</option>`).join('');
+}
+
+function terjemahErrorAuth(e){
+  const map = {
+    'auth/invalid-email': 'Format email tidak valid.',
+    'auth/user-not-found': 'Akun dengan email ini tidak ditemukan.',
+    'auth/wrong-password': 'Password salah. Coba lagi.',
+    'auth/invalid-credential': 'Email atau password salah.',
+    'auth/email-already-in-use': 'Email ini sudah terdaftar. Coba masuk saja, atau pakai "Lupa password?" kalau lupa passwordnya.',
+    'auth/weak-password': 'Password terlalu lemah, minimal 6 karakter.',
+    'auth/too-many-requests': 'Terlalu banyak percobaan. Coba lagi beberapa saat lagi.',
+    'auth/operation-not-allowed': 'Login Email/Password belum diaktifkan di Firebase Console (Authentication → Sign-in method). Aktifkan dulu, baru coba daftar lagi.',
+    'auth/network-request-failed': 'Koneksi internet bermasalah. Cek koneksi lalu coba lagi.',
+    'permission-denied': 'Akun berhasil dibuat tapi gagal disimpan datanya (aturan keamanan Firestore belum mengizinkan). Perlu update Firestore Rules dulu.',
+  };
+  if(e && map[e.code]) return map[e.code];
+  return `Terjadi kesalahan${e && e.code ? ' ('+e.code+')' : ''}. Coba lagi ya.`;
+}
+
+async function tryLogin(){
+  const err = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  err.textContent = '';
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if(!email || !password){ err.textContent = 'Isi email dan password ya.'; return; }
+  btn.disabled = true;
+  try{
+    await auth.signInWithEmailAndPassword(email, password);
+    // onAuthStateChanged yang lanjutin masuk ke app.
+  }catch(e){
+    console.error(e);
+    err.textContent = terjemahErrorAuth(e);
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+async function tryRegister(){
+  const err = document.getElementById('registerError');
+  const btn = document.getElementById('registerBtn');
+  err.textContent = '';
+  const petugasId = document.getElementById('regPetugas').value;
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  if(!petugasId){ err.textContent = 'Pilih dulu nama kamu di daftar petugas.'; return; }
+  if(!email || !password){ err.textContent = 'Isi email dan password ya.'; return; }
+  if(password.length < 6){ err.textContent = 'Password minimal 6 karakter.'; return; }
+  // Akun baru SELALU dibuat sebagai 'viewer'. Status editor/PJ nggak bisa diset
+  // dari sini sama sekali — ini disengaja (lihat catatan keamanan). Admin yang
+  // naikkan status seseorang jadi editor secara manual lewat Firebase Console.
+  const role = 'viewer';
+  btn.disabled = true;
+  try{
+    const cred = await auth.createUserWithEmailAndPassword(email, password);
+    const nama = namaPetugas(petugasId);
+    const userData = {petugasId, nama, email, role};
+    await db.collection(USERS_COLLECTION).doc(cred.user.uid).set(userData);
+    currentUser = cred.user;
+    currentUserData = userData;
+    currentRole = role;
+    showToast(`Akun dibuat, selamat datang ${nama}!`);
+    enterApp();
+  }catch(e){
+    console.error(e);
+    err.textContent = terjemahErrorAuth(e);
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+async function tryResetPassword(){
+  const err = document.getElementById('forgotError');
+  const btn = document.getElementById('forgotBtn');
+  err.textContent = '';
+  const email = document.getElementById('forgotEmail').value.trim();
+  if(!email){ err.textContent = 'Isi email akun kamu dulu.'; return; }
+  btn.disabled = true;
+  try{
+    await auth.sendPasswordResetEmail(email);
+    showToast('Link reset password sudah dikirim, cek email kamu ya.');
+    document.getElementById('forgotEmail').value = '';
+    showAuthView('login');
+  }catch(e){
+    console.error(e);
+    err.textContent = terjemahErrorAuth(e);
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+async function enterApp(){
+  await dataReady;
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('app').style.flexDirection = 'column';
+  applyRoleUI();
+  populateFilters();
+  renderJadwalList();
+  renderPetugas();
+  renderPengingat();
+  renderNotifBanner();
+}
+
+async function logout(){
+  try{ await auth.signOut(); }catch(e){}
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPassword').value = '';
+  showAuthView('login');
+  document.getElementById('gate').style.display = 'flex';
+}
+
+function applyRoleUI(){
+  const badge = document.getElementById('roleBadge');
+  const nama = currentUserData ? currentUserData.nama : '';
+  if(currentRole === 'editor'){
+    badge.textContent = nama ? `${nama} — PJ` : 'Mode Edit — PJ';
+    badge.classList.add('editor');
+    document.getElementById('navTambah').style.display = 'block';
+    document.getElementById('petugasAddRow').style.display = 'flex';
+  }else{
+    badge.textContent = nama || 'Mode Lihat';
+    badge.classList.remove('editor');
+    document.getElementById('navTambah').style.display = 'none';
+    document.getElementById('petugasAddRow').style.display = 'none';
+  }
+}
+
+/* ---------------- PENGINGAT TUGAS (dalam-app) ----------------
+   CATATAN: pengingat ini baru muncul waktu petugas MEMBUKA app-nya (bukan notifikasi/alarm asli
+   yang nongol sendiri walau HP-nya idle/app tertutup — itu butuh "robot" pengirim notifikasi
+   di server terpisah, yang belum kita pasang di versi ini).
+
+   TODO (lanjutan, kalau nanti mau upgrade): tombol "Kirim reminder ke grup WA" — otomatis susun
+   teks pengingat (versi H-1 tengah malam, versi hari-H) terus tinggal diklik utk kirim ke grup
+   WhatsApp KOMSOS. Bisa reuse pola shareWA() di atas sebagai basisnya (buat teks + buka wa.me link).
+------------------------------------------------------------------ */
+function semuaSlotTanggal(tanggalDateStr){
+  const rows = [];
+  jadwalList.forEach(j=>{
+    j.slots.forEach(s=>{
+      if(new Date(s.tanggal).toDateString() === tanggalDateStr){
+        rows.push({...s, namaMisa:j.namaMisa});
+      }
+    });
+  });
+  rows.sort((a,b)=> a.jam.localeCompare(b.jam));
+  return rows;
+}
+function jamMundur(jam, menit){
+  const [h,m] = jam.split(':').map(Number);
+  const d = new Date(); d.setHours(h,m,0,0);
+  d.setMinutes(d.getMinutes()-menit);
+  return d.toTimeString().slice(0,5);
+}
+function renderPengingat(){
+  const area = document.getElementById('pengingatArea');
+  if(!area) return;
+  if(!currentUserData || !currentUserData.petugasId){ area.innerHTML=''; return; }
+  const pid = currentUserData.petugasId;
+  const now = new Date();
+  const todayStr = now.toDateString();
+  const besokStr = new Date(now.getTime()+86400000).toDateString();
+
+  const slotHariIni = semuaSlotTanggal(todayStr).filter(s=>s.petugas.includes(pid));
+  const slotBesok = semuaSlotTanggal(besokStr).filter(s=>s.petugas.includes(pid));
+
+  if(slotHariIni.length>0){
+    const s = slotHariIni[0];
+    const [h,m] = s.jam.split(':').map(Number);
+    const waktuTugas = new Date(); waktuTugas.setHours(h,m,0,0);
+    const menitLagi = (waktuTugas - now)/60000;
+    const jamHadir = jamMundur(s.jam, 30);
+    const selesai = semuaSlotTanggal(todayStr).filter(x=> x.jam < s.jam);
+    const subList = selesai.length>0
+      ? `<div class="sub-list">${selesai.map(x=>`✓ Misa ${x.jam} sudah selesai`).join('<br>')}</div>` : '';
+
+    if(menitLagi > -180 && menitLagi <= 60){
+      area.innerHTML = `<div class="pengingat-card">
+        <div class="judul">⏰ Giliranmu sebentar lagi!</div>
+        <div class="isi">Kamu bertugas hari ini jam <b>${s.jam}</b> (${escapeHtml(s.namaMisa)}). Usahakan sudah hadir jam <b>${jamHadir}</b> (30 menit sebelum misa mulai).</div>
+        ${subList}
+      </div>`;
+    }else if(menitLagi > 60){
+      area.innerHTML = `<div class="pengingat-card info">
+        <div class="judul">📋 Kamu bertugas hari ini</div>
+        <div class="isi">Giliranmu jam <b>${s.jam}</b> (${escapeHtml(s.namaMisa)}). Usahakan hadir jam <b>${jamHadir}</b> (30 menit sebelum misa mulai).</div>
+        ${subList}
+      </div>`;
+    }else{
+      area.innerHTML = '';
+    }
+    return;
+  }
+
+  if(slotBesok.length>0){
+    const s = slotBesok[0];
+    area.innerHTML = `<div class="pengingat-card info">
+      <div class="judul">🔔 Besok kamu bertugas</div>
+      <div class="isi">Jam <b>${s.jam}</b> pada Misa <b>${escapeHtml(s.namaMisa)}</b>. Jangan lupa siap-siap ya!</div>
+    </div>`;
+    return;
+  }
+
+  area.innerHTML = '';
+}
+// Refresh tiap 5 menit selama app kebuka, biar status "sudah selesai" ikut update.
+setInterval(()=>{ if(currentUser) renderPengingat(); }, 5*60*1000);
+
+/* ---------------- NAV ---------------- */
+function goPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.bottomnav button').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.bottomnav button[data-page="${name}"]`).classList.add('active');
+  if(name==='home') renderPengingat();
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ---------------- FILTERS / REKAP ---------------- */
+function populateFilters(){
+  const fb = document.getElementById('filterBulan');
+  const ft = document.getElementById('filterTahun');
+  fb.innerHTML = BULAN_NAMA.map((b,i)=>`<option value="${i}">${b}</option>`).join('');
+  const now = new Date();
+  fb.value = now.getMonth();
+  const years = [now.getFullYear()-1, now.getFullYear(), now.getFullYear()+1];
+  ft.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  ft.value = now.getFullYear();
+  fb.onchange = renderJadwalList;
+  ft.onchange = renderJadwalList;
+}
+
+function jadwalUntukBulan(bulan, tahun){
+  return jadwalList.filter(j=>{
+    const d = new Date(j.tglSabtu);
+    return d.getMonth() === bulan && d.getFullYear() === tahun;
+  }).sort((a,b)=> new Date(a.tglSabtu) - new Date(b.tglSabtu));
+}
+
+function namaPetugas(id){
+  const p = petugasList.find(x=>x.id===id);
+  return p ? p.nama : '—';
+}
+
+function renderJadwalList(){
+  const bulan = parseInt(document.getElementById('filterBulan').value);
+  const tahun = parseInt(document.getElementById('filterTahun').value);
+  const list = jadwalUntukBulan(bulan, tahun);
+  const area = document.getElementById('jadwalListArea');
+  if(list.length===0){
+    area.innerHTML = `<div class="empty-note">Belum ada jadwal untuk ${BULAN_NAMA[bulan]} ${tahun}.</div>`;
+    return;
+  }
+  area.innerHTML = list.map(j=>{
+    const slots = j.slots.map(s=>{
+      const tgl = new Date(s.tanggal);
+      const tglStr = tgl.toLocaleDateString('id-ID', {day:'2-digit', month:'short'});
+      const nm = s.petugas.map(id=>namaPetugas(id)).filter(Boolean).map(escapeHtml).join(' & ') || '(kosong)';
+      return `<div class="slot-line"><span class="waktu">${s.hari}, ${tglStr} — ${s.jam}</span><span class="nama">${nm}</span></div>`;
+    }).join('');
+    return `<div class="jadwal-card">
+      <div class="judul">PETUGAS OPERATOR ${escapeHtml(j.namaMisa.toUpperCase())}</div>
+      ${slots}
+      <div style="margin-top:12px; display:flex; gap:8px;">
+        <button class="btn-secondary" onclick="shareWA('${j.id}')">Bagikan ke WhatsApp</button>
+        ${currentRole==='editor' ? `<button class="btn-secondary" style="color:var(--maroon); border-color:var(--maroon-bg);" onclick="hapusJadwal('${j.id}')">Hapus</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function hapusJadwal(jadwalId){
+  const j = jadwalList.find(x=>x.id===jadwalId);
+  if(!j) return;
+  if(!confirm(`Hapus jadwal "${j.namaMisa}"? Tindakan ini tidak bisa dibatalkan.`)) return;
+  jadwalList = jadwalList.filter(x=>x.id!==jadwalId);
+  await saveList('jadwal-list', jadwalList);
+  renderJadwalList();
+  renderPetugas();
+  showToast('Jadwal dihapus');
+}
+
+function shareWA(jadwalId){
+  const j = jadwalList.find(x=>x.id===jadwalId);
+  if(!j) return;
+  let text = `*PETUGAS OPERATOR ${j.namaMisa.toUpperCase()}*\n`;
+  const grouped = {};
+  j.slots.forEach(s=>{
+    const tgl = new Date(s.tanggal);
+    const tglStr = tgl.toLocaleDateString('id-ID', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+    if(!grouped[tglStr]) grouped[tglStr] = [];
+    grouped[tglStr].push(s);
+  });
+  Object.keys(grouped).forEach(tglStr=>{
+    grouped[tglStr].forEach(s=>{
+      text += `${tglStr}\n(${s.jam})\n`;
+      s.petugas.forEach(id=> text += `* ${namaPetugas(id)}\n`);
+      if(s.petugas.length===0) text += `* \n`;
+      text += `-\n`;
+    });
+  });
+  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+}
+
+/* ---------------- SARAN ---------------- */
+function openSaranModal(){
+  document.getElementById('modalTitle').textContent = 'Kotak Saran';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="section-sub" style="margin-bottom:12px;">Ada masukan buat tim KOMSOS? Tulis di sini ya.</div>
+    <input type="text" id="saranNama" class="modal-field" placeholder="Nama (boleh dikosongkan)">
+    <textarea id="saranIsi" class="modal-field" placeholder="Tulis saran atau masukanmu..."></textarea>
+    <button class="btn-primary" style="width:100%;" onclick="kirimSaran()">Kirim Saran</button>
+    <div class="saran-list" id="saranListArea"></div>
+  `;
+  renderSaranListInModal();
+  document.getElementById('modalOverlay').classList.add('open');
+}
+async function kirimSaran(){
+  const nama = document.getElementById('saranNama').value.trim() || 'Anonim';
+  const isi = document.getElementById('saranIsi').value.trim();
+  if(!isi){ showToast('Tulis dulu saranmu ya'); return; }
+  saranList.unshift({nama, isi, waktu: new Date().toISOString()});
+  await saveList('saran-list', saranList);
+  showToast('Saran terkirim, terima kasih!');
+  closeModal();
+}
+function renderSaranListInModal(){
+  const area = document.getElementById('saranListArea');
+  if(!area || currentRole !== 'editor'){ if(area) area.innerHTML=''; return; }
+  if(saranList.length===0){ area.innerHTML = '<div class="section-sub" style="margin:10px 0 0;">Belum ada saran masuk.</div>'; return; }
+  area.innerHTML = saranList.slice(0,8).map(s=>{
+    const d = new Date(s.waktu).toLocaleDateString('id-ID',{day:'2-digit',month:'short'});
+    return `<div class="saran-item"><b>${escapeHtml(s.nama)}</b> <span>· ${d}</span><br>${escapeHtml(s.isi)}</div>`;
+  }).join('');
+}
+
+/* ---------------- PETUGAS ---------------- */
+async function tambahPetugas(){
+  const input = document.getElementById('newPetugasName');
+  const nama = input.value.trim();
+  if(!nama){ return; }
+  const id = 'p' + Date.now();
+  petugasList.push({id, nama});
+  petugasList.sort((a,b)=>a.nama.localeCompare(b.nama));
+  await saveList('petugas-list', petugasList);
+  input.value = '';
+  renderPetugas();
+  showToast(`${nama} ditambahkan`);
+}
+
+function hitungTugasBulanIni(petugasId){
+  const now = new Date();
+  return hitungTugasBulan(petugasId, now.getMonth(), now.getFullYear());
+}
+function hitungTugasBulan(petugasId, bulan, tahun){
+  let count = 0;
+  jadwalUntukBulan(bulan, tahun).forEach(j=>{
+    j.slots.forEach(s=>{ if(s.petugas.includes(petugasId)) count++; });
+  });
+  return count;
+}
+function riwayatPetugas(petugasId){
+  const rows = [];
+  jadwalList.forEach(j=>{
+    j.slots.forEach(s=>{
+      if(s.petugas.includes(petugasId)){
+        const tgl = new Date(s.tanggal).toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+        rows.push({tgl, jam:s.jam, misa:j.namaMisa, tanggalSort: s.tanggal});
+      }
+    });
+  });
+  rows.sort((a,b)=> new Date(b.tanggalSort) - new Date(a.tanggalSort));
+  return rows;
+}
+
+function renderPetugas(){
+  const area = document.getElementById('petugasListArea');
+  const sorted = [...petugasList].sort((a,b)=>a.nama.localeCompare(b.nama));
+  area.innerHTML = sorted.map(p=>{
+    const cnt = hitungTugasBulanIni(p.id);
+    const cls = cnt>=3 ? 'full' : (cnt===0 ? 'zero' : '');
+    const label = cnt>=3 ? `⚠️ ${cnt}x bulan ini` : `${cnt}x bulan ini`;
+    return `<div class="petugas-row" onclick="openPetugasDetail('${p.id}')">
+      <span class="nm">${escapeHtml(p.nama)}</span>
+      <span class="count-pill ${cls}">${label}</span>
+    </div>`;
+  }).join('');
+}
+
+function openPetugasDetail(id){
+  const p = petugasList.find(x=>x.id===id);
+  const hist = riwayatPetugas(id);
+  document.getElementById('modalTitle').textContent = p.nama;
+  const body = document.getElementById('modalBody');
+  if(hist.length===0){
+    body.innerHTML = '<div class="empty-note">Belum pernah bertugas.</div>';
+  }else{
+    body.innerHTML = `<div class="section-sub" style="margin-bottom:10px;">Total ${hist.length}x bertugas.</div>` +
+      hist.map(h=>`<div class="hist-line"><span>${h.tgl} · ${h.jam}</span><span style="color:var(--muted); text-align:right; max-width:55%;">${escapeHtml(h.misa)}</span></div>`).join('');
+  }
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
+
+/* ---------------- TAMBAH JADWAL ---------------- */
+function resetForm(){
+  document.getElementById('namaMisa').value = '';
+  document.getElementById('tglSabtu').value = '';
+  currentSlots = [];
+  document.getElementById('slotEditorArea').innerHTML = '';
+}
+
+function generateSlots(){
+  const sabtuVal = document.getElementById('tglSabtu').value;
+  if(!sabtuVal) return;
+  const sabtu = new Date(sabtuVal + 'T00:00:00');
+  currentSlots = SLOT_DEFAULT.map((s,i)=>{
+    const d = new Date(sabtu);
+    d.setDate(d.getDate() + s.offset);
+    return {id:'s'+i, hari:s.hari, jam:s.jam, tanggal:d.toISOString(), petugas:[null,null]};
+  });
+  renderSlotEditor();
+}
+
+function addManualSlot(){
+  const sabtuVal = document.getElementById('tglSabtu').value;
+  const base = sabtuVal ? new Date(sabtuVal+'T00:00:00') : new Date();
+  currentSlots.push({id:'s'+Date.now(), hari:'Lainnya', jam:'18:00', tanggal: base.toISOString(), petugas:[null,null]});
+  renderSlotEditor();
+}
+
+function getFormBulanTahun(){
+  const v = document.getElementById('tglSabtu').value;
+  const d = v ? new Date(v) : new Date();
+  return {bulan:d.getMonth(), tahun:d.getFullYear()};
+}
+
+function renderSlotEditor(){
+  const area = document.getElementById('slotEditorArea');
+  const {bulan, tahun} = getFormBulanTahun();
+  const label = (id)=> hitungTugasBulan(id,bulan,tahun)>=3 ? ' ⚠️ sudah lebih dari 3x bulan ini' : '';
+
+  area.innerHTML = currentSlots.map((s, idx)=>{
+    const tglStr = new Date(s.tanggal).toLocaleDateString('id-ID',{weekday:'long', day:'2-digit', month:'short'});
+    const sel1 = s.petugas[0] || '';
+    const sel2 = s.petugas[1] || '';
+    return `<div class="slot-editor">
+      <div class="slot-head"><span>${tglStr} — ${s.jam}</span><span class="remove-slot" onclick="removeSlot(${idx})">Hapus</span></div>
+      <select onchange="setSlotPetugas(${idx},0,this.value)">
+        <option value="">— Pilih petugas 1 —</option>
+        ${petugasList.map(p=>`<option value="${p.id}" ${p.id===sel1?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
+      </select>
+      <select onchange="setSlotPetugas(${idx},1,this.value)">
+        <option value="">— Pilih petugas 2 —</option>
+        ${petugasList.map(p=>`<option value="${p.id}" ${p.id===sel2?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
+      </select>
+    </div>`;
+  }).join('');
+
+  const wrap = document.getElementById('autoFillWrap');
+  if(wrap){
+    wrap.innerHTML = currentSlots.length>0
+      ? `<button class="btn-secondary" style="width:100%; margin-bottom:16px;" onclick="autoFillSlots()">⚡ Isi Otomatis Slot Kosong</button>`
+      : '';
+  }
+}
+function setSlotPetugas(idx, slotIdx, val){
+  currentSlots[idx].petugas[slotIdx] = val || null;
+}
+function removeSlot(idx){
+  currentSlots.splice(idx,1);
+  renderSlotEditor();
+}
+
+function shuffleArray(arr){
+  const a = [...arr];
+  for(let i=a.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function autoFillSlots(){
+  const {bulan, tahun} = getFormBulanTahun();
+  // Start from real counts this month, then track picks made during this fill so we spread fairly.
+  const running = {};
+  petugasList.forEach(p=> running[p.id] = hitungTugasBulan(p.id, bulan, tahun));
+  currentSlots.forEach(s=> s.petugas.forEach(pid=>{ if(pid) running[pid] = (running[pid]||0)+1; }));
+
+  let filledAny = false;
+  currentSlots.forEach(s=>{
+    for(let i=0;i<2;i++){
+      if(!s.petugas[i]){
+        const candidates = shuffleArray(petugasList.filter(p=> !s.petugas.includes(p.id)));
+        if(candidates.length===0) continue;
+        candidates.sort((a,b)=> (running[a.id]||0) - (running[b.id]||0));
+        const pick = candidates[0];
+        s.petugas[i] = pick.id;
+        running[pick.id] = (running[pick.id]||0)+1;
+        filledAny = true;
+      }
+    }
+  });
+  renderSlotEditor();
+  showToast(filledAny ? 'Slot kosong diisi otomatis — cek lagi sebelum simpan' : 'Semua slot sudah terisi');
+}
+
+async function simpanJadwal(){
+  const namaMisa = document.getElementById('namaMisa').value.trim();
+  const sabtuVal = document.getElementById('tglSabtu').value;
+  if(!namaMisa){ showToast('Isi dulu nama hari raya/misanya'); return; }
+  if(!sabtuVal || currentSlots.length===0){ showToast('Pilih tanggal & pastikan slot terisi'); return; }
+
+  const entry = {
+    id: 'j' + Date.now(),
+    namaMisa,
+    tglSabtu: sabtuVal,
+    slots: currentSlots.map(s=>({...s, petugas: s.petugas.filter(Boolean)}))
+  };
+  jadwalList.push(entry);
+  await saveList('jadwal-list', jadwalList);
+  showToast('Jadwal tersimpan');
+  resetForm();
+  populateFilters();
+  renderJadwalList();
+  renderPetugas();
+  goPage('home');
+}
+</script>
+</body>
+</html>

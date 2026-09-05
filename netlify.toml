@@ -1,0 +1,5 @@
+[functions]
+  node_bundler = "esbuild"
+
+[functions."cek-pengingat"]
+  schedule = "*/15 * * * *"
