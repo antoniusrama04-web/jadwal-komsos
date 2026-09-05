@@ -18,13 +18,22 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 // Ini yang jalan kalau app lagi ketutup / HP lagi dikunci —
-// notifikasi + bunyi default HP otomatis muncul dari sini.
+// notifikasi otomatis muncul dari sini, termasuk di layar kunci.
+// CATATAN PENTING soal suara: Web Push API (standar yang dipakai semua
+// browser, bukan cuma Firebase) TIDAK mengizinkan file suara custom untuk
+// notifikasi yang muncul saat app tertutup/HP terkunci — browser hanya
+// boleh memutar suara notifikasi BAWAAN sistem Android/HP kamu di kondisi
+// ini. Suara bel custom yang kamu upload HANYA bisa berbunyi kalau app-nya
+// sedang terbuka di layar (lihat playNotifSound() di index.html) — itu
+// sudah cukup untuk skenario presentasi karena HP kalian akan dibuka.
 messaging.onBackgroundMessage((payload) => {
   const title = (payload.notification && payload.notification.title) || 'Pengingat KOMSOS';
   const body = (payload.notification && payload.notification.body) || '';
   self.registration.showNotification(title, {
     body,
     vibrate: [200, 100, 200],
-    tag: 'komsos-pengingat',
+    tag: 'komsos-pengingat-' + Date.now(), // tag unik biar tidak menimpa notifikasi sebelumnya
+    requireInteraction: true, // notifikasi tetap nongol sampai disentuh, tidak hilang sendiri
+    renotify: true,
   });
 });

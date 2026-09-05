@@ -352,6 +352,10 @@ nav.bottomnav button.active .ic{color:var(--gold);}
         <span style="font-size:14px;">🔔 Aktifkan notifikasi biar diingatkan otomatis pas mau bertugas.</span>
         <button class="btn-secondary" style="white-space:nowrap;" onclick="aktifkanNotifikasi()">Aktifkan</button>
       </div>
+      <div id="testNotifBox" style="display:none; background:rgba(62,111,168,0.08); border:1px solid var(--blue); border-radius:12px; padding:12px 14px; margin-bottom:14px; align-items:center; justify-content:space-between; gap:10px;">
+        <span style="font-size:14px;">🧪 Mode PJ: kirim notifikasi uji coba ke semua HP yang sudah aktifkan (cocok buat demo/presentasi).</span>
+        <button class="btn-secondary" id="btnUjiNotif" style="white-space:nowrap;" onclick="kirimNotifikasiUjiCoba()">Kirim Sekarang</button>
+      </div>
       <div id="pengingatArea"></div>
       <div class="section-title">Rekap Jadwal</div>
       <div class="section-sub">Pilih bulan & tahun untuk melihat jadwal yang sudah dibuat.</div>
@@ -416,6 +420,7 @@ nav.bottomnav button.active .ic{color:var(--gold);}
 </div>
 
 <div class="toast" id="toast"></div>
+<audio id="bellSound" src="./mixkit-happy-bells-notification-937.wav" preload="auto"></audio>
 
 <script>
 /* ---------------- CONFIG ---------------- */
@@ -463,9 +468,9 @@ const USERS_COLLECTION = 'komsos-users';
 /* ---------------- NOTIFIKASI PENGINGAT (Firebase Cloud Messaging) ---------------- */
 // GANTI nilai ini dengan kunci VAPID dari Firebase Console →
 // Project settings → Cloud Messaging → Web configuration → Generate key pair.
-const VAPID_KEY = "BGC0Z9RA1tFpQH_hu923uBkcuB57cI-Tz81j4hc91L_oWNAleCtjebhUsRaanGCcOKdEIYdhfF6hYMhYnUOzKN0";
+const VAPID_KEY = "GANTI_DENGAN_VAPID_KEY_KAMU";
 
-function beepPengingat(){
+function beepFallback(){
   try{
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const o = ctx.createOscillator();
@@ -476,6 +481,19 @@ function beepPengingat(){
     o.start();
     o.stop(ctx.currentTime + 0.25);
   }catch(e){ /* browser lama, abaikan */ }
+}
+
+function playNotifSound(){
+  try{
+    const audio = document.getElementById('bellSound');
+    if(audio){
+      audio.currentTime = 0;
+      const p = audio.play();
+      if(p && p.catch) p.catch(()=> beepFallback());
+      return;
+    }
+  }catch(e){}
+  beepFallback();
 }
 
 async function aktifkanNotifikasi(){
@@ -513,11 +531,41 @@ function renderNotifBanner(){
   }
 }
 
+async function kirimNotifikasiUjiCoba(){
+  if(!currentUser || currentRole !== 'editor'){ showToast('Hanya PJ yang bisa kirim notifikasi uji coba.'); return; }
+  const btn = document.getElementById('btnUjiNotif');
+  btn.disabled = true;
+  const teksAsli = btn.textContent;
+  btn.textContent = 'Mengirim...';
+  try{
+    const idToken = await currentUser.getIdToken();
+    const res = await fetch('/.netlify/functions/test-notifikasi', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + idToken }
+    });
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok){
+      showToast(data.error || 'Gagal mengirim notifikasi uji coba.');
+    }else if(!data.terkirim){
+      showToast(data.pesan || 'Belum ada HP yang mengaktifkan notifikasi.');
+    }else{
+      showToast(`Terkirim ke ${data.terkirim} HP! 🎉`);
+      playNotifSound();
+    }
+  }catch(e){
+    console.error(e);
+    showToast('Gagal menghubungi server notifikasi. Cek koneksi internet.');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = teksAsli;
+  }
+}
+
 if(firebase.messaging.isSupported()){
   firebase.messaging().onMessage(payload=>{
     const title = payload.notification?.title || 'Pengingat KOMSOS';
     const body = payload.notification?.body || '';
-    beepPengingat();
+    playNotifSound();
     showToast(`${title} — ${body}`);
     if(Notification.permission === 'granted'){
       new Notification(title, {body});
@@ -792,11 +840,13 @@ function applyRoleUI(){
     badge.classList.add('editor');
     document.getElementById('navTambah').style.display = 'block';
     document.getElementById('petugasAddRow').style.display = 'flex';
+    document.getElementById('testNotifBox').style.display = 'flex';
   }else{
     badge.textContent = nama || 'Mode Lihat';
     badge.classList.remove('editor');
     document.getElementById('navTambah').style.display = 'none';
     document.getElementById('petugasAddRow').style.display = 'none';
+    document.getElementById('testNotifBox').style.display = 'none';
   }
 }
 
