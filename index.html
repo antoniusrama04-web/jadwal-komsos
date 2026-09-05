@@ -544,6 +544,7 @@ async function aktifkanNotifikasi(){
       await db.collection(USERS_COLLECTION).doc(currentUser.uid).update({
         fcmTokens: firebase.firestore.FieldValue.arrayUnion(token)
       });
+      punyaTokenTersimpan = true;
       showToast('Notifikasi pengingat aktif!');
     }
     renderNotifBanner();
@@ -557,11 +558,31 @@ function renderNotifBanner(){
   const el = document.getElementById('notifBanner');
   if(!el) return;
   const supported = ('Notification' in window) && firebase.messaging.isSupported && firebase.messaging.isSupported();
-  if(!supported || Notification.permission === 'granted'){
+  // Jangan cuma andalkan izin browser (Notification.permission) untuk sembunyikan tombol —
+  // izin bisa saja sudah "granted" dari percobaan sebelumnya walau tokennya gagal tersimpan
+  // (misalnya karena VAPID key sempat salah). Baru sembunyikan kalau kita BENAR-BENAR
+  // sudah konfirmasi ada token tersimpan di Firestore untuk akun ini.
+  if(!supported || Notification.permission === 'denied'){
+    el.style.display = 'none';
+  }else if(Notification.permission === 'granted' && punyaTokenTersimpan){
     el.style.display = 'none';
   }else{
     el.style.display = 'flex';
   }
+}
+
+let punyaTokenTersimpan = false;
+async function cekTokenTersimpan(){
+  if(!currentUser){ punyaTokenTersimpan = false; return; }
+  try{
+    const doc = await db.collection(USERS_COLLECTION).doc(currentUser.uid).get();
+    const tokens = doc.exists ? (doc.data().fcmTokens || []) : [];
+    punyaTokenTersimpan = tokens.length > 0;
+  }catch(e){
+    console.error(e);
+    punyaTokenTersimpan = false;
+  }
+  renderNotifBanner();
 }
 
 async function kirimNotifikasiUjiCoba(){
@@ -853,7 +874,7 @@ async function enterApp(){
   renderJadwalList();
   renderPetugas();
   renderPengingat();
-  renderNotifBanner();
+  cekTokenTersimpan();
 }
 
 async function logout(){
