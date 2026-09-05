@@ -1047,7 +1047,7 @@ function renderJadwalList(){
       <div class="judul">PETUGAS OPERATOR ${escapeHtml(j.namaMisa.toUpperCase())}</div>
       ${slots}
       <div style="margin-top:12px; display:flex; gap:8px;">
-        <button class="btn-secondary" onclick="shareWA('${j.id}')">Bagikan ke WhatsApp</button>
+        ${currentRole==='editor' ? `<button class="btn-secondary" onclick="shareWA('${j.id}')">Bagikan ke WhatsApp</button>` : ''}
         ${currentRole==='editor' ? `<button class="btn-secondary" style="color:var(--maroon); border-color:var(--maroon-bg);" onclick="hapusJadwal('${j.id}')">Hapus</button>` : ''}
       </div>
     </div>`;
