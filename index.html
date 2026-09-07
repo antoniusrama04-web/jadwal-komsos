@@ -412,6 +412,7 @@ nav.bottomnav button.active .ic{color:var(--gold);}
     <div class="page" id="page-petugas">
       <div class="section-title">Nama Petugas</div>
       <div class="section-sub">Daftar anggota KOMSOS yang bertugas sebagai operator.</div>
+      <button class="btn-secondary" style="width:100%; margin-bottom:14px;" onclick="shareRekapBulanan()">📤 Bagikan Rekap Bulan Ini ke WhatsApp</button>
       <div class="petugas-add" id="petugasAddRow" style="display:none;">
         <input type="text" id="newPetugasName" placeholder="Nama petugas baru">
         <button class="btn-primary" onclick="tambahPetugas()">Tambah</button>
@@ -473,6 +474,20 @@ const SLOT_DEFAULT = [
   {hari:"Minggu", jam:"19:00", offset:1},
 ];
 const PETUGAS_AWAL = ["Abet","Agung","Andreas Che","Angel","Anton","Apra","Aris","Bintang","Gege","Gio","Gresia","Hansen","Iren","Jessica","Ko Ferdi","Kristian","Levina","Lica","Maria","Marvetta","Moniq","Nicho","Ruben","Tasya","Tevo"];
+
+// Nama-nama ini (huruf kecil) statusnya OPSIONAL: masih boleh dipilih manual buat
+// bertugas sewaktu-waktu, tapi TIDAK dihitung dalam kuota 3x/bulan, tidak kena
+// peringatan ⚠️, dan tidak ikut dipilih oleh "Isi Otomatis". Contoh: Anton (PJ),
+// yang keikutsertaannya di jadwal sifatnya sukarela, bukan giliran wajib.
+const NAMA_OPSIONAL = ['anton'];
+function tandaiOpsional(list){
+  let changed = false;
+  list.forEach(p=>{
+    const seharusnyaOpsional = NAMA_OPSIONAL.includes((p.nama||'').trim().toLowerCase());
+    if(seharusnyaOpsional && !p.opsional){ p.opsional = true; changed = true; }
+  });
+  return changed;
+}
 
 let currentRole = null; // 'viewer' | 'editor'
 let currentUser = null;     // objek user dari Firebase Auth
@@ -578,9 +593,18 @@ async function aktifkanNotifikasi(){
     const messaging = firebase.messaging();
     const token = await messaging.getToken({ vapidKey: VAPID_KEY });
     if(token && currentUser){
-      await db.collection(USERS_COLLECTION).doc(currentUser.uid).update({
-        fcmTokens: firebase.firestore.FieldValue.arrayUnion(token)
+      // Satu HP/browser (satu token) cuma boleh nempel ke SATU akun aktif.
+      // Kalau HP ini pernah dipakai login akun lain sebelumnya dan token yang
+      // sama masih tersimpan di sana, itu yang bikin notifikasi dobel — jadi
+      // proses ini dilakukan lewat server (bukan langsung dari sini) supaya
+      // token itu dipindahkan bersih: dihapus dari akun lama, ditaruh di akun ini.
+      const idToken = await currentUser.getIdToken();
+      const res = await fetch('/.netlify/functions/sinkron-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+        body: JSON.stringify({ token })
       });
+      if(!res.ok){ throw new Error('sinkron-token gagal'); }
       punyaTokenTersimpan = true;
       showToast('Notifikasi pengingat aktif!');
     }
@@ -669,14 +693,23 @@ async function loadPetugasList(){
   // makanya rules Firestore-nya bikin dokumen 'petugas-list' bisa dibaca publik.
   petugasList = await safeGet('petugas-list', null);
   if(!petugasList){
-    petugasList = PETUGAS_AWAL.map((n,i)=>({id:'p'+i, nama:n}));
+    petugasList = PETUGAS_AWAL.map((n,i)=>({id:'p'+i, nama:n, opsional: NAMA_OPSIONAL.includes(n.toLowerCase())}));
     // Catatan: kalau dokumennya belum pernah ada sama sekali, write ini butuh login
     // (rules mewajibkan auth untuk write). Kalau gagal di sini, biarin saja —
     // list default di atas tetap dipakai buat tampilan sementara.
     try{ await saveList('petugas-list', petugasList); }catch(e){ console.error(e); }
+  }else if(tandaiOpsional(petugasList)){
+    // Data lama (dibuat sebelum fitur opsional ada) — tandai & simpan sekali.
+    try{ await saveList('petugas-list', petugasList); }catch(e){ console.error(e); }
   }
   db.collection(KOMSOS_COLLECTION).doc('petugas-list').onSnapshot(doc=>{
-    if(doc.exists){ petugasList = doc.data().payload || []; renderPetugas(); renderSlotEditor(); }
+    if(doc.exists){
+      petugasList = doc.data().payload || [];
+      if(tandaiOpsional(petugasList)){
+        saveList('petugas-list', petugasList).catch(e=>console.error(e));
+      }
+      renderPetugas(); renderSlotEditor();
+    }
   });
 }
 async function loadData(){
@@ -1233,11 +1266,34 @@ function riwayatPetugas(petugasId){
   return rows;
 }
 
+function shareRekapBulanan(){
+  const now = new Date();
+  const bulan = now.getMonth(), tahun = now.getFullYear();
+  const sorted = [...petugasList].filter(p=>!p.opsional).sort((a,b)=>a.nama.localeCompare(b.nama));
+  let text = `*Rekap Petugas Operator — ${BULAN_NAMA[bulan]} ${tahun}*\n\n`;
+  sorted.forEach(p=>{
+    const cnt = hitungTugasBulan(p.id, bulan, tahun);
+    text += `${p.nama} — ${cnt}x\n`;
+  });
+  const opsionalList = petugasList.filter(p=>p.opsional);
+  if(opsionalList.length){
+    text += `\n_(${opsionalList.map(p=>p.nama).join(', ')} — opsional, tidak dihitung wajib)_`;
+  }
+  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+}
+
 function renderPetugas(){
   const area = document.getElementById('petugasListArea');
   const sorted = [...petugasList].sort((a,b)=>a.nama.localeCompare(b.nama));
   area.innerHTML = sorted.map(p=>{
     const cnt = hitungTugasBulanIni(p.id);
+    if(p.opsional){
+      return `<div class="petugas-row" onclick="openPetugasDetail('${p.id}')">
+        <span class="nm">${escapeHtml(p.nama)}</span>
+        <span class="count-pill">Opsional${cnt>0 ? ` · ${cnt}x bulan ini` : ''}</span>
+      </div>`;
+    }
     const cls = cnt>=3 ? 'full' : (cnt===0 ? 'zero' : '');
     const label = cnt>=3 ? `⚠️ ${cnt}x bulan ini` : `${cnt}x bulan ini`;
     return `<div class="petugas-row" onclick="openPetugasDetail('${p.id}')">
@@ -1298,7 +1354,11 @@ function getFormBulanTahun(){
 function renderSlotEditor(){
   const area = document.getElementById('slotEditorArea');
   const {bulan, tahun} = getFormBulanTahun();
-  const label = (id)=> hitungTugasBulan(id,bulan,tahun)>=3 ? ' ⚠️ sudah lebih dari 3x bulan ini' : '';
+  const label = (id)=>{
+    const p = petugasList.find(x=>x.id===id);
+    if(p && p.opsional) return ' (opsional)';
+    return hitungTugasBulan(id,bulan,tahun)>=3 ? ' ⚠️ sudah lebih dari 3x bulan ini' : '';
+  };
 
   area.innerHTML = currentSlots.map((s, idx)=>{
     const tglStr = new Date(s.tanggal).toLocaleDateString('id-ID',{weekday:'long', day:'2-digit', month:'short'});
@@ -1353,19 +1413,19 @@ function autoFillSlots(){
   // - Bulan lalu cuma 0-1x (jarang bertugas) -> diprioritaskan (running dikurangi).
   // - Bulan lalu 2x atau lebih (sudah lumayan/cukup) -> dapat keringanan (running ditambah).
   const running = {};
-  petugasList.forEach(p=>{
+  petugasList.filter(p=>!p.opsional).forEach(p=>{
     const iniBulan = hitungTugasBulan(p.id, bulan, tahun);
     const bulanLalu = hitungTugasBulan(p.id, lalu.bulan, lalu.tahun);
     const penyesuaian = bulanLalu <= 1 ? -1 : (bulanLalu - 1);
     running[p.id] = iniBulan + penyesuaian;
   });
-  currentSlots.forEach(s=> s.petugas.forEach(pid=>{ if(pid) running[pid] = (running[pid]||0)+1; }));
+  currentSlots.forEach(s=> s.petugas.forEach(pid=>{ if(pid && running.hasOwnProperty(pid)) running[pid] = (running[pid]||0)+1; }));
 
   let filledAny = false;
   currentSlots.forEach(s=>{
     for(let i=0;i<2;i++){
       if(!s.petugas[i]){
-        const candidates = shuffleArray(petugasList.filter(p=> !s.petugas.includes(p.id)));
+        const candidates = shuffleArray(petugasList.filter(p=> !p.opsional && !s.petugas.includes(p.id)));
         if(candidates.length===0) continue;
         candidates.sort((a,b)=> (running[a.id]||0) - (running[b.id]||0));
         const pick = candidates[0];
