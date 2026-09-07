@@ -13,6 +13,27 @@ const KOMSOS_COLLECTION = 'komsos-data';
 const USERS_COLLECTION = 'komsos-users';
 const LOG_COLLECTION = 'reminder-log';
 
+// PENTING soal zona waktu: server (Netlify Functions) biasanya jalan dengan jam
+// sistem UTC, BUKAN WIB (Asia/Jakarta, UTC+7). Kalau kita pakai waktuTugas.setHours(...)
+// begitu saja, itu artinya "jam 19:00 menurut jam SERVER" — yang kalau server-nya UTC,
+// itu sama dengan jam 02:00 dini hari WIB, alias meleset 7 jam dari yang dimaksud!
+// Makanya di bawah ini waktu dibangun eksplisit pakai offset "+07:00", supaya hasilnya
+// benar persis jam WIB berapa pun timezone si server sebenarnya.
+function tanggalWIB(isoString) {
+  // Ambil tanggal kalender (YYYY-MM-DD) SESUAI ZONA WAKTU JAKARTA dari sebuah
+  // timestamp, apa pun timezone server yang menjalankan kode ini.
+  const fmt = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Jakarta',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+  });
+  return fmt.format(new Date(isoString)); // -> "2026-09-07"
+}
+function waktuJakarta(tanggalYMD, jamHM) {
+  // Bangun instant absolut yang benar untuk "tanggal X jam Y WIB" — Indonesia
+  // (WIB) tidak kenal DST, jadi offset +07:00 ini aman dipakai sepanjang tahun.
+  return new Date(`${tanggalYMD}T${jamHM}:00+07:00`);
+}
+
 // Netlify otomatis menjalankan fungsi ini tiap 15 menit (lihat netlify.toml).
 // Cek semua jadwal, kirim notifikasi HANYA ke petugas yang namanya ada
 // di slot itu, pas 3 momen: tengah malam hari-H, 3 jam sebelum, 1 jam sebelum.
@@ -29,31 +50,29 @@ exports.handler = async function () {
       for (const s of (j.slots || [])) {
         if (!s.petugas || s.petugas.length === 0) continue;
 
-        const waktuTugas = new Date(s.tanggal);
-        const [h, m] = (s.jam || '00:00').split(':').map(Number);
-        waktuTugas.setHours(h, m, 0, 0);
-
-        const tengahMalam = new Date(waktuTugas);
-        tengahMalam.setHours(0, 0, 0, 0);
+        const tglWIB = tanggalWIB(s.tanggal);
+        const jamStr = s.jam || '00:00';
+        const waktuTugas = waktuJakarta(tglWIB, jamStr);
+        const tengahMalam = waktuJakarta(tglWIB, '00:00');
 
         const target = [
           {
             key: 'midnight',
             waktu: tengahMalam,
             judul: 'Hari ini kamu bertugas 🙏',
-            pesan: `Jangan lupa, hari ini kamu bertugas jam ${s.jam} (${j.namaMisa}).`,
+            pesan: `Jangan lupa, hari ini kamu bertugas jam ${jamStr} (${j.namaMisa}).`,
           },
           {
             key: 'h3',
             waktu: new Date(waktuTugas.getTime() - 3 * 3600 * 1000),
             judul: 'Pengingat: 3 jam lagi',
-            pesan: `3 jam lagi kamu bertugas jam ${s.jam} (${j.namaMisa}).`,
+            pesan: `3 jam lagi kamu bertugas jam ${jamStr} (${j.namaMisa}).`,
           },
           {
             key: 'h1',
             waktu: new Date(waktuTugas.getTime() - 1 * 3600 * 1000),
             judul: 'Pengingat: 1 jam lagi ⏰',
-            pesan: `1 jam lagi kamu bertugas jam ${s.jam} (${j.namaMisa}). Siap-siap ya!`,
+            pesan: `1 jam lagi kamu bertugas jam ${jamStr} (${j.namaMisa}). Siap-siap ya!`,
           },
         ];
 
@@ -66,20 +85,27 @@ exports.handler = async function () {
           const logSnap = await logRef.get();
           if (logSnap.exists) continue; // sudah pernah dikirim, skip
 
+          // Kumpulkan dulu SEMUA token dari semua petugas di slot ini jadi satu
+          // set unik, baru kirim SEKALI per token — supaya kalau ada 1 HP yang
+          // (secara tidak sengaja) tercatat di lebih dari satu akun, dia tetap
+          // cuma dapat SATU notifikasi, bukan dobel.
+          const tokenSet = new Set();
           for (const pid of s.petugas) {
             const usersSnap = await db.collection(USERS_COLLECTION).where('petugasId', '==', pid).get();
-            for (const userDoc of usersSnap.docs) {
-              const tokens = userDoc.data().fcmTokens || [];
-              if (tokens.length === 0) continue;
-              try {
-                await admin.messaging().sendEachForMulticast({
-                  tokens,
-                  notification: { title: t.judul, body: t.pesan },
-                });
-                terkirim++;
-              } catch (sendErr) {
-                console.error('Gagal kirim ke', pid, sendErr);
-              }
+            usersSnap.forEach((userDoc) => {
+              (userDoc.data().fcmTokens || []).forEach((tok) => tokenSet.add(tok));
+            });
+          }
+
+          if (tokenSet.size > 0) {
+            try {
+              const resp = await admin.messaging().sendEachForMulticast({
+                tokens: [...tokenSet],
+                notification: { title: t.judul, body: t.pesan },
+              });
+              terkirim += resp.successCount;
+            } catch (sendErr) {
+              console.error('Gagal kirim reminder', logId, sendErr);
             }
           }
           await logRef.set({ terkirimPada: admin.firestore.FieldValue.serverTimestamp() });
