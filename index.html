@@ -308,9 +308,9 @@ nav.bottomnav button.active .ic{color:var(--gold);}
     <!-- MASUK -->
     <div id="authLogin">
       <p>Masuk dengan akun KOMSOS kamu untuk melihat atau mengelola jadwal petugas operator.</p>
-      <input type="email" id="loginEmail" placeholder="Email" autocomplete="username" style="margin-bottom:14px;">
+      <input type="email" id="loginEmail" placeholder="Email" autocomplete="username" style="margin-bottom:14px;" onkeydown="if(event.key==='Enter') tryLogin()">
       <div style="position:relative; margin-bottom:8px;">
-        <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" style="margin-bottom:0; padding-right:44px;">
+        <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" style="margin-bottom:0; padding-right:44px;" onkeydown="if(event.key==='Enter') tryLogin()">
         <span class="pw-eye" onclick="togglePw('loginPassword', this)">👁️</span>
       </div>
       <div class="auth-forgot"><span onclick="showAuthView('forgot')">Lupa password?</span></div>
@@ -323,14 +323,9 @@ nav.bottomnav button.active .ic{color:var(--gold);}
     <div id="authRegister" style="display:none;">
       <p>Buat akun kamu sebagai petugas operator KOMSOS.</p>
       <select id="regPetugas"><option value="">— Pilih nama kamu —</option></select>
-      <input type="text" id="regNamaBebas" placeholder="Nama kamu" style="display:none; margin-bottom:14px;">
-      <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted); margin:-6px 0 14px; cursor:pointer;">
-        <input type="checkbox" id="regBukanPetugas" onchange="toggleModeDaftar()" style="width:auto;">
-        Saya bukan petugas operator (cuma mau memantau/PJ tambahan)
-      </label>
-      <input type="email" id="regEmail" placeholder="Email" autocomplete="username" style="margin-bottom:14px;">
+      <input type="email" id="regEmail" placeholder="Email" autocomplete="username" style="margin-bottom:14px;" onkeydown="if(event.key==='Enter') tryRegister()">
       <div style="position:relative; margin-bottom:14px;">
-        <input type="password" id="regPassword" placeholder="Buat password (min. 6 karakter)" autocomplete="new-password" style="margin-bottom:0; padding-right:44px;">
+        <input type="password" id="regPassword" placeholder="Buat password (min. 6 karakter)" autocomplete="new-password" style="margin-bottom:0; padding-right:44px;" onkeydown="if(event.key==='Enter') tryRegister()">
         <span class="pw-eye" onclick="togglePw('regPassword', this)">👁️</span>
       </div>
       <button id="registerBtn" onclick="tryRegister()">Daftar</button>
@@ -343,7 +338,7 @@ nav.bottomnav button.active .ic{color:var(--gold);}
     <!-- LUPA PASSWORD -->
     <div id="authForgot" style="display:none;">
       <p>Masukkan email akun kamu, nanti kami kirimkan link untuk membuat password baru.</p>
-      <input type="email" id="forgotEmail" placeholder="Email" style="margin-bottom:14px;">
+      <input type="email" id="forgotEmail" placeholder="Email" style="margin-bottom:14px;" onkeydown="if(event.key==='Enter') tryResetPassword()">
       <button id="forgotBtn" onclick="tryResetPassword()">Kirim Link Reset</button>
       <div class="gate-error" id="forgotError"></div>
       <div class="auth-switch"><a onclick="showAuthView('login')">← Kembali ke halaman Masuk</a></div>
@@ -419,6 +414,7 @@ nav.bottomnav button.active .ic{color:var(--gold);}
       <div class="section-title">Nama Petugas</div>
       <div class="section-sub">Daftar anggota KOMSOS yang bertugas sebagai operator.</div>
       <button class="btn-secondary" style="width:100%; margin-bottom:14px;" onclick="shareRekapBulanan()">📤 Bagikan Rekap Bulan Ini ke WhatsApp</button>
+      <button class="btn-secondary" id="btnImporLama" style="display:none; width:100%; margin-bottom:14px;" onclick="importRekapLama()">📥 Impor Rekap Jadwal Jan–Agu 2026</button>
       <div class="petugas-add" id="petugasAddRow" style="display:none;">
         <input type="text" id="newPetugasName" placeholder="Nama petugas baru">
         <button class="btn-primary" onclick="tambahPetugas()">Tambah</button>
@@ -892,30 +888,14 @@ async function tryLogin(){
   }
 }
 
-function toggleModeDaftar(){
-  const bukanPetugas = document.getElementById('regBukanPetugas').checked;
-  document.getElementById('regPetugas').style.display = bukanPetugas ? 'none' : 'block';
-  document.getElementById('regNamaBebas').style.display = bukanPetugas ? 'block' : 'none';
-}
-
 async function tryRegister(){
   const err = document.getElementById('registerError');
   const btn = document.getElementById('registerBtn');
   err.textContent = '';
-  const bukanPetugas = document.getElementById('regBukanPetugas').checked;
   const petugasId = document.getElementById('regPetugas').value;
-  const namaBebas = document.getElementById('regNamaBebas').value.trim();
   const email = document.getElementById('regEmail').value.trim();
   const password = document.getElementById('regPassword').value;
-
-  let nama;
-  if(bukanPetugas){
-    if(!namaBebas){ err.textContent = 'Isi dulu nama kamu.'; return; }
-    nama = namaBebas;
-  }else{
-    if(!petugasId){ err.textContent = 'Pilih dulu nama kamu di daftar petugas.'; return; }
-    nama = namaPetugas(petugasId);
-  }
+  if(!petugasId){ err.textContent = 'Pilih dulu nama kamu di daftar petugas.'; return; }
   if(!email || !password){ err.textContent = 'Isi email dan password ya.'; return; }
   if(password.length < 6){ err.textContent = 'Password minimal 6 karakter.'; return; }
   // Akun baru SELALU dibuat sebagai 'viewer'. Status editor/PJ nggak bisa diset
@@ -925,11 +905,8 @@ async function tryRegister(){
   btn.disabled = true;
   try{
     const cred = await auth.createUserWithEmailAndPassword(email, password);
-    // Akun "bukan petugas" sengaja petugasId-nya null — supaya namanya TIDAK
-    // PERNAH nyambung ke daftar petugas operator (tidak dihitung jadwal, tidak
-    // muncul di dropdown/isi-otomatis), cuma bisa login buat memantau (viewer)
-    // atau jadi PJ tambahan kalau nanti dinaikkan manual jadi editor.
-    const userData = {petugasId: bukanPetugas ? null : petugasId, nama, email, role};
+    const nama = namaPetugas(petugasId);
+    const userData = {petugasId, nama, email, role};
     await db.collection(USERS_COLLECTION).doc(cred.user.uid).set(userData);
     currentUser = cred.user;
     currentUserData = userData;
@@ -995,12 +972,14 @@ function applyRoleUI(){
     document.getElementById('navTambah').style.display = 'block';
     document.getElementById('petugasAddRow').style.display = 'flex';
     document.getElementById('testNotifBox').style.display = 'flex';
+    document.getElementById('btnImporLama').style.display = 'block';
   }else{
     badge.textContent = nama || 'Mode Lihat';
     badge.classList.remove('editor');
     document.getElementById('navTambah').style.display = 'none';
     document.getElementById('petugasAddRow').style.display = 'none';
     document.getElementById('testNotifBox').style.display = 'none';
+    document.getElementById('btnImporLama').style.display = 'none';
   }
 }
 
@@ -1403,6 +1382,76 @@ async function hapusPetugas(id){
   renderPetugas();
   closeModal();
   showToast(`${p.nama} dihapus dari daftar petugas.`);
+}
+
+
+/* ---------------- IMPOR REKAP JADWAL LAMA (Jan-Agu 2026) ----------------
+   Sekali pakai: mengambil rekapan Word yang sudah diberikan, dan memasukkannya
+   sebagai jadwal Firestore beneran, supaya Rekap & Isi Otomatis ikut hitung
+   riwayat lama ini. Aman dijalankan berkali-kali -- kalau sudah pernah
+   diimpor, akan otomatis terdeteksi & dibatalkan (skip), tidak dobel. */
+
+const IMPOR_ALIAS_NAMA = {
+  'ferdinand':'ko ferdi', 'ferdi':'ko ferdi', 'ferdinan':'ko ferdi',
+  'vetta':'marvetta',
+  'lika':'lica',
+  'kris':'kristian',
+  'albet':'abet',
+  'gress':'gresia',
+  'andreas':'andreas che',
+  'rama':'anton',
+};
+
+const IMPOR_DATA_LAMA = [{"namaMisa": "Misa Jumat Pertama Januari", "tglSabtu": "2026-01-02", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-01-02", "petugas": ["Yubi", "Tevo"]}]}, {"namaMisa": "Akhir Pekan 3-4 Januari", "tglSabtu": "2026-01-03", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-01-03", "petugas": ["Levina", "Angel"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-01-04", "petugas": ["Ferdinand", "Vetta"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-01-04", "petugas": ["Ruben", "Agung"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-01-04", "petugas": ["Yubi", "Moniq"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-01-04", "petugas": ["Lika", "Kristian"]}]}, {"namaMisa": "Akhir Pekan 10-11 Januari", "tglSabtu": "2026-01-10", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-01-10", "petugas": ["Gress", "Bintang"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-01-11", "petugas": ["Ruben", "Moniq"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-01-11", "petugas": ["Yubi", null]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-01-11", "petugas": ["Tevo", null]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-01-11", "petugas": ["Ferdi", null]}]}, {"namaMisa": "Akhir Pekan 16-17 Januari", "tglSabtu": "2026-01-16", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-01-16", "petugas": ["Levina", "Agung"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-01-17", "petugas": ["Vetta", "Aris"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-01-17", "petugas": ["Gio", "Iren"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-01-17", "petugas": ["Kris", "Lika"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-01-17", "petugas": ["Jessica", "Albet"]}]}, {"namaMisa": "Akhir Pekan 24-25 Januari", "tglSabtu": "2026-01-24", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-01-24", "petugas": ["Albet", "Gio"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-01-25", "petugas": ["Aris", "Apra"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-01-25", "petugas": ["Tasya", "Gress"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-01-25", "petugas": ["Rama", "Iren"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-01-25", "petugas": ["Maria", "Angel"]}]}, {"namaMisa": "Sabtu 31 Januari", "tglSabtu": "2026-01-31", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-01-31", "petugas": ["Iren", "Levina"]}]}, {"namaMisa": "Misa Jumat Pertama Februari", "tglSabtu": "2026-02-06", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-02-06", "petugas": ["Aris", "Ruben"]}]}, {"namaMisa": "Minggu 1 Februari", "tglSabtu": "2026-02-01", "slots": [{"hari": "Minggu", "jam": "06:00", "tanggal": "2026-02-01", "petugas": ["Ferdinand", "Lika"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-02-01", "petugas": ["Gio", "Bintang"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-02-01", "petugas": ["Gress", "Jessica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-02-01", "petugas": ["Tevo", "Yubi"]}]}, {"namaMisa": "Akhir Pekan 7-8 Februari", "tglSabtu": "2026-02-07", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-02-07", "petugas": ["Agung", "Maria"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-02-08", "petugas": ["Moniq", "Vetta"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-02-08", "petugas": ["Tasya", "Anton"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-02-08", "petugas": ["Kris", "Iren"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-02-08", "petugas": ["Abet", "Ferdi"]}]}, {"namaMisa": "Akhir Pekan 14-15 Februari", "tglSabtu": "2026-02-14", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-02-14", "petugas": ["Maria", "Lika"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-02-15", "petugas": ["Ferdinand", "Vetta"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-02-15", "petugas": ["Levina", "Angel"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-02-15", "petugas": ["Tevo", "Apra"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-02-15", "petugas": ["Bintang", "Hansen"]}]}, {"namaMisa": "Akhir Pekan 21-22 Februari", "tglSabtu": "2026-02-21", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-02-21", "petugas": ["Gio", "Levina"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-02-22", "petugas": ["Maria", "Moniq"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-02-22", "petugas": ["Andreas", "Bintang"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-02-22", "petugas": ["Tasya", "Jessica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-02-22", "petugas": ["Ruben", "Gyan"]}]}, {"namaMisa": "Sabtu 28 Februari", "tglSabtu": "2026-02-28", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-02-28", "petugas": ["Gege", "Iren"]}]}, {"namaMisa": "Misa Rabu Abu", "tglSabtu": "2026-02-18", "slots": [{"hari": "Rabu", "jam": "05:30", "tanggal": "2026-02-18", "petugas": ["Vetta", "Ferdinand"]}, {"hari": "Rabu", "jam": "08:00", "tanggal": "2026-02-18", "petugas": ["Gress", "Moniq"]}, {"hari": "Rabu", "jam": "12:00", "tanggal": "2026-02-18", "petugas": ["Aris", "Angel"]}, {"hari": "Rabu", "jam": "16:00", "tanggal": "2026-02-18", "petugas": ["Tevo", "Apra"]}, {"hari": "Rabu", "jam": "19:00", "tanggal": "2026-02-18", "petugas": ["Bintang", "Hansen"]}]}, {"namaMisa": "Jalan Salib 20 Februari", "tglSabtu": "2026-02-20", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-02-20", "petugas": ["Kristian", "Ruben"]}]}, {"namaMisa": "Jalan Salib 27 Februari", "tglSabtu": "2026-02-27", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-02-27", "petugas": ["Gege", "Iren"]}]}, {"namaMisa": "Minggu 1 Maret", "tglSabtu": "2026-03-01", "slots": [{"hari": "Minggu", "jam": "06:00", "tanggal": "2026-03-01", "petugas": ["Ruben", "Nicho"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-03-01", "petugas": ["Bintang", "Hansen"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-03-01", "petugas": ["Agung", "Tevo"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-03-01", "petugas": ["Albet", "Andreas"]}]}, {"namaMisa": "Jalan Salib 6 Maret", "tglSabtu": "2026-03-06", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-03-06", "petugas": ["Levina", "Angel"]}]}, {"namaMisa": "Jalan Salib 13 Maret", "tglSabtu": "2026-03-13", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-03-13", "petugas": ["Gyan", "Gio"]}]}, {"namaMisa": "Jalan Salib 20 Maret", "tglSabtu": "2026-03-20", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-03-20", "petugas": ["Tevo", "Gege"]}]}, {"namaMisa": "Jalan Salib 27 Maret", "tglSabtu": "2026-03-27", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-03-27", "petugas": ["Lika", "Iren"]}]}, {"namaMisa": "Akhir Pekan 7-8 Maret", "tglSabtu": "2026-03-07", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-03-07", "petugas": ["Tevo", "Kristian"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-03-08", "petugas": ["Jessica", "Tasya"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-03-08", "petugas": ["Yubi", "Ruben"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-03-08", "petugas": ["Vetta", "Ferdinand"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-03-08", "petugas": ["Lika", "Kristian"]}]}, {"namaMisa": "Akhir Pekan 14-15 Maret", "tglSabtu": "2026-03-14", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-03-14", "petugas": ["Lika", "Yubi"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-03-15", "petugas": ["Aris", "Vetta"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-03-15", "petugas": ["Iren", "Moniq"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-03-15", "petugas": ["Andreas", "Ferdinand"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-03-15", "petugas": ["Gio", "Apra"]}]}, {"namaMisa": "Akhir Pekan 21-22 Maret", "tglSabtu": "2026-03-21", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-03-21", "petugas": ["Levina", "Hansen"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-03-22", "petugas": ["Maria", "Vetta"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-03-22", "petugas": ["Aris", "Nicho"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-03-22", "petugas": ["Gress", "Tevo"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-03-22", "petugas": ["Albet", "Agung"]}]}, {"namaMisa": "Minggu Palma", "tglSabtu": "2026-03-28", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-03-28", "petugas": ["Maria", "Iren"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-03-29", "petugas": ["Gio", "Kristian"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-03-29", "petugas": ["Tasya", "Ruben"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-03-29", "petugas": ["Angel", "Gege"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-03-29", "petugas": ["Moniq", "Lika"]}]}, {"namaMisa": "Pekan Suci: Kamis Putih - Minggu Paskah", "tglSabtu": "2026-04-02", "slots": [{"hari": "Kamis", "jam": "17:00", "tanggal": "2026-04-02", "petugas": ["Gress", "Lika"]}, {"hari": "Kamis", "jam": "20:00", "tanggal": "2026-04-02", "petugas": ["Jessica", "Hansen"]}, {"hari": "Jumat", "jam": "07:00", "tanggal": "2026-04-03", "petugas": ["Levina", "Angel"]}, {"hari": "Jumat", "jam": "13:00", "tanggal": "2026-04-03", "petugas": ["Moniq", "Gress"]}, {"hari": "Jumat", "jam": "17:00", "tanggal": "2026-04-03", "petugas": ["Angel", "Vetta"]}, {"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-04-04", "petugas": ["Iren", "Vetta"]}, {"hari": "Sabtu", "jam": "22:00", "tanggal": "2026-04-04", "petugas": ["Ferdinand", "Tevo"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-04-05", "petugas": ["Levina", "Maria"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-04-05", "petugas": ["Jessica", "Tasya"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-04-05", "petugas": ["Ferdinand", "Agung"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-04-05", "petugas": ["Vetta", "Lika"]}]}, {"namaMisa": "Akhir Pekan 11-12 April", "tglSabtu": "2026-04-11", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-04-11", "petugas": ["Levina", "Bintang"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-04-12", "petugas": ["Kris", "Gege"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-04-12", "petugas": ["Apra", "Hansen"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-04-12", "petugas": ["Gio", "Nicho"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-04-12", "petugas": ["Maria", "Lika"]}]}, {"namaMisa": "Akhir Pekan 18-19 April", "tglSabtu": "2026-04-18", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-04-18", "petugas": ["Levina", "Angel"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-04-19", "petugas": ["Vetta", "Jessica"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-04-19", "petugas": ["Iren", "Lica"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-04-19", "petugas": ["Tevo", "Ferdinand"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-04-19", "petugas": ["Albet", "Andreas"]}]}, {"namaMisa": "Akhir Pekan 25-26 April", "tglSabtu": "2026-04-25", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-04-25", "petugas": ["Iren", "Hansen"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-04-26", "petugas": ["Yubi", "Ruben"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-04-26", "petugas": ["Aris", "Tasya"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-04-26", "petugas": ["Kristian", "Lica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-04-26", "petugas": ["Tevo", "Bintang"]}]}, {"namaMisa": "Misa Jumat Pertama Mei", "tglSabtu": "2026-05-01", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-05-01", "petugas": ["Aris", "Nicho"]}]}, {"namaMisa": "Akhir Pekan 2-3 Mei", "tglSabtu": "2026-05-02", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-05-02", "petugas": ["Agung", "Jessica"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-05-03", "petugas": ["Apra", "Gio"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-05-03", "petugas": ["Moniq", "Lica"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-05-03", "petugas": ["Vetta", "Angel"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-05-03", "petugas": ["Ruben", "Albet"]}]}, {"namaMisa": "Akhir Pekan 9-10 Mei", "tglSabtu": "2026-05-09", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-05-09", "petugas": ["Yubi", "Gege"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-05-10", "petugas": ["Kristian", "Andreas"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-05-10", "petugas": ["Bintang", "Nicho"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-05-10", "petugas": ["Maria", "Tasya"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-05-10", "petugas": ["Tevo", "Hansen"]}]}, {"namaMisa": "Misa Kenaikan Tuhan Yesus", "tglSabtu": "2026-05-14", "slots": [{"hari": "Kamis", "jam": "06:00", "tanggal": "2026-05-14", "petugas": ["Ferdinand", "Levina"]}, {"hari": "Kamis", "jam": "08:00", "tanggal": "2026-05-14", "petugas": ["Tevo", "Moniq"]}, {"hari": "Kamis", "jam": "16:00", "tanggal": "2026-05-14", "petugas": ["Gress", "Ruben"]}, {"hari": "Kamis", "jam": "19:00", "tanggal": "2026-05-14", "petugas": ["Lica", "Kristian"]}]}, {"namaMisa": "Akhir Pekan 16-17 Mei", "tglSabtu": "2026-05-16", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-05-16", "petugas": ["Levina", "Hansen"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-05-17", "petugas": ["Vetta", "Agung"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-05-17", "petugas": ["Gege", "Gio"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-05-17", "petugas": ["Ferdinand", "Tevo"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-05-17", "petugas": ["Apra", "Aris"]}]}, {"namaMisa": "Akhir Pekan 23-24 Mei", "tglSabtu": "2026-05-23", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-05-23", "petugas": ["Levina", "Gress"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-05-24", "petugas": ["Maria", "Moniq"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-05-24", "petugas": ["Bu Yani", "Jessica"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-05-24", "petugas": ["Iren", "Lika"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-05-24", "petugas": ["Angel", "Vetta"]}]}, {"namaMisa": "Akhir Pekan 30-31 Mei", "tglSabtu": "2026-05-30", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-05-30", "petugas": ["Tasya", "Angel"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-05-31", "petugas": ["Maria", "Gege"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-05-31", "petugas": ["Gio", "Kristian"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-05-31", "petugas": ["Tevo", "Ferdinand"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-05-31", "petugas": ["Andreas", "Albet"]}]}, {"namaMisa": "Misa Jumat Pertama Juni", "tglSabtu": "2026-06-05", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-06-05", "petugas": ["Apra", "Bu Yani"]}]}, {"namaMisa": "Akhir Pekan 6-7 Juni", "tglSabtu": "2026-06-06", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-06-06", "petugas": ["Maria", "Agung"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-06-07", "petugas": ["Kristian", "Lica"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-06-07", "petugas": ["Jessica", "Iren"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-06-07", "petugas": ["Ferdinand", "Tasya"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-06-07", "petugas": ["Yubi", "Tevo"]}]}, {"namaMisa": "Akhir Pekan 13-14 Juni", "tglSabtu": "2026-06-13", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-06-13", "petugas": ["Levina", "Angel"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-06-14", "petugas": ["Agung", "Gege"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-06-14", "petugas": ["Ruben", "Nicho"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-06-14", "petugas": ["Aris", "Apra"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-06-14", "petugas": ["Gio", "Tevo"]}]}, {"namaMisa": "Akhir Pekan 20-21 Juni", "tglSabtu": "2026-06-20", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-06-20", "petugas": ["Yubi", "Maria"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-06-21", "petugas": ["Hansen", "Moniq"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-06-21", "petugas": ["Ruben", "Kristian"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-06-21", "petugas": ["Lika", "Jessica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-06-21", "petugas": ["Albet", "Andreas"]}]}, {"namaMisa": "Akhir Pekan 27-28 Juni", "tglSabtu": "2026-06-27", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-06-27", "petugas": ["Iren", "Bintang"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-06-28", "petugas": ["Hansen", "Gege"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-06-28", "petugas": ["Nicho", "Tasya"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-06-28", "petugas": ["Lika", "Jessica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-06-28", "petugas": ["Gio", "Apra"]}]}, {"namaMisa": "Misa Jumat Pertama Juli", "tglSabtu": "2026-07-03", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-07-03", "petugas": ["Apra", "Aris"]}]}, {"namaMisa": "Akhir Pekan 4-5 Juli", "tglSabtu": "2026-07-04", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-07-04", "petugas": ["Tevo", "Agung"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-07-05", "petugas": ["Vetta", "Lica"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-07-05", "petugas": ["Levina", "Hansen"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-07-05", "petugas": ["Maria", "Jessica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-07-05", "petugas": ["Ruben", "Andreas"]}]}, {"namaMisa": "Akhir Pekan 11-12 Juli", "tglSabtu": "2026-07-11", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-07-11", "petugas": ["Bintang", "Apra"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-07-12", "petugas": ["Vetta", "Gio"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-07-12", "petugas": ["Lica", "Kristian"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-07-12", "petugas": ["Moniq", "Tevo"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-07-12", "petugas": ["Gege", "Albet"]}]}, {"namaMisa": "Akhir Pekan 18-19 Juli", "tglSabtu": "2026-07-18", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-07-18", "petugas": ["Iren", "Gress"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-07-19", "petugas": ["Kristian", "Hansen"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-07-19", "petugas": ["Levina", "Aris"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-07-19", "petugas": ["Andreas", "Albet"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-07-19", "petugas": ["Lica", "Jessica"]}]}, {"namaMisa": "Akhir Pekan 25-26 Juli", "tglSabtu": "2026-07-25", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-07-25", "petugas": ["Tasya", "Angel"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-07-26", "petugas": ["Kristian", "Bintang"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-07-26", "petugas": ["Gio", "Gege"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-07-26", "petugas": ["Maria", "Iren"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-07-26", "petugas": ["Hansen", "Andreas"]}]}, {"namaMisa": "Akhir Pekan 1-2 Agustus", "tglSabtu": "2026-08-01", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-08-01", "petugas": ["Yubi", "Agung"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-08-02", "petugas": ["Vetta", "Moniq"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-08-02", "petugas": ["Tasya", "Jessica"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-08-02", "petugas": ["Lica", "Gress"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-08-02", "petugas": ["Aris", "Angel"]}]}, {"namaMisa": "Misa Jumat Pertama Agustus", "tglSabtu": "2026-08-07", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-08-07", "petugas": ["Levina", "Bu Yani"]}]}, {"namaMisa": "Akhir Pekan 8-9 Agustus", "tglSabtu": "2026-08-08", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-08-08", "petugas": ["Levina", "Angel"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-08-09", "petugas": ["Ruben", "Hansen"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-08-09", "petugas": ["Kristian", "Iren"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-08-09", "petugas": ["Andreas", "Bintang"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-08-09", "petugas": ["Lica", "Jessica"]}]}, {"namaMisa": "Akhir Pekan 15-16 Agustus", "tglSabtu": "2026-08-15", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-08-15", "petugas": ["Gege", "Bintang"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-08-16", "petugas": ["Aris", "Maria"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-08-16", "petugas": ["Moniq", "Tasya"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-08-16", "petugas": ["Albet", "Gress"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-08-16", "petugas": ["Gio", "Ruben"]}]}, {"namaMisa": "Akhir Pekan 22-23 Agustus", "tglSabtu": "2026-08-22", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-08-22", "petugas": ["Agung", "Maria"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-08-23", "petugas": ["Kristian", "Apra"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-08-23", "petugas": ["Ruben", "Lica"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-08-23", "petugas": ["Gio", "Gege"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-08-23", "petugas": ["Andreas", "Albet"]}]}, {"namaMisa": "Akhir Pekan 29-30 Agustus", "tglSabtu": "2026-08-29", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-08-29", "petugas": ["Angel", "Levina"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-08-30", "petugas": ["Vetta", "Apra"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-08-30", "petugas": ["Tasya", "Jessica"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-08-30", "petugas": ["Iren", "Lica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-08-30", "petugas": ["Tevo", "Moniq"]}]}];
+
+function importResolveNama(namaMentah, cache){
+  const key = (namaMentah||'').trim().toLowerCase();
+  const target = IMPOR_ALIAS_NAMA[key] || key;
+  let p = petugasList.find(x => (x.nama||'').trim().toLowerCase() === target);
+  if(!p){
+    if(cache[target]) return cache[target];
+    const id = 'pimp' + Date.now() + Math.random().toString(36).slice(2,7);
+    p = {id, nama: namaMentah.trim()};
+    petugasList.push(p);
+    cache[target] = id;
+  }
+  return p.id;
+}
+
+async function importRekapLama(){
+  if(currentRole !== 'editor'){ showToast('Hanya PJ yang bisa impor data lama.'); return; }
+  const sudahAda = jadwalList.some(j => j.id && j.id.startsWith('imp2026-'));
+  if(sudahAda){
+    showToast('Rekap Jan-Agu 2026 sudah pernah diimpor sebelumnya. Tidak diimpor ulang.');
+    return;
+  }
+  if(!confirm(`Ini akan menambahkan ${IMPOR_DATA_LAMA.length} jadwal (Januari-Agustus 2026) dari rekap Word ke database. Lanjutkan?`)) return;
+
+  const cacheBaru = {};
+  IMPOR_DATA_LAMA.forEach((entry, idx) => {
+    const slots = entry.slots.map((s, si) => ({
+      id: 'simp' + idx + '_' + si,
+      hari: s.hari,
+      jam: s.jam,
+      tanggal: new Date(s.tanggal + 'T00:00:00').toISOString(),
+      petugas: s.petugas.map(nm => nm ? importResolveNama(nm, cacheBaru) : null)
+    }));
+    jadwalList.push({
+      id: 'imp2026-' + idx,
+      namaMisa: entry.namaMisa,
+      tglSabtu: new Date(entry.tglSabtu + 'T00:00:00').toISOString(),
+      slots
+    });
+  });
+
+  petugasList.sort((a,b) => a.nama.localeCompare(b.nama));
+  await saveList('petugas-list', petugasList);
+  await saveList('jadwal-list', jadwalList);
+
+  const jumlahBaru = Object.keys(cacheBaru).length;
+  refreshHomeViews();
+  renderPetugas();
+  showToast(`Berhasil! ${IMPOR_DATA_LAMA.length} jadwal diimpor${jumlahBaru ? `, ${jumlahBaru} petugas baru dibuat` : ''}.`);
 }
 function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
 
