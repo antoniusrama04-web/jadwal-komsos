@@ -23,6 +23,7 @@
   --blue-light: #8FB4FF;
   --gold: #8B5CF6;
   --gold-soft: #C4B5FD;
+  --sos-blue: #2FB0FF;
   --paper: #0A0F1E;
   --paper-card: rgba(255,255,255,0.055);
   --text: #F1F4FB;
@@ -77,9 +78,7 @@ h1,h2,h3,.display{font-family:'Sora', sans-serif;}
   animation:markIn 1.1s cubic-bezier(.16,1,.3,1) forwards;
 }
 .splash-mark .kom{color:#fff;}
-.splash-mark .sos{
-  background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;
-}
+.splash-mark .sos{color:var(--sos-blue);}
 .splash-sub{
   position:relative; z-index:1;
   margin-top:16px; color:var(--muted); font-size:13.5px; letter-spacing:0.08em;
@@ -101,7 +100,7 @@ h1,h2,h3,.display{font-family:'Sora', sans-serif;}
   font-size:26vw; opacity:0.05; white-space:nowrap;
 }
 .watermark .kom{color:#fff;}
-.watermark .sos{color:var(--gold);}
+.watermark .sos{color:var(--sos-blue);}
 
 /* ---------- ACCESS GATE ---------- */
 #gate{
@@ -119,7 +118,7 @@ h1,h2,h3,.display{font-family:'Sora', sans-serif;}
   content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--grad);
 }
 .gate-card .mini-mark{font-family:'Sora'; font-weight:800; font-size:25px; margin-bottom:6px;}
-.mini-mark .kom{color:#fff;} .mini-mark .sos{color:var(--gold-soft);}
+.mini-mark .kom{color:#fff;} .mini-mark .sos{color:var(--sos-blue);}
 .gate-card p{color:var(--muted); font-size:15px; margin:8px 0 24px; line-height:1.6;}
 .gate-card input{
   width:100%; padding:13px 15px; border:1px solid transparent; border-radius:12px;
@@ -160,7 +159,7 @@ header.appbar{
   border-bottom:1px solid var(--line);
 }
 header.appbar .mark{font-family:'Sora'; font-weight:800; font-size:21px;}
-header.appbar .kom{color:#fff;} header.appbar .sos{color:var(--gold-soft);}
+header.appbar .kom{color:#fff;} header.appbar .sos{color:var(--sos-blue);}
 .role-badge{
   font-size:12.5px; padding:5px 12px; border-radius:20px; font-weight:600;
   background:rgba(255,255,255,0.08); color:#C7D2E2; letter-spacing:0.02em;
