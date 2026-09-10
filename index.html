@@ -563,6 +563,7 @@ function tandaiOpsional(list){
 let currentRole = null; // 'viewer' | 'editor'
 let currentUser = null;     // objek user dari Firebase Auth
 let currentUserData = null; // {petugasId, nama, email, role} dari koleksi komsos-users
+let currentPetugasId = null; // shortcut dari currentUserData.petugasId, dipakai fitur "isi slot sendiri"
 
 // Selalu bungkus teks bebas dari user (nama, saran, dll) dengan ini sebelum
 // dimasukkan ke innerHTML, biar nggak bisa disusupi kode HTML/JS (XSS).
@@ -846,10 +847,12 @@ let authReady = new Promise(resolve=>{
         currentUserData = {petugasId:null, nama:user.email, role:'viewer'};
       }
       currentRole = currentUserData.role === 'editor' ? 'editor' : 'viewer';
+      currentPetugasId = currentUserData.petugasId || null;
     }else{
       currentUser = null;
       currentUserData = null;
       currentRole = null;
+      currentPetugasId = null;
     }
     if(!authResolved){ authResolved = true; resolve(); }
     else if(splashDone){ reactToAuthChange(); }
@@ -980,6 +983,7 @@ async function tryRegister(){
     currentUser = cred.user;
     currentUserData = userData;
     currentRole = role;
+    currentPetugasId = petugasId || null;
     showToast(`Akun dibuat, selamat datang ${nama}!`);
     enterApp();
   }catch(e){
