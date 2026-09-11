@@ -903,8 +903,13 @@ function getWarnaMusim(d){
    Setiap kali app di-upgrade, naikkan APP_VERSION & tambah entri baru di atas
    CHANGELOG. Status "sudah dilihat" disimpan per-HP/browser lewat localStorage
    (bukan Firestore), jadi nggak perlu ubah Firestore Rules buat fitur ini. */
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.2.0';
 const CHANGELOG = [
+  {versi:'1.2.0', tanggal:'12 Sep 2026', catatan:[
+    'Perbaikan bug: popup Pembaruan Aplikasi dulu nggak pernah muncul sama sekali di update pertama — sekarang beres.',
+    'Fitur baru: PJ bisa "Gabungkan Riwayat Petugas" — buat nyambungin riwayat tugas lama ke akun petugas yang aktif sekarang (berguna kalau petugas pernah dihapus & ditambah ulang, dan riwayatnya kebetulan kepisah).',
+    'Perbaikan: tombol Balas/Edit/Hapus di Obrolan sekarang kasih pemberitahuan yang jelas kalau aksinya gagal, bukan diam saja.'
+  ]},
   {versi:'1.1.0', tanggal:'10 Sep 2026', catatan:[
     'Kalender Liturgi Otomatis: saat pilih tanggal di "Tambah Jadwal", nama hari Minggu/hari raya tersaran otomatis (masih bisa diedit bebas).',
     'Badge warna musim liturgi (Hijau/Ungu/Putih/Merah) sekarang tampil di tiap kartu jadwal.',
@@ -917,20 +922,24 @@ const CHANGELOG = [
 function cekPembaruanVersi(){
   try{
     const terakhir = localStorage.getItem('komsosLastSeenVersion');
-    if(terakhir === null){
-      // Browser/akun baru pertama kali pakai app — anggap sudah "melihat" versi
-      // sekarang, tanpa popup (biar nggak mengagetkan pengguna baru).
-      localStorage.setItem('komsosLastSeenVersion', APP_VERSION);
-      return;
-    }
+    // CATATAN PERBAIKAN (versi sebelumnya ada bug di sini): dulu kalau
+    // localStorage kosong (terakhir === null), kode langsung anggap "sudah
+    // dilihat" dan diam-diam nyimpen APP_VERSION sekarang TANPA nunjukin
+    // popup-nya sama sekali. Itu bug fatal khusus di update PERTAMA kali fitur
+    // ini di-deploy: semua HP jelas belum pernah punya nilai ini (localStorage
+    // masih kosong), jadi popup "Pembaruan Aplikasi" nggak pernah nongol buat
+    // siapa pun, padahal justru itu update yang paling penting diumumkan.
+    // Sekarang: null dianggap sama kayak "versi lama", jadi popup tetap muncul
+    // — cuma aktivitas "diperbarui ke versi..." nggak dicatat ke Log Aktivitas
+    // kalau ini murni HP/akun baru (biar nggak nyampah log buat user baru).
     if(terakhir !== APP_VERSION){
       const dot = document.getElementById('updateDot');
       if(dot) dot.style.display = 'block';
-      // Deteksi ini jalan di sisi tiap HP/browser, jadi kalau beberapa orang buka
-      // app di waktu berdekatan setelah update, cegah log-nya dobel-dobel.
-      const pesanVersi = `Aplikasi diperbarui ke versi ${APP_VERSION}`;
-      if(!logAktivitas.some(l=>l.aksi===pesanVersi)){
-        catatLog(pesanVersi, 'Sistem');
+      if(terakhir !== null){
+        const pesanVersi = `Aplikasi diperbarui ke versi ${APP_VERSION}`;
+        if(!logAktivitas.some(l=>l.aksi===pesanVersi)){
+          catatLog(pesanVersi, 'Sistem');
+        }
       }
       bukaPembaruan();
     }
@@ -2107,7 +2116,8 @@ function renderChatReplyPreview(){
 
 function mulaiEditChat(jadwalId, msgId){
   const m = cariPesanChat(jadwalId, msgId);
-  if(!m || m.petugasId !== currentPetugasId) return;
+  if(!m){ showToast('Pesan tidak ditemukan (mungkin sudah dihapus).'); return; }
+  if(m.petugasId !== currentPetugasId){ showToast('Kamu cuma bisa mengedit pesanmu sendiri.'); return; }
   chatReplyTo = null;
   renderChatReplyPreview();
   chatEditingId = msgId;
@@ -2120,7 +2130,8 @@ function mulaiEditChat(jadwalId, msgId){
 
 async function hapusPesanChat(jadwalId, msgId){
   const m = cariPesanChat(jadwalId, msgId);
-  if(!m || m.petugasId !== currentPetugasId) return;
+  if(!m){ showToast('Pesan tidak ditemukan (mungkin sudah dihapus).'); return; }
+  if(m.petugasId !== currentPetugasId){ showToast('Kamu cuma bisa menghapus pesanmu sendiri.'); return; }
   if(!confirm('Hapus pesan ini?')) return;
   let existing = (chatCache[jadwalId] || []).filter(x=>x.id!==msgId);
   chatCache[jadwalId] = existing;
@@ -2143,6 +2154,12 @@ async function kirimPesanChat(jadwalId){
     const idx = existing.findIndex(m=>m.id===chatEditingId);
     if(idx > -1 && existing[idx].petugasId === currentPetugasId){
       existing[idx] = {...existing[idx], teks, diedit:true};
+    }else{
+      chatEditingId = null;
+      const btn = document.getElementById('chatKirimBtn');
+      if(btn) btn.textContent = 'Kirim';
+      showToast('Gagal menyimpan — pesan ini bukan milikmu atau sudah dihapus.');
+      return;
     }
     chatEditingId = null;
     const btn = document.getElementById('chatKirimBtn');
@@ -2552,6 +2569,11 @@ function openPetugasDetail(id){
           <button class="btn-secondary" style="color:var(--maroon); border-color:var(--maroon-bg);" onclick="hapusPetugas('${id}')">🗑️ Hapus Petugas</button>
         </div>
         <div class="section-sub" style="margin:8px 0 0;">Nonaktif = tidak dipilih fitur "Isi Otomatis" &amp; tidak kena target jadwal, tapi namanya tetap ada &amp; masih bisa dipilih manual sewaktu-waktu. Ganti nama sekarang cuma bisa dilakukan sendiri oleh pemilik akun lewat profilnya.</div>
+      </div>
+      <div class="profil-edit-block">
+        <label style="margin-bottom:6px;">Riwayat "Nyangkut" di Petugas Lain?</label>
+        <div class="section-sub" style="margin:0 0 10px;">Kalau petugas ini pernah dihapus & dibuat ulang di masa lalu (sebelum ada perbaikan penyambungan otomatis), riwayat tugas lamanya bisa "nyangkut" di data petugas dengan ID lain. Gabungkan ke sini kalau itu terjadi.</div>
+        <button class="btn-secondary" style="width:100%;" onclick="bukaGabungRiwayat('${id}')">🔗 Gabungkan Riwayat dari Petugas Lain</button>
       </div>`;
   }
 
@@ -2640,6 +2662,88 @@ async function hapusPetugas(id){
   renderPetugas();
   closeModal();
   showToast(`${p.nama} dihapus dari daftar petugas.`);
+}
+
+/* ---------------- GABUNGKAN RIWAYAT PETUGAS ----------------
+   Alat perbaikan manual buat PJ. Kenapa dibutuhkan: field petugasId di akun
+   (komsos-users) itu dikunci nggak bisa diubah lewat rules Firestore begitu
+   akun dibuat. Jadi kalau dulu (sebelum ada penyambungan nama otomatis di
+   tambahPetugas) sebuah petugas dihapus permanen lalu ditambah ulang, akunnya
+   akan tetap "menunjuk" ke ID lama yang sudah nggak ada -> riwayat lamanya
+   kelihatan hilang ("Belum pernah bertugas"), padahal datanya masih ada,
+   cuma nyangkut di record petugasId yang berbeda.
+   Fungsi ini nulis ulang referensi ID di jadwal & obrolan (bukan di akun,
+   supaya nggak kena kunci rules itu), jadi aman dipakai. */
+function bukaGabungRiwayat(targetId){
+  const target = petugasList.find(x=>x.id===targetId);
+  if(!target) return;
+  const kandidat = petugasList
+    .filter(x=>x.id!==targetId)
+    .map(x=>({...x, jumlahRiwayat: riwayatPetugas(x.id).length}))
+    .sort((a,b)=>b.jumlahRiwayat - a.jumlahRiwayat);
+
+  document.getElementById('modalTitle').textContent = `🔗 Gabungkan ke "${target.nama}"`;
+  const daftarHtml = kandidat.length===0
+    ? '<div class="empty-note">Tidak ada petugas lain di daftar.</div>'
+    : kandidat.map(k=>`
+      <div class="petugas-row" onclick="konfirmasiGabungRiwayat('${k.id}','${targetId}')" style="cursor:pointer;">
+        <div style="display:flex; align-items:center; gap:12px; min-width:0; flex:1;">
+          <span class="nm" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(k.nama)}${k.dihapus ? ' <span style="color:var(--muted); font-weight:400;">(terhapus)</span>' : ''}</span>
+        </div>
+        <span class="count-pill">${k.jumlahRiwayat}x riwayat</span>
+      </div>`).join('');
+  document.getElementById('modalBody').innerHTML = `
+    <div class="section-sub" style="margin:0 0 12px;">Pilih data petugas lama yang riwayat tugasnya mau dipindahkan ke <b>${escapeHtml(target.nama)}</b>. Urutan diurutkan dari yang riwayatnya paling banyak — biasanya itu "versi lama" dari petugas yang sama.</div>
+    ${daftarHtml}
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+async function konfirmasiGabungRiwayat(sourceId, targetId){
+  const source = petugasList.find(x=>x.id===sourceId);
+  const target = petugasList.find(x=>x.id===targetId);
+  if(!source || !target) return;
+  const jumlah = riwayatPetugas(sourceId).length;
+  const ok = confirm(`Gabungkan ${jumlah}x riwayat tugas dari "${source.nama}" ke "${target.nama}"?\n\nSetelah digabung, data "${source.nama}" (yang lama) akan DIHAPUS PERMANEN dari daftar petugas — tugasnya sudah pindah sepenuhnya jadi milik "${target.nama}". Aksi ini nggak bisa dibatalkan.`);
+  if(!ok) return;
+
+  showToast('Menggabungkan riwayat, mohon tunggu...');
+  let jumlahSlotDiubah = 0;
+  jadwalList.forEach(j=>{
+    j.slots.forEach(s=>{
+      if(!Array.isArray(s.petugas)) return;
+      if(s.petugas.includes(sourceId)){
+        s.petugas = s.petugas
+          .map(pid => pid===sourceId ? targetId : pid)
+          .filter((pid,idx,arr) => arr.indexOf(pid)===idx); // buang duplikat kalau targetId sudah ada juga di slot yang sama
+        jumlahSlotDiubah++;
+      }
+    });
+  });
+  if(jumlahSlotDiubah > 0){
+    await saveList('jadwal-list', jadwalList);
+  }
+
+  // Ikut perbaiki kepemilikan pesan obrolan lama di tiap jadwal yang kena, biar
+  // tombol Edit/Hapus pesan lama itu ikut kembali normal buat target petugas.
+  const jadwalTerdampak = jadwalList.filter(j => j.slots.some(s=>Array.isArray(s.petugas) && s.petugas.includes(targetId)));
+  for(const j of jadwalTerdampak){
+    try{
+      const doc = await db.collection(KOMSOS_COLLECTION).doc(`chat-${j.id}`).get();
+      if(!doc.exists) continue;
+      const pesan = doc.data().payload || [];
+      let berubah = false;
+      pesan.forEach(m=>{ if(m.petugasId===sourceId){ m.petugasId = targetId; berubah = true; } });
+      if(berubah) await saveList(`chat-${j.id}`, pesan);
+    }catch(e){ console.error('gagal memperbaiki obrolan lama untuk jadwal', j.id, e); }
+  }
+
+  petugasList = petugasList.filter(x=>x.id!==sourceId);
+  await saveList('petugas-list', petugasList);
+  catatLog(`menggabungkan riwayat "${source.nama}" (lama) ke "${target.nama}"`);
+  renderPetugas();
+  openPetugasDetail(targetId);
+  showToast(`Riwayat "${source.nama}" sudah digabung ke "${target.nama}".`);
 }
 
 function closeModal(){
