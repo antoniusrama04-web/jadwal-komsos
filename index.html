@@ -227,6 +227,10 @@ main{flex:1; padding:28px 22px 110px; max-width:680px; width:100%; margin:0 auto
   color:var(--muted); margin-bottom:12px; letter-spacing:0.02em;
 }
 .musim-badge .dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
+.info-hariraya{
+  font-size:12.5px; color:var(--muted); margin:-6px 0 12px; line-height:1.5;
+}
+.info-hariraya b{color:var(--text); font-weight:600;}
 .saran-liturgi{
   display:flex; align-items:center; gap:10px; padding:12px 14px; margin:-4px 0 16px;
   border-radius:14px; background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3);
@@ -393,6 +397,20 @@ textarea.modal-field{min-height:90px;}
 .chat-waktu{font-size:10px; color:var(--muted); margin-top:4px; text-align:right;}
 .chat-input-row{display:flex; gap:8px; align-items:center; position:sticky; bottom:0;}
 .chat-input-row input{flex:1; margin-bottom:0;}
+.chat-quote{
+  border-left:2.5px solid var(--blue-light); padding:3px 8px; margin-bottom:5px;
+  font-size:11.5px; color:var(--muted); background:rgba(255,255,255,0.04); border-radius:4px;
+}
+.chat-actions{margin-top:3px; font-size:10.5px;}
+.chat-actions a{color:var(--muted); cursor:pointer; text-decoration:underline;}
+.chat-actions a:hover{color:var(--blue-light);}
+.chat-reply-preview{
+  display:flex; align-items:center; gap:8px; background:var(--paper-card);
+  border:1px solid var(--line); border-left:2.5px solid var(--blue-light);
+  border-radius:8px; padding:6px 10px; margin-bottom:8px; font-size:12px; color:var(--muted);
+}
+.chat-reply-preview span.txt{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.chat-reply-preview a{color:var(--maroon); cursor:pointer; font-weight:700; flex-shrink:0;}
 .modal-sheet{
   background:#131A2C; width:100%; max-width:520px; border-radius:24px 24px 0 0;
   padding:28px 24px 32px; max-height:82vh; overflow-y:auto; border-top:1px solid var(--line);
@@ -575,6 +593,7 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
           <line x1="9" y1="8" x2="15" y2="8"></line>
           <line x1="9" y1="11.5" x2="15" y2="11.5"></line>
         </svg>
+        <span class="icon-dot" id="logDot" style="display:none;"></span>
       </button>
       <div class="role-badge" id="roleBadge" onclick="if(currentPetugasId) openPetugasDetail(currentPetugasId)" style="cursor:pointer;">Mode Lihat</div>
       <button class="icon-action-btn danger" onclick="logout()" title="Keluar" aria-label="Keluar">
@@ -591,6 +610,7 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
     <!-- HOME -->
     <div class="page active" id="page-home">
       <div id="ulangTahunArea" style="margin-bottom:14px;"></div>
+      <div id="infoLiturgiHariIni"></div>
       <div id="notifBanner" style="display:none; background:rgba(139,92,246,0.12); border:1px solid rgba(139,92,246,0.35); border-radius:16px; padding:14px 16px; margin-bottom:14px; align-items:center; justify-content:space-between; gap:10px; backdrop-filter:blur(10px);">
         <span style="font-size:14px; color:var(--text);">🔔 Aktifkan notifikasi biar diingatkan otomatis pas mau bertugas.</span>
         <button class="btn-secondary" style="white-space:nowrap;" onclick="aktifkanNotifikasi()">Aktifkan</button>
@@ -643,7 +663,7 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
       <div class="section-title">Nama Petugas</div>
       <div class="section-sub">Daftar anggota KOMSOS yang bertugas sebagai operator.</div>
       <button class="btn-secondary" style="width:100%; margin-bottom:14px;" onclick="shareRekapBulanan()">📤 Bagikan Rekap Bulan Ini ke WhatsApp</button>
-      <button class="btn-secondary" id="btnImporLama" style="display:none; width:100%; margin-bottom:14px;" onclick="importRekapLama()">📥 Impor Rekap Jadwal Jan–Agu 2026</button>
+
       <div class="petugas-add" id="petugasAddRow" style="display:none;">
         <input type="text" id="newPetugasName" placeholder="Nama petugas baru">
         <button class="btn-primary" onclick="tambahPetugas()">Tambah</button>
@@ -731,7 +751,7 @@ function tandaiOpsional(list){
    orang kudus). Hasilnya adalah SARAN OTOMATIS yang bisa diedit bebas di form —
    PJ tetap pegang kata akhir kalau ada penyesuaian keuskupan/paroki setempat.
    Formula ini sudah dicek cocok terhadap 35+ tanggal Minggu asli di rekap
-   Jan-Agu 2026 (IMPOR_DATA_LAMA) di bawah, termasuk Rabu Abu, Kenaikan, Tritunggal,
+   Jan-Agu 2026 yang sudah diimpor sebelumnya, termasuk Rabu Abu, Kenaikan, Tritunggal,
    Tubuh & Darah Kristus, dan Maria Diangkat ke Surga. */
 function hariGregorianPaskah(tahun){
   const a = tahun % 19, b = Math.floor(tahun/100), c = tahun % 100;
@@ -906,6 +926,12 @@ function cekPembaruanVersi(){
     if(terakhir !== APP_VERSION){
       const dot = document.getElementById('updateDot');
       if(dot) dot.style.display = 'block';
+      // Deteksi ini jalan di sisi tiap HP/browser, jadi kalau beberapa orang buka
+      // app di waktu berdekatan setelah update, cegah log-nya dobel-dobel.
+      const pesanVersi = `Aplikasi diperbarui ke versi ${APP_VERSION}`;
+      if(!logAktivitas.some(l=>l.aksi===pesanVersi)){
+        catatLog(pesanVersi, 'Sistem');
+      }
       bukaPembaruan();
     }
   }catch(e){ /* localStorage nggak tersedia (mode privat dll) — lewati fitur ini */ }
@@ -966,10 +992,12 @@ const USERS_COLLECTION = 'komsos-users';
 const PROFIL_COLLECTION = 'komsos-profil';
 let profilMap = {}; // { [petugasId]: {foto, tglLahir, bio, gantiNamaCount, gantiNamaBulan} }
 let modalLocked = false;
-const CHAT_EXPIRY_HARI = 7; // pesan obrolan per jadwal otomatis "kadaluarsa" & dibuang setelah sekian hari
-let chatCache = {}; // { [jadwalId]: [{petugasId, nama, teks, waktu}] }
+// (Dulu ada batas kadaluarsa pesan di sini, sekarang arsip chat disimpan permanen — lihat pruneChatPesan.)
+let chatCache = {}; // { [jadwalId]: [{id, petugasId, nama, teks, waktu, replyTo?, diedit?}] }
 let chatUnsubscribe = null;
 let currentChatJadwalId = null;
+let chatReplyTo = null; // {id, nama, teks} pesan yang lagi mau dibalas
+let chatEditingId = null; // id pesan yang lagi diedit (null kalau lagi nulis pesan baru)
 
 /* ---------------- NOTIFIKASI PENGINGAT (Firebase Cloud Messaging) ---------------- */
 // GANTI nilai ini dengan kunci VAPID dari Firebase Console →
@@ -1177,7 +1205,7 @@ async function loadData(){
     if(doc.exists){ saranList = doc.data().payload || []; renderSaranListInModal(); }
   });
   db.collection(KOMSOS_COLLECTION).doc('log-aktivitas').onSnapshot(doc=>{
-    if(doc.exists){ logAktivitas = doc.data().payload || []; }
+    if(doc.exists){ logAktivitas = doc.data().payload || []; updateLogDotDanBadge(); }
   });
   db.collection(PROFIL_COLLECTION).onSnapshot(snap=>{
     profilMap = {};
@@ -1263,7 +1291,6 @@ async function handleFotoUpload(inputEl, petugasId){
     showToast('Mengunggah foto...');
     const dataUrl = await resizeImageFile(file, 240, 0.6);
     await saveProfil(petugasId, {foto: dataUrl});
-    catatLog(petugasId===currentPetugasId ? 'mengganti foto profil' : `mengganti foto profil "${namaPetugas(petugasId)}"`);
     showToast('Foto profil diperbarui.');
     renderPetugas();
     if(petugasId===currentPetugasId) renderNavProfilAvatar();
@@ -1301,7 +1328,6 @@ async function simpanTglLahirWajib(){
   const err = document.getElementById('wajibTglLahirError');
   if(!val){ err.textContent = 'Tanggal lahir wajib diisi.'; return; }
   await saveProfil(currentPetugasId, {tglLahir: val});
-  catatLog('melengkapi tanggal lahir profil');
   modalLocked = false;
   document.getElementById('modalOverlay').classList.remove('locked');
   closeModal();
@@ -1312,13 +1338,38 @@ async function simpanTglLahirWajib(){
 // Dipanggil di setiap aksi PJ/petugas yang mengubah data, biar ada jejak audit.
 // Nggak pernah melempar error ke pemanggilnya — kalau gagal simpan log, aksi
 // utamanya (tambah jadwal, dsb) tetap jalan seperti biasa.
-function catatLog(aksi){
+function catatLog(aksi, siapaOverride){
   try{
-    const siapa = (currentUserData && currentUserData.nama) ? currentUserData.nama : 'Sistem';
+    const siapa = siapaOverride || ((currentUserData && currentUserData.nama) ? currentUserData.nama : 'Sistem');
     logAktivitas.unshift({ waktu: new Date().toISOString(), siapa, aksi });
     if(logAktivitas.length > 200) logAktivitas = logAktivitas.slice(0, 200);
     saveList('log-aktivitas', logAktivitas).catch(e=>console.error(e));
+    updateLogDotDanBadge();
   }catch(e){ console.error('catatLog gagal', e); }
+}
+
+// --- Dot indikator "belum dibaca" di ikon Log Aktivitas + Badge API di ikon app ---
+// Status "sudah dibaca" disimpan per-HP/browser lewat localStorage (pola yang sama
+// dengan cekPembaruanVersi), jadi nggak perlu ubah Firestore Rules buat fitur ini.
+function hitungLogBelumDibaca(){
+  if(currentRole !== 'editor' || logAktivitas.length===0) return 0;
+  let terakhirDilihat = 0;
+  try{ terakhirDilihat = parseInt(localStorage.getItem('komsosLogLastSeen')||'0',10); }catch(e){}
+  return logAktivitas.filter(l=> new Date(l.waktu).getTime() > terakhirDilihat).length;
+}
+function updateAppBadge(count){
+  try{
+    if('setAppBadge' in navigator){
+      if(count > 0) navigator.setAppBadge(count).catch(()=>{});
+      else navigator.clearAppBadge().catch(()=>{});
+    }
+  }catch(e){ /* Badging API belum didukung browser ini — lewati diam-diam */ }
+}
+function updateLogDotDanBadge(){
+  const dot = document.getElementById('logDot');
+  const jumlah = hitungLogBelumDibaca();
+  if(dot) dot.style.display = jumlah>0 ? 'block' : 'none';
+  updateAppBadge(jumlah);
 }
 
 function bukaLogAktivitas(){
@@ -1332,6 +1383,9 @@ function bukaLogAktivitas(){
       }).join('');
   document.getElementById('modalBody').innerHTML = isi;
   document.getElementById('modalOverlay').classList.add('open');
+  // Buka log = otomatis dianggap "sudah dibaca semua sampai sekarang".
+  try{ localStorage.setItem('komsosLogLastSeen', Date.now().toString()); }catch(e){}
+  updateLogDotDanBadge();
 }
 function refreshHomeViews(){
   renderJadwalBulanIni();
@@ -1456,7 +1510,7 @@ async function populateRegisterPetugasSelect(){
     document.getElementById('registerError').textContent = 'Gagal memuat daftar nama petugas. Cek koneksi internet lalu coba muat ulang halaman.';
     return;
   }
-  const sorted = [...petugasList].sort((a,b)=>a.nama.localeCompare(b.nama));
+  const sorted = [...petugasList].filter(p=>!p.dihapus).sort((a,b)=>a.nama.localeCompare(b.nama));
   sel.innerHTML = '<option value="">— Pilih nama kamu —</option>' + sorted.map(p=>`<option value="${p.id}">${escapeHtml(p.nama)}</option>`).join('');
 }
 
@@ -1566,12 +1620,37 @@ async function enterApp(){
   showHomePanel('menu');
   renderPetugas();
   renderPengingat();
+  renderInfoLiturgiHariIni();
   renderUlangTahunBanner();
   renderNavProfilAvatar();
   cekTokenTersimpan();
   document.getElementById('loadingOverlay').style.display = 'none';
   cekWajibProfil();
   cekPembaruanVersi();
+  if(currentRole === 'editor') perbaikiJudulJadwalLama();
+}
+
+// Jadwal Jan-Agu 2026 yang diimpor dulu (id diawali 'imp2026-') sempat tersimpan
+// pakai judul generik ("Akhir Pekan...", dll) sebelum mesin kalender liturgi di
+// atas ini dibuat. Ini nyamain judulnya jadi sesuai liturgi, otomatis & diam-diam
+// (nggak pakai tombol) tiap PJ buka app — aman diulang berkali-kali, karena begitu
+// judulnya sudah benar, kondisi regex di bawah nggak akan cocok lagi & dilewati.
+async function perbaikiJudulJadwalLama(){
+  let berubah = false;
+  jadwalList.forEach(j=>{
+    if(!j.id || !j.id.startsWith('imp2026-')) return;
+    if(!/^(Akhir Pekan|Sabtu \d|Minggu \d)/.test(j.namaMisa || '')) return;
+    const info = getInfoLiturgi(anchorTanggalJadwal(j));
+    if(info && info.nama && info.nama !== j.namaMisa){
+      j.namaMisa = info.nama;
+      berubah = true;
+    }
+  });
+  if(berubah){
+    await saveList('jadwal-list', jadwalList);
+    refreshHomeViews();
+    showToast('Judul jadwal lama otomatis disesuaikan dengan kalender liturgi. 📅');
+  }
 }
 
 async function logout(){
@@ -1623,7 +1702,6 @@ function applyRoleUI(){
     document.getElementById('navTambah').style.display = 'block';
     document.getElementById('petugasAddRow').style.display = 'flex';
     document.getElementById('testNotifBox').style.display = 'flex';
-    document.getElementById('btnImporLama').style.display = 'block';
     document.getElementById('logAktivitasLink').style.display = 'flex';
   }else{
     badge.textContent = nama || 'Mode Lihat';
@@ -1631,9 +1709,9 @@ function applyRoleUI(){
     document.getElementById('navTambah').style.display = 'none';
     document.getElementById('petugasAddRow').style.display = 'none';
     document.getElementById('testNotifBox').style.display = 'none';
-    document.getElementById('btnImporLama').style.display = 'none';
     document.getElementById('logAktivitasLink').style.display = 'none';
   }
+  updateLogDotDanBadge();
 }
 
 /* ---------------- PENGINGAT TUGAS (dalam-app) ----------------
@@ -1714,6 +1792,19 @@ function renderPengingat(){
 
   area.innerHTML = '';
 }
+function renderInfoLiturgiHariIni(){
+  const el = document.getElementById('infoLiturgiHariIni');
+  if(!el) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const info = getInfoLiturgi(today);
+  if(!info){ el.innerHTML=''; return; }
+  const bulan = today.getMonth()+1, tahun = today.getFullYear();
+  el.innerHTML = `<div class="musim-badge" style="display:flex; width:100%; box-sizing:border-box; margin-bottom:14px; padding:9px 14px;">
+    <span class="dot" style="background:${WARNA_LITURGI_HEX[info.warna]};"></span>
+    <span>Hari ini: ${escapeHtml(info.nama)}</span>
+    <a href="https://www.imankatolik.or.id/kalender.php?b=${bulan}&t=${tahun}" target="_blank" rel="noopener" style="margin-left:auto; color:var(--blue-light); text-decoration:underline; font-weight:600; white-space:nowrap;">Kalender lengkap</a>
+  </div>`;
+}
 // Refresh tiap 5 menit selama app kebuka, biar status "sudah selesai" ikut update.
 setInterval(()=>{ if(currentUser) renderPengingat(); }, 5*60*1000);
 
@@ -1787,11 +1878,40 @@ function anchorTanggalJadwal(j){
   const mingguSlot = j.slots.find(s=>s.hari==='Minggu');
   return new Date(mingguSlot ? mingguSlot.tanggal : j.tglSabtu);
 }
+
+// Jadwal dianggap "lewat" (obrolan otomatis ditutup) sehari setelah slot
+// TERAKHIR-nya — kasih toleransi H+1 biar masih bisa dipakai koordinasi
+// menit-menit terakhir/pas hari-H, bukan langsung ditutup jam 00:00.
+function jadwalSudahLewat(j){
+  if(!j.slots || j.slots.length===0) return false;
+  const tglTerakhir = j.slots.reduce((max,s)=> Math.max(max, new Date(s.tanggal).getTime()), 0);
+  return Date.now() > tglTerakhir + 24*3600*1000;
+}
+
+// Nyalakan titik kecil di tombol "💬 Obrolan" kalau jadwal itu punya obrolan.
+// Sengaja pakai get() satu kali (bukan onSnapshot permanen) supaya nggak buka
+// puluhan koneksi realtime sekaligus cuma buat nampilin kartu-kartu di Beranda.
+async function tandaiObrolanAktifDiKartu(list){
+  for(const j of list){
+    if(jadwalSudahLewat(j)) continue;
+    try{
+      const snap = await db.collection(KOMSOS_COLLECTION).doc(`chat-${j.id}`).get();
+      const pesan = snap.exists ? (snap.data().payload || []) : [];
+      const dot = document.getElementById(`chatDot-${j.id}`);
+      if(dot) dot.style.display = pesan.length>0 ? 'block' : 'none';
+    }catch(e){ /* jangan sampai satu kartu gagal ganggu kartu lain */ }
+  }
+}
 function buildJadwalCardsHtml(list){
   if(list.length===0) return '';
   return list.map(j=>{
-    const warnaMusim = getWarnaMusim(anchorTanggalJadwal(j));
+    const anchor = anchorTanggalJadwal(j);
+    const warnaMusim = getWarnaMusim(anchor);
     const musimBadge = `<div class="musim-badge"><span class="dot" style="background:${WARNA_LITURGI_HEX[warnaMusim]};"></span>Warna Liturgi: ${WARNA_LITURGI_LABEL[warnaMusim]}</div>`;
+    // Info konteks "hari ini pesta/peringatan siapa" — cuma nama hari raya/pestanya
+    // (bukan bacaan/riwayat orang kudus dari sumber lain), berguna buat salam pembuka slide.
+    const infoHariRaya = getInfoLiturgi(anchor);
+    const infoBadge = infoHariRaya ? `<div class="info-hariraya">📌 <b>${escapeHtml(infoHariRaya.nama)}</b></div>` : '';
     const slots = j.slots.map(s=>{
       const tgl = new Date(s.tanggal);
       const tglStr = tgl.toLocaleDateString('id-ID', {day:'2-digit', month:'short'});
@@ -1809,12 +1929,16 @@ function buildJadwalCardsHtml(list){
       const nm = namaTerisi.length ? namaTerisi.join(' & ') : '<span style="color:var(--muted);">(kosong)</span>';
       return `<div class="slot-line"><span class="waktu">${s.hari}, ${tglStr} — ${s.jam}</span><span class="nama">${nm}${aksi}</span></div>`;
     }).join('');
+    const jadwalLewat = jadwalSudahLewat(j);
+    const tombolObrolan = jadwalLewat
+      ? `<button class="btn-secondary" style="opacity:0.7;" onclick="bukaObrolanJadwal('${j.id}')" title="Jadwal sudah lewat, obrolan ditutup tapi arsip masih bisa dibaca">🔒 Obrolan ditutup (baca arsip)</button>`
+      : `<button class="btn-secondary" style="position:relative;" onclick="bukaObrolanJadwal('${j.id}')">💬 Obrolan<span id="chatDot-${j.id}" class="icon-dot" style="display:none; position:absolute; top:-3px; right:-3px;"></span></button>`;
     return `<div class="jadwal-card">
       <div class="judul">PETUGAS OPERATOR ${escapeHtml(j.namaMisa.toUpperCase())}</div>
       ${musimBadge}
       ${slots}
       <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="btn-secondary" onclick="bukaObrolanJadwal('${j.id}')">💬 Obrolan</button>
+        ${tombolObrolan}
         ${currentRole==='editor' ? `<button class="btn-secondary" onclick="shareWA('${j.id}')">Bagikan ke WhatsApp</button>` : ''}
         ${currentRole==='editor' ? `<button class="btn-secondary" onclick="editJadwal('${j.id}')">✏️ Edit</button>` : ''}
         ${currentRole==='editor' ? `<button class="btn-secondary" style="color:var(--maroon); border-color:var(--maroon-bg);" onclick="hapusJadwal('${j.id}')">Hapus</button>` : ''}
@@ -1858,17 +1982,13 @@ async function batalkanSlotSendiri(jadwalId, slotId){
    Satu grup obrolan kecil per jadwal (per akhir pekan misa), biar petugas yang
    kebagian di jadwal itu bisa saling infoin sesuatu tanpa keluar dari app.
    Disimpan di koleksi yang sama (komsos-data) dengan key "chat-{jadwalId}",
-   jadi otomatis ikut rules yang sudah ada — nggak perlu ubah Firestore Rules lagi. */
-/* Buang pesan yang lebih tua dari CHAT_EXPIRY_HARI, lalu (jaga-jaga) tetap
-   batasi maksimal 200 pesan sebagai lapisan pengaman kedua. Dipakai baik
-   waktu kirim pesan baru maupun waktu obrolan lama dibuka lagi, supaya
-   pesan basi ikut kebuang otomatis walau nggak ada yang kirim pesan baru. */
+   jadi otomatis ikut rules yang sudah ada — nggak perlu ubah Firestore Rules lagi.
+   Arsip pesan disimpan PERMANEN (nggak ada auto-hapus berdasar waktu) — begitu
+   jadwalnya lewat, cuma pengiriman pesan BARU yang ditutup, arsip lama tetap
+   bisa dibaca kapan saja. Batas 200 pesan/jadwal cuma pengaman teknis biar satu
+   dokumen Firestore nggak membengkak, bukan alasan buat "bersih-bersih" rutin. */
 function pruneChatPesan(list){
-  const batasWaktu = Date.now() - CHAT_EXPIRY_HARI * 24 * 60 * 60 * 1000;
-  let hasil = (list || []).filter(m=>{
-    const t = new Date(m.waktu).getTime();
-    return !isNaN(t) && t >= batasWaktu;
-  });
+  let hasil = (list || []).filter(m=> m && m.teks);
   if(hasil.length > 200) hasil = hasil.slice(hasil.length - 200);
   return hasil;
 }
@@ -1876,36 +1996,49 @@ function pruneChatPesan(list){
 function bukaObrolanJadwal(jadwalId){
   const j = jadwalList.find(x=>x.id===jadwalId);
   if(!j) return;
+  const peserta = getPesertaObrolan(j);
+  const pesertaIds = [...new Set(j.slots.flatMap(s=>s.petugas || []))];
+  const bolehAkses = currentRole === 'editor' || (currentPetugasId && pesertaIds.includes(currentPetugasId));
+  if(!bolehAkses){
+    showToast('Obrolan ini cuma buat petugas yang bertugas di jadwal ini.');
+    return;
+  }
+  const jadwalLewat = jadwalSudahLewat(j);
   currentChatJadwalId = jadwalId;
+  chatReplyTo = null;
+  chatEditingId = null;
   document.getElementById('modalTitle').textContent = `💬 Obrolan — ${j.namaMisa}`;
-  document.getElementById('modalBody').innerHTML = `
-    <div class="section-sub" style="margin:0 0 12px;">Obrolan ini cuma buat koordinasi jadwal ini. Namamu otomatis diambil dari profil. Pesan otomatis terhapus setelah ${CHAT_EXPIRY_HARI} hari.</div>
-    <div id="chatMessagesArea" class="chat-messages"></div>
+  const inputHtml = jadwalLewat
+    ? `<div class="section-sub" style="margin-top:10px; padding:10px; background:var(--paper-card); border-radius:10px; text-align:center;">🔒 Obrolan ditutup karena jadwal ini sudah lewat. Arsip percakapan di atas tetap bisa dibaca kapan saja.</div>`
+    : `<div id="chatReplyPreviewArea"></div>
     <div class="chat-input-row">
       <input type="text" id="chatInputText" class="modal-field" maxlength="500" placeholder="Tulis pesan..." onkeydown="if(event.key==='Enter'){ event.preventDefault(); kirimPesanChat('${jadwalId}'); }">
-      <button class="btn-primary" onclick="kirimPesanChat('${jadwalId}')">Kirim</button>
-    </div>
+      <button class="btn-primary" id="chatKirimBtn" onclick="kirimPesanChat('${jadwalId}')">Kirim</button>
+    </div>`;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="section-sub" style="margin:0 0 4px;">Obrolan ini cuma buat koordinasi jadwal ini. Arsipnya tersimpan permanen, bisa dibaca lagi kapan saja.</div>
+    <div class="section-sub" style="margin:0 0 12px;">👥 Petugas: ${peserta.length ? escapeHtml(peserta.join(', ')) : '-'}</div>
+    <div id="chatMessagesArea" class="chat-messages"></div>
+    ${inputHtml}
   `;
   document.getElementById('modalOverlay').classList.add('open');
   renderChatMessages(jadwalId);
 
   if(chatUnsubscribe){ chatUnsubscribe(); chatUnsubscribe = null; }
-  let sudahDibersihkanSekaliBuka = false;
   chatUnsubscribe = db.collection(KOMSOS_COLLECTION).doc(`chat-${jadwalId}`).onSnapshot(doc=>{
     const mentah = doc.exists ? (doc.data().payload || []) : [];
     const bersih = pruneChatPesan(mentah);
     chatCache[jadwalId] = bersih;
     if(currentChatJadwalId === jadwalId) renderChatMessages(jadwalId);
-
-    // Kalau ternyata ada pesan basi (>7 hari) yang kebuang, tulis ulang versi
-    // bersihnya ke Firestore sekali saja per kali dibuka — jadi obrolan lama
-    // yang dibuka siapa aja otomatis "beres-beres sendiri" tanpa perlu ada
-    // yang kirim pesan baru dulu.
-    if(!sudahDibersihkanSekaliBuka && bersih.length < mentah.length){
-      sudahDibersihkanSekaliBuka = true;
-      saveList(`chat-${jadwalId}`, bersih).catch(e=>console.error('gagal beres-beres chat lama', e));
-    }
   });
+}
+
+// Peserta obrolan = semua petugas yang tercatat di slot-slot jadwal ini
+// (bukan cuma yang pernah kirim pesan) — biar semua yang bertugas tahu ada
+// grup obrolannya, meski belum pernah nulis apa-apa.
+function getPesertaObrolan(j){
+  const ids = [...new Set(j.slots.flatMap(s=>s.petugas || []))];
+  return ids.map(id=>namaPetugas(id)).filter(Boolean);
 }
 
 function renderChatMessages(jadwalId){
@@ -1923,17 +2056,77 @@ function renderChatMessages(jadwalId){
       const namaTampil = m.petugasId ? namaPetugas(m.petugasId) : (m.nama || 'Anonim');
       let waktu = '';
       try{ waktu = new Date(m.waktu).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); }catch(e){}
+      const quoteHtml = m.replyTo
+        ? `<div class="chat-quote"><b>${escapeHtml(m.replyTo.nama)}</b>: ${escapeHtml(m.replyTo.teks)}</div>`
+        : '';
+      const editedTag = m.diedit ? ' <span style="opacity:0.6;">(diedit)</span>' : '';
+      const aksi = [`<a onclick="mulaiBalasChat('${jadwalId}','${m.id}')">Balas</a>`];
+      if(milikSendiri){
+        aksi.push(`<a onclick="mulaiEditChat('${jadwalId}','${m.id}')">Edit</a>`);
+        aksi.push(`<a onclick="hapusPesanChat('${jadwalId}','${m.id}')">Hapus</a>`);
+      }
       return `<div class="chat-bubble-row ${milikSendiri?'sendiri':''}">
         ${avatarHtml(profil, namaTampil, 30)}
         <div class="chat-bubble">
           <div class="chat-nama">${escapeHtml(namaTampil)}</div>
-          <div class="chat-teks">${escapeHtml(m.teks)}</div>
+          ${quoteHtml}
+          <div class="chat-teks">${escapeHtml(m.teks)}${editedTag}</div>
           <div class="chat-waktu">${waktu}</div>
+          <div class="chat-actions">${aksi.join(' · ')}</div>
         </div>
       </div>`;
     }).join('');
   }
   area.scrollTop = area.scrollHeight;
+}
+
+function cariPesanChat(jadwalId, msgId){
+  return (chatCache[jadwalId] || []).find(m=>m.id===msgId);
+}
+
+function mulaiBalasChat(jadwalId, msgId){
+  const m = cariPesanChat(jadwalId, msgId);
+  if(!m) return;
+  chatEditingId = null;
+  const namaAsli = m.petugasId ? namaPetugas(m.petugasId) : (m.nama || 'Anonim');
+  chatReplyTo = { id: m.id, nama: namaAsli, teks: m.teks };
+  renderChatReplyPreview();
+  document.getElementById('chatInputText').focus();
+}
+function batalBalasChat(){
+  chatReplyTo = null;
+  renderChatReplyPreview();
+}
+function renderChatReplyPreview(){
+  const area = document.getElementById('chatReplyPreviewArea');
+  if(!area) return;
+  area.innerHTML = chatReplyTo
+    ? `<div class="chat-reply-preview"><span class="txt">↩️ Balas <b>${escapeHtml(chatReplyTo.nama)}</b>: ${escapeHtml(chatReplyTo.teks)}</span><a onclick="batalBalasChat()">✕</a></div>`
+    : '';
+}
+
+function mulaiEditChat(jadwalId, msgId){
+  const m = cariPesanChat(jadwalId, msgId);
+  if(!m || m.petugasId !== currentPetugasId) return;
+  chatReplyTo = null;
+  renderChatReplyPreview();
+  chatEditingId = msgId;
+  const input = document.getElementById('chatInputText');
+  input.value = m.teks;
+  input.focus();
+  const btn = document.getElementById('chatKirimBtn');
+  if(btn) btn.textContent = 'Simpan';
+}
+
+async function hapusPesanChat(jadwalId, msgId){
+  const m = cariPesanChat(jadwalId, msgId);
+  if(!m || m.petugasId !== currentPetugasId) return;
+  if(!confirm('Hapus pesan ini?')) return;
+  let existing = (chatCache[jadwalId] || []).filter(x=>x.id!==msgId);
+  chatCache[jadwalId] = existing;
+  renderChatMessages(jadwalId);
+  try{ await saveList(`chat-${jadwalId}`, existing); }
+  catch(e){ console.error(e); showToast('Gagal menghapus pesan.'); }
 }
 
 async function kirimPesanChat(jadwalId){
@@ -1942,13 +2135,33 @@ async function kirimPesanChat(jadwalId){
   const teks = input.value.trim();
   if(!teks) return;
   if(!currentUserData){ showToast('Kamu harus login untuk mengirim pesan.'); return; }
-  const nama = currentUserData.nama || 'Anonim';
-  const pesanBaru = { petugasId: currentPetugasId || null, nama, teks, waktu: new Date().toISOString() };
+
+  let existing = chatCache[jadwalId] ? [...chatCache[jadwalId]] : (await safeGet(`chat-${jadwalId}`, []));
+
+  if(chatEditingId){
+    // Mode edit: timpa pesan yang sudah ada, jangan bikin pesan baru.
+    const idx = existing.findIndex(m=>m.id===chatEditingId);
+    if(idx > -1 && existing[idx].petugasId === currentPetugasId){
+      existing[idx] = {...existing[idx], teks, diedit:true};
+    }
+    chatEditingId = null;
+    const btn = document.getElementById('chatKirimBtn');
+    if(btn) btn.textContent = 'Kirim';
+  }else{
+    const nama = currentUserData.nama || 'Anonim';
+    const pesanBaru = {
+      id: 'm'+Date.now()+Math.random().toString(36).slice(2,7),
+      petugasId: currentPetugasId || null, nama, teks, waktu: new Date().toISOString()
+    };
+    if(chatReplyTo) pesanBaru.replyTo = { nama: chatReplyTo.nama, teks: chatReplyTo.teks };
+    existing.push(pesanBaru);
+  }
+  chatReplyTo = null;
+  renderChatReplyPreview();
+
   input.value = '';
   input.focus();
 
-  let existing = chatCache[jadwalId] ? [...chatCache[jadwalId]] : (await safeGet(`chat-${jadwalId}`, []));
-  existing.push(pesanBaru);
   existing = pruneChatPesan(existing);
   chatCache[jadwalId] = existing;
   renderChatMessages(jadwalId);
@@ -1969,6 +2182,7 @@ function renderJadwalBulanIni(){
   area.innerHTML = list.length>0
     ? buildJadwalCardsHtml(list)
     : `<div class="empty-note">Belum ada jadwal untuk ${BULAN_NAMA[now.getMonth()]} ${now.getFullYear()}.</div>`;
+  if(list.length>0) tandaiObrolanAktifDiKartu(list);
 }
 
 function renderRekap(){
@@ -2031,11 +2245,30 @@ function editJadwal(jadwalId){
       <label style="display:block; font-size:11.5px; font-weight:600; color:var(--muted); margin-bottom:6px;">Nama Hari Raya/Misa</label>
       <input type="text" id="editNamaMisa" value="${escapeHtml(j.namaMisa)}" style="width:100%; padding:10px 12px; border:1px solid transparent; border-radius:8px; font-family:inherit; font-size:14px; background:var(--field-bg); color:#1A2033;">
     </div>
+    <div id="editSaranLiturgiArea"></div>
     <div id="editSlotEditorArea"></div>
     <button class="btn-primary" style="width:100%; margin-top:6px;" onclick="simpanEditJadwal()">Simpan Perubahan</button>
   `;
   renderEditSlotEditor();
+  renderEditSaranLiturgi(j);
   document.getElementById('modalOverlay').classList.add('open');
+}
+
+// Buat jadwal LAMA yang namanya masih generik (mis. "Minggu 1 Februari", "Sabtu 31
+// Januari" dari rekap impor) — tawarkan nama liturgi yang benar via mesin kalender,
+// biar PJ tinggal satu klik "Gunakan" kalau mau menyesuaikan, bukan diganti paksa.
+let editSaranLiturgiNama = null;
+function renderEditSaranLiturgi(j){
+  const area = document.getElementById('editSaranLiturgiArea');
+  if(!area) return;
+  const info = getInfoLiturgi(anchorTanggalJadwal(j));
+  if(!info || info.nama === j.namaMisa){ area.innerHTML=''; editSaranLiturgiNama=null; return; }
+  editSaranLiturgiNama = info.nama;
+  area.innerHTML = `<div class="saran-liturgi" style="margin-top:-4px;">
+    <span class="dot" style="background:${WARNA_LITURGI_HEX[info.warna]};"></span>
+    <span>Saran nama liturgi: <b>${escapeHtml(info.nama)}</b></span>
+    <button class="pakai-btn" onclick="document.getElementById('editNamaMisa').value=editSaranLiturgiNama;">Gunakan</button>
+  </div>`;
 }
 
 function renderEditSlotEditor(){
@@ -2057,11 +2290,11 @@ function renderEditSlotEditor(){
       <div class="slot-head"><span>${tglStr} — ${s.jam}</span></div>
       <select onchange="setEditSlotPetugas(${idx},0,this.value)">
         <option value="">— Kosongkan —</option>
-        ${petugasList.map(p=>`<option value="${p.id}" ${p.id===sel1?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
+        ${petugasList.filter(p=>!p.dihapus).map(p=>`<option value="${p.id}" ${p.id===sel1?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
       </select>
       <select onchange="setEditSlotPetugas(${idx},1,this.value)">
         <option value="">— Kosongkan —</option>
-        ${petugasList.map(p=>`<option value="${p.id}" ${p.id===sel2?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
+        ${petugasList.filter(p=>!p.dihapus).map(p=>`<option value="${p.id}" ${p.id===sel2?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
       </select>
     </div>`;
   }).join('');
@@ -2144,6 +2377,25 @@ async function tambahPetugas(){
   const input = document.getElementById('newPetugasName');
   const nama = input.value.trim();
   if(!nama){ return; }
+  const namaLower = nama.toLowerCase();
+  const existing = petugasList.find(x=>(x.nama||'').trim().toLowerCase() === namaLower);
+  if(existing && !existing.dihapus){
+    showToast(`"${nama}" sudah ada di daftar aktif.`);
+    return;
+  }
+  if(existing && existing.dihapus){
+    // Ketemu nama yang sama persis dari petugas yang dulu dihapus (soft-delete) —
+    // sambungkan lagi ke record LAMA (id sama), biar riwayat tugasnya otomatis ikut,
+    // bukan bikin id baru yang bikin dia kelihatan "belum pernah bertugas".
+    existing.dihapus = false;
+    existing.nama = nama;
+    await saveList('petugas-list', petugasList);
+    catatLog(`menambahkan kembali petugas "${nama}" (riwayat tugas lama otomatis tersambung)`);
+    input.value = '';
+    renderPetugas();
+    showToast(`${nama} ditambahkan lagi — riwayat tugas lamanya otomatis nyambung.`);
+    return;
+  }
   const id = 'p' + Date.now();
   petugasList.push({id, nama});
   petugasList.sort((a,b)=>a.nama.localeCompare(b.nama));
@@ -2182,7 +2434,7 @@ function riwayatPetugas(petugasId){
 function shareRekapBulanan(){
   const now = new Date();
   const bulan = now.getMonth(), tahun = now.getFullYear();
-  const sorted = [...petugasList].filter(p=>!p.opsional).sort((a,b)=>a.nama.localeCompare(b.nama));
+  const sorted = [...petugasList].filter(p=>!p.opsional && !p.dihapus).sort((a,b)=>a.nama.localeCompare(b.nama));
   let text = `*Rekap Petugas Operator — ${BULAN_NAMA[bulan]} ${tahun}*\n\n`;
   sorted.forEach(p=>{
     const cnt = hitungTugasBulan(p.id, bulan, tahun);
@@ -2198,7 +2450,7 @@ function shareRekapBulanan(){
 
 function renderPetugas(){
   const area = document.getElementById('petugasListArea');
-  const sorted = [...petugasList].sort((a,b)=>a.nama.localeCompare(b.nama));
+  const sorted = [...petugasList].filter(p=>!p.dihapus).sort((a,b)=>a.nama.localeCompare(b.nama));
   area.innerHTML = sorted.map(p=>{
     const cnt = hitungTugasBulanIni(p.id);
     const profil = getProfil(p.id);
@@ -2318,7 +2570,6 @@ async function simpanProfilSendiri(id){
   const bio = document.getElementById('editBioSendiri').value.trim();
   if(!tgl){ showToast('Tanggal lahir wajib diisi ya.'); return; }
   await saveProfil(id, {tglLahir: tgl, bio});
-  catatLog('memperbarui profil (tanggal lahir/bio)');
   showToast('Profil disimpan.');
   renderUlangTahunBanner();
   openPetugasDetail(id);
@@ -2350,7 +2601,6 @@ async function simpanNamaSendiri(id){
     currentUserData.nama = namaBaru;
     try{ await db.collection(USERS_COLLECTION).doc(currentUser.uid).update({nama: namaBaru}); }catch(e){ console.error(e); }
   }
-  catatLog(`mengganti nama sendiri dari "${namaLama}" jadi "${namaBaru}"`);
   renderPetugas();
   applyRoleUI();
   openPetugasDetail(id);
@@ -2373,10 +2623,18 @@ async function hapusPetugas(id){
   if(!p) return;
   const hist = riwayatPetugas(id);
   const pesanKonfirmasi = hist.length > 0
-    ? `${p.nama} sudah tercatat ${hist.length}x bertugas di jadwal lama. Riwayat lama itu akan tetap ada tapi namanya nggak akan muncul lagi. Yakin mau hapus?`
+    ? `${p.nama} sudah tercatat ${hist.length}x bertugas di jadwal lama. Riwayat & namanya tetap tersimpan (nggak akan jadi "—"), cuma disembunyikan dari daftar aktif buat tugas baru. Kalau nanti nama "${p.nama}" ditambahkan lagi, riwayat lamanya otomatis nyambung kembali. Yakin mau hapus dari daftar aktif?`
     : `Yakin mau hapus ${p.nama} dari daftar petugas?`;
   if(!confirm(pesanKonfirmasi)) return;
-  petugasList = petugasList.filter(x=>x.id!==id);
+  if(hist.length > 0){
+    // Riwayat pernah ada -> soft-delete: id & nama tetap ada di petugasList (cuma
+    // ditandai dihapus) supaya jadwal lama tetap bisa nampilin namanya dengan benar,
+    // dan supaya kalau nama yang sama ditambahkan lagi nanti, riwayatnya nyambung.
+    p.dihapus = true;
+  }else{
+    // Belum pernah bertugas sama sekali -> aman dihapus permanen dari daftar.
+    petugasList = petugasList.filter(x=>x.id!==id);
+  }
   await saveList('petugas-list', petugasList);
   catatLog(`menghapus petugas "${p.nama}" dari daftar`);
   renderPetugas();
@@ -2384,80 +2642,13 @@ async function hapusPetugas(id){
   showToast(`${p.nama} dihapus dari daftar petugas.`);
 }
 
-
-/* ---------------- IMPOR REKAP JADWAL LAMA (Jan-Agu 2026) ----------------
-   Sekali pakai: mengambil rekapan Word yang sudah diberikan, dan memasukkannya
-   sebagai jadwal Firestore beneran, supaya Rekap & Isi Otomatis ikut hitung
-   riwayat lama ini. Aman dijalankan berkali-kali -- kalau sudah pernah
-   diimpor, akan otomatis terdeteksi & dibatalkan (skip), tidak dobel. */
-
-const IMPOR_ALIAS_NAMA = {
-  'ferdinand':'ko ferdi', 'ferdi':'ko ferdi', 'ferdinan':'ko ferdi',
-  'vetta':'marvetta',
-  'lika':'lica',
-  'kris':'kristian',
-  'albet':'abet',
-  'gress':'gresia',
-  'andreas':'andreas che',
-  'rama':'anton',
-};
-
-const IMPOR_DATA_LAMA = [{"namaMisa": "Misa Jumat Pertama Januari", "tglSabtu": "2026-01-02", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-01-02", "petugas": ["Yubi", "Tevo"]}]}, {"namaMisa": "Hari Penampakan Tuhan 3-4 Januari", "tglSabtu": "2026-01-03", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-01-03", "petugas": ["Levina", "Angel"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-01-04", "petugas": ["Ferdinand", "Vetta"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-01-04", "petugas": ["Ruben", "Agung"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-01-04", "petugas": ["Yubi", "Moniq"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-01-04", "petugas": ["Lika", "Kristian"]}]}, {"namaMisa": "Pesta Pembaptisan Tuhan 10-11 Januari", "tglSabtu": "2026-01-10", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-01-10", "petugas": ["Gress", "Bintang"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-01-11", "petugas": ["Ruben", "Moniq"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-01-11", "petugas": ["Yubi", null]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-01-11", "petugas": ["Tevo", null]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-01-11", "petugas": ["Ferdi", null]}]}, {"namaMisa": "Hari Minggu Biasa ke II 16-17 Januari", "tglSabtu": "2026-01-16", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-01-16", "petugas": ["Levina", "Agung"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-01-17", "petugas": ["Vetta", "Aris"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-01-17", "petugas": ["Gio", "Iren"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-01-17", "petugas": ["Kris", "Lika"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-01-17", "petugas": ["Jessica", "Albet"]}]}, {"namaMisa": "Hari Minggu Biasa ke III 24-25 Januari", "tglSabtu": "2026-01-24", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-01-24", "petugas": ["Albet", "Gio"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-01-25", "petugas": ["Aris", "Apra"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-01-25", "petugas": ["Tasya", "Gress"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-01-25", "petugas": ["Rama", "Iren"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-01-25", "petugas": ["Maria", "Angel"]}]}, {"namaMisa": "Sabtu 31 Januari", "tglSabtu": "2026-01-31", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-01-31", "petugas": ["Iren", "Levina"]}]}, {"namaMisa": "Misa Jumat Pertama Februari", "tglSabtu": "2026-02-06", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-02-06", "petugas": ["Aris", "Ruben"]}]}, {"namaMisa": "Minggu 1 Februari", "tglSabtu": "2026-02-01", "slots": [{"hari": "Minggu", "jam": "06:00", "tanggal": "2026-02-01", "petugas": ["Ferdinand", "Lika"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-02-01", "petugas": ["Gio", "Bintang"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-02-01", "petugas": ["Gress", "Jessica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-02-01", "petugas": ["Tevo", "Yubi"]}]}, {"namaMisa": "Hari Minggu Biasa ke V 7-8 Februari", "tglSabtu": "2026-02-07", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-02-07", "petugas": ["Agung", "Maria"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-02-08", "petugas": ["Moniq", "Vetta"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-02-08", "petugas": ["Tasya", "Anton"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-02-08", "petugas": ["Kris", "Iren"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-02-08", "petugas": ["Abet", "Ferdi"]}]}, {"namaMisa": "Hari Minggu Biasa ke VI 14-15 Februari", "tglSabtu": "2026-02-14", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-02-14", "petugas": ["Maria", "Lika"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-02-15", "petugas": ["Ferdinand", "Vetta"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-02-15", "petugas": ["Levina", "Angel"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-02-15", "petugas": ["Tevo", "Apra"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-02-15", "petugas": ["Bintang", "Hansen"]}]}, {"namaMisa": "Hari Minggu Prapaskah I 21-22 Februari", "tglSabtu": "2026-02-21", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-02-21", "petugas": ["Gio", "Levina"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-02-22", "petugas": ["Maria", "Moniq"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-02-22", "petugas": ["Andreas", "Bintang"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-02-22", "petugas": ["Tasya", "Jessica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-02-22", "petugas": ["Ruben", "Gyan"]}]}, {"namaMisa": "Sabtu 28 Februari", "tglSabtu": "2026-02-28", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-02-28", "petugas": ["Gege", "Iren"]}]}, {"namaMisa": "Misa Rabu Abu", "tglSabtu": "2026-02-18", "slots": [{"hari": "Rabu", "jam": "05:30", "tanggal": "2026-02-18", "petugas": ["Vetta", "Ferdinand"]}, {"hari": "Rabu", "jam": "08:00", "tanggal": "2026-02-18", "petugas": ["Gress", "Moniq"]}, {"hari": "Rabu", "jam": "12:00", "tanggal": "2026-02-18", "petugas": ["Aris", "Angel"]}, {"hari": "Rabu", "jam": "16:00", "tanggal": "2026-02-18", "petugas": ["Tevo", "Apra"]}, {"hari": "Rabu", "jam": "19:00", "tanggal": "2026-02-18", "petugas": ["Bintang", "Hansen"]}]}, {"namaMisa": "Jalan Salib 20 Februari", "tglSabtu": "2026-02-20", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-02-20", "petugas": ["Kristian", "Ruben"]}]}, {"namaMisa": "Jalan Salib 27 Februari", "tglSabtu": "2026-02-27", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-02-27", "petugas": ["Gege", "Iren"]}]}, {"namaMisa": "Minggu 1 Maret", "tglSabtu": "2026-03-01", "slots": [{"hari": "Minggu", "jam": "06:00", "tanggal": "2026-03-01", "petugas": ["Ruben", "Nicho"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-03-01", "petugas": ["Bintang", "Hansen"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-03-01", "petugas": ["Agung", "Tevo"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-03-01", "petugas": ["Albet", "Andreas"]}]}, {"namaMisa": "Jalan Salib 6 Maret", "tglSabtu": "2026-03-06", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-03-06", "petugas": ["Levina", "Angel"]}]}, {"namaMisa": "Jalan Salib 13 Maret", "tglSabtu": "2026-03-13", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-03-13", "petugas": ["Gyan", "Gio"]}]}, {"namaMisa": "Jalan Salib 20 Maret", "tglSabtu": "2026-03-20", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-03-20", "petugas": ["Tevo", "Gege"]}]}, {"namaMisa": "Jalan Salib 27 Maret", "tglSabtu": "2026-03-27", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-03-27", "petugas": ["Lika", "Iren"]}]}, {"namaMisa": "Hari Minggu Prapaskah III 7-8 Maret", "tglSabtu": "2026-03-07", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-03-07", "petugas": ["Tevo", "Kristian"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-03-08", "petugas": ["Jessica", "Tasya"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-03-08", "petugas": ["Yubi", "Ruben"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-03-08", "petugas": ["Vetta", "Ferdinand"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-03-08", "petugas": ["Lika", "Kristian"]}]}, {"namaMisa": "Hari Minggu Prapaskah IV 14-15 Maret", "tglSabtu": "2026-03-14", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-03-14", "petugas": ["Lika", "Yubi"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-03-15", "petugas": ["Aris", "Vetta"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-03-15", "petugas": ["Iren", "Moniq"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-03-15", "petugas": ["Andreas", "Ferdinand"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-03-15", "petugas": ["Gio", "Apra"]}]}, {"namaMisa": "Hari Minggu Prapaskah V 21-22 Maret", "tglSabtu": "2026-03-21", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-03-21", "petugas": ["Levina", "Hansen"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-03-22", "petugas": ["Maria", "Vetta"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-03-22", "petugas": ["Aris", "Nicho"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-03-22", "petugas": ["Gress", "Tevo"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-03-22", "petugas": ["Albet", "Agung"]}]}, {"namaMisa": "Minggu Palma", "tglSabtu": "2026-03-28", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-03-28", "petugas": ["Maria", "Iren"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-03-29", "petugas": ["Gio", "Kristian"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-03-29", "petugas": ["Tasya", "Ruben"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-03-29", "petugas": ["Angel", "Gege"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-03-29", "petugas": ["Moniq", "Lika"]}]}, {"namaMisa": "Pekan Suci: Kamis Putih - Minggu Paskah", "tglSabtu": "2026-04-02", "slots": [{"hari": "Kamis", "jam": "17:00", "tanggal": "2026-04-02", "petugas": ["Gress", "Lika"]}, {"hari": "Kamis", "jam": "20:00", "tanggal": "2026-04-02", "petugas": ["Jessica", "Hansen"]}, {"hari": "Jumat", "jam": "07:00", "tanggal": "2026-04-03", "petugas": ["Levina", "Angel"]}, {"hari": "Jumat", "jam": "13:00", "tanggal": "2026-04-03", "petugas": ["Moniq", "Gress"]}, {"hari": "Jumat", "jam": "17:00", "tanggal": "2026-04-03", "petugas": ["Angel", "Vetta"]}, {"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-04-04", "petugas": ["Iren", "Vetta"]}, {"hari": "Sabtu", "jam": "22:00", "tanggal": "2026-04-04", "petugas": ["Ferdinand", "Tevo"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-04-05", "petugas": ["Levina", "Maria"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-04-05", "petugas": ["Jessica", "Tasya"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-04-05", "petugas": ["Ferdinand", "Agung"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-04-05", "petugas": ["Vetta", "Lika"]}]}, {"namaMisa": "Hari Minggu Paskah II 11-12 April", "tglSabtu": "2026-04-11", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-04-11", "petugas": ["Levina", "Bintang"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-04-12", "petugas": ["Kris", "Gege"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-04-12", "petugas": ["Apra", "Hansen"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-04-12", "petugas": ["Gio", "Nicho"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-04-12", "petugas": ["Maria", "Lika"]}]}, {"namaMisa": "Hari Minggu Paskah III 18-19 April", "tglSabtu": "2026-04-18", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-04-18", "petugas": ["Levina", "Angel"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-04-19", "petugas": ["Vetta", "Jessica"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-04-19", "petugas": ["Iren", "Lica"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-04-19", "petugas": ["Tevo", "Ferdinand"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-04-19", "petugas": ["Albet", "Andreas"]}]}, {"namaMisa": "Hari Minggu Paskah IV 25-26 April", "tglSabtu": "2026-04-25", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-04-25", "petugas": ["Iren", "Hansen"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-04-26", "petugas": ["Yubi", "Ruben"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-04-26", "petugas": ["Aris", "Tasya"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-04-26", "petugas": ["Kristian", "Lica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-04-26", "petugas": ["Tevo", "Bintang"]}]}, {"namaMisa": "Misa Jumat Pertama Mei", "tglSabtu": "2026-05-01", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-05-01", "petugas": ["Aris", "Nicho"]}]}, {"namaMisa": "Hari Minggu Paskah V 2-3 Mei", "tglSabtu": "2026-05-02", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-05-02", "petugas": ["Agung", "Jessica"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-05-03", "petugas": ["Apra", "Gio"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-05-03", "petugas": ["Moniq", "Lica"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-05-03", "petugas": ["Vetta", "Angel"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-05-03", "petugas": ["Ruben", "Albet"]}]}, {"namaMisa": "Hari Minggu Paskah VI 9-10 Mei", "tglSabtu": "2026-05-09", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-05-09", "petugas": ["Yubi", "Gege"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-05-10", "petugas": ["Kristian", "Andreas"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-05-10", "petugas": ["Bintang", "Nicho"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-05-10", "petugas": ["Maria", "Tasya"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-05-10", "petugas": ["Tevo", "Hansen"]}]}, {"namaMisa": "Misa Kenaikan Tuhan Yesus", "tglSabtu": "2026-05-14", "slots": [{"hari": "Kamis", "jam": "06:00", "tanggal": "2026-05-14", "petugas": ["Ferdinand", "Levina"]}, {"hari": "Kamis", "jam": "08:00", "tanggal": "2026-05-14", "petugas": ["Tevo", "Moniq"]}, {"hari": "Kamis", "jam": "16:00", "tanggal": "2026-05-14", "petugas": ["Gress", "Ruben"]}, {"hari": "Kamis", "jam": "19:00", "tanggal": "2026-05-14", "petugas": ["Lica", "Kristian"]}]}, {"namaMisa": "Hari Minggu Paskah VII 16-17 Mei", "tglSabtu": "2026-05-16", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-05-16", "petugas": ["Levina", "Hansen"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-05-17", "petugas": ["Vetta", "Agung"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-05-17", "petugas": ["Gege", "Gio"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-05-17", "petugas": ["Ferdinand", "Tevo"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-05-17", "petugas": ["Apra", "Aris"]}]}, {"namaMisa": "Hari Raya Pentakosta 23-24 Mei", "tglSabtu": "2026-05-23", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-05-23", "petugas": ["Levina", "Gress"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-05-24", "petugas": ["Maria", "Moniq"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-05-24", "petugas": ["Bu Yani", "Jessica"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-05-24", "petugas": ["Iren", "Lika"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-05-24", "petugas": ["Angel", "Vetta"]}]}, {"namaMisa": "Hari Tritunggal Mahakudus 30-31 Mei", "tglSabtu": "2026-05-30", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-05-30", "petugas": ["Tasya", "Angel"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-05-31", "petugas": ["Maria", "Gege"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-05-31", "petugas": ["Gio", "Kristian"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-05-31", "petugas": ["Tevo", "Ferdinand"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-05-31", "petugas": ["Andreas", "Albet"]}]}, {"namaMisa": "Misa Jumat Pertama Juni", "tglSabtu": "2026-06-05", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-06-05", "petugas": ["Apra", "Bu Yani"]}]}, {"namaMisa": "Hari Tubuh dan Darah Kristus 6-7 Juni", "tglSabtu": "2026-06-06", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-06-06", "petugas": ["Maria", "Agung"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-06-07", "petugas": ["Kristian", "Lica"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-06-07", "petugas": ["Jessica", "Iren"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-06-07", "petugas": ["Ferdinand", "Tasya"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-06-07", "petugas": ["Yubi", "Tevo"]}]}, {"namaMisa": "Hari Minggu Biasa ke XI 13-14 Juni", "tglSabtu": "2026-06-13", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-06-13", "petugas": ["Levina", "Angel"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-06-14", "petugas": ["Agung", "Gege"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-06-14", "petugas": ["Ruben", "Nicho"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-06-14", "petugas": ["Aris", "Apra"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-06-14", "petugas": ["Gio", "Tevo"]}]}, {"namaMisa": "Hari Minggu Biasa ke XII 20-21 Juni", "tglSabtu": "2026-06-20", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-06-20", "petugas": ["Yubi", "Maria"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-06-21", "petugas": ["Hansen", "Moniq"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-06-21", "petugas": ["Ruben", "Kristian"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-06-21", "petugas": ["Lika", "Jessica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-06-21", "petugas": ["Albet", "Andreas"]}]}, {"namaMisa": "Hari Minggu Biasa ke XIII 27-28 Juni", "tglSabtu": "2026-06-27", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-06-27", "petugas": ["Iren", "Bintang"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-06-28", "petugas": ["Hansen", "Gege"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-06-28", "petugas": ["Nicho", "Tasya"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-06-28", "petugas": ["Lika", "Jessica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-06-28", "petugas": ["Gio", "Apra"]}]}, {"namaMisa": "Misa Jumat Pertama Juli", "tglSabtu": "2026-07-03", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-07-03", "petugas": ["Apra", "Aris"]}]}, {"namaMisa": "Hari Minggu Biasa ke XIV 4-5 Juli", "tglSabtu": "2026-07-04", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-07-04", "petugas": ["Tevo", "Agung"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-07-05", "petugas": ["Vetta", "Lica"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-07-05", "petugas": ["Levina", "Hansen"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-07-05", "petugas": ["Maria", "Jessica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-07-05", "petugas": ["Ruben", "Andreas"]}]}, {"namaMisa": "Hari Minggu Biasa ke XV 11-12 Juli", "tglSabtu": "2026-07-11", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-07-11", "petugas": ["Bintang", "Apra"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-07-12", "petugas": ["Vetta", "Gio"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-07-12", "petugas": ["Lica", "Kristian"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-07-12", "petugas": ["Moniq", "Tevo"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-07-12", "petugas": ["Gege", "Albet"]}]}, {"namaMisa": "Hari Minggu Biasa ke XVI 18-19 Juli", "tglSabtu": "2026-07-18", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-07-18", "petugas": ["Iren", "Gress"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-07-19", "petugas": ["Kristian", "Hansen"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-07-19", "petugas": ["Levina", "Aris"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-07-19", "petugas": ["Andreas", "Albet"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-07-19", "petugas": ["Lica", "Jessica"]}]}, {"namaMisa": "Hari Minggu Biasa ke XVII 25-26 Juli", "tglSabtu": "2026-07-25", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-07-25", "petugas": ["Tasya", "Angel"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-07-26", "petugas": ["Kristian", "Bintang"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-07-26", "petugas": ["Gio", "Gege"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-07-26", "petugas": ["Maria", "Iren"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-07-26", "petugas": ["Hansen", "Andreas"]}]}, {"namaMisa": "Hari Minggu Biasa ke XVIII 1-2 Agustus", "tglSabtu": "2026-08-01", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-08-01", "petugas": ["Yubi", "Agung"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-08-02", "petugas": ["Vetta", "Moniq"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-08-02", "petugas": ["Tasya", "Jessica"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-08-02", "petugas": ["Lica", "Gress"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-08-02", "petugas": ["Aris", "Angel"]}]}, {"namaMisa": "Misa Jumat Pertama Agustus", "tglSabtu": "2026-08-07", "slots": [{"hari": "Jumat", "jam": "18:00", "tanggal": "2026-08-07", "petugas": ["Levina", "Bu Yani"]}]}, {"namaMisa": "Hari Minggu Biasa ke XIX 8-9 Agustus", "tglSabtu": "2026-08-08", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-08-08", "petugas": ["Levina", "Angel"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-08-09", "petugas": ["Ruben", "Hansen"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-08-09", "petugas": ["Kristian", "Iren"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-08-09", "petugas": ["Andreas", "Bintang"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-08-09", "petugas": ["Lica", "Jessica"]}]}, {"namaMisa": "Hari Santa Maria Diangkat Ke Surga 15-16 Agustus", "tglSabtu": "2026-08-15", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-08-15", "petugas": ["Gege", "Bintang"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-08-16", "petugas": ["Aris", "Maria"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-08-16", "petugas": ["Moniq", "Tasya"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-08-16", "petugas": ["Albet", "Gress"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-08-16", "petugas": ["Gio", "Ruben"]}]}, {"namaMisa": "Hari Minggu Biasa ke XXI 22-23 Agustus", "tglSabtu": "2026-08-22", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-08-22", "petugas": ["Agung", "Maria"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-08-23", "petugas": ["Kristian", "Apra"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-08-23", "petugas": ["Ruben", "Lica"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-08-23", "petugas": ["Gio", "Gege"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-08-23", "petugas": ["Andreas", "Albet"]}]}, {"namaMisa": "Hari Minggu Biasa ke XXII 29-30 Agustus", "tglSabtu": "2026-08-29", "slots": [{"hari": "Sabtu", "jam": "18:00", "tanggal": "2026-08-29", "petugas": ["Angel", "Levina"]}, {"hari": "Minggu", "jam": "06:00", "tanggal": "2026-08-30", "petugas": ["Vetta", "Apra"]}, {"hari": "Minggu", "jam": "08:00", "tanggal": "2026-08-30", "petugas": ["Tasya", "Jessica"]}, {"hari": "Minggu", "jam": "16:00", "tanggal": "2026-08-30", "petugas": ["Iren", "Lica"]}, {"hari": "Minggu", "jam": "19:00", "tanggal": "2026-08-30", "petugas": ["Tevo", "Moniq"]}]}];
-
-function importResolveNama(namaMentah, cache){
-  const key = (namaMentah||'').trim().toLowerCase();
-  const target = IMPOR_ALIAS_NAMA[key] || key;
-  let p = petugasList.find(x => (x.nama||'').trim().toLowerCase() === target);
-  if(!p){
-    if(cache[target]) return cache[target];
-    const id = 'pimp' + Date.now() + Math.random().toString(36).slice(2,7);
-    p = {id, nama: namaMentah.trim()};
-    petugasList.push(p);
-    cache[target] = id;
-  }
-  return p.id;
-}
-
-async function importRekapLama(){
-  if(currentRole !== 'editor'){ showToast('Hanya PJ yang bisa impor data lama.'); return; }
-  const sudahAda = jadwalList.some(j => j.id && j.id.startsWith('imp2026-'));
-  if(sudahAda){
-    showToast('Rekap Jan-Agu 2026 sudah pernah diimpor sebelumnya. Tidak diimpor ulang.');
-    return;
-  }
-  if(!confirm(`Ini akan menambahkan ${IMPOR_DATA_LAMA.length} jadwal (Januari-Agustus 2026) dari rekap Word ke database. Lanjutkan?`)) return;
-
-  const cacheBaru = {};
-  IMPOR_DATA_LAMA.forEach((entry, idx) => {
-    const slots = entry.slots.map((s, si) => ({
-      id: 'simp' + idx + '_' + si,
-      hari: s.hari,
-      jam: s.jam,
-      tanggal: new Date(s.tanggal + 'T00:00:00').toISOString(),
-      petugas: s.petugas.map(nm => nm ? importResolveNama(nm, cacheBaru) : null)
-    }));
-    jadwalList.push({
-      id: 'imp2026-' + idx,
-      namaMisa: entry.namaMisa,
-      tglSabtu: new Date(entry.tglSabtu + 'T00:00:00').toISOString(),
-      slots
-    });
-  });
-
-  petugasList.sort((a,b) => a.nama.localeCompare(b.nama));
-  await saveList('petugas-list', petugasList);
-  await saveList('jadwal-list', jadwalList);
-
-  const jumlahBaru = Object.keys(cacheBaru).length;
-  refreshHomeViews();
-  renderPetugas();
-  showToast(`Berhasil! ${IMPOR_DATA_LAMA.length} jadwal diimpor${jumlahBaru ? `, ${jumlahBaru} petugas baru dibuat` : ''}.`);
-}
 function closeModal(){
   if(modalLocked) return;
   document.getElementById('modalOverlay').classList.remove('open');
   if(chatUnsubscribe){ chatUnsubscribe(); chatUnsubscribe = null; }
   currentChatJadwalId = null;
+  chatReplyTo = null;
+  chatEditingId = null;
   // Kalau modal ini dibuka dari tab Profil di bottom nav, balikin highlight nav
   // ke halaman yang aktif sebelumnya (Beranda/Petugas/dst).
   const navProfil = document.getElementById('navProfil');
@@ -2543,11 +2734,11 @@ function renderSlotEditor(){
       <div class="slot-head"><span>${tglStr} — ${s.jam}</span><span class="remove-slot" onclick="removeSlot(${idx})">Hapus</span></div>
       <select onchange="setSlotPetugas(${idx},0,this.value)">
         <option value="">— Pilih petugas 1 —</option>
-        ${petugasList.map(p=>`<option value="${p.id}" ${p.id===sel1?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
+        ${petugasList.filter(p=>!p.dihapus).map(p=>`<option value="${p.id}" ${p.id===sel1?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
       </select>
       <select onchange="setSlotPetugas(${idx},1,this.value)">
         <option value="">— Pilih petugas 2 —</option>
-        ${petugasList.map(p=>`<option value="${p.id}" ${p.id===sel2?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
+        ${petugasList.filter(p=>!p.dihapus).map(p=>`<option value="${p.id}" ${p.id===sel2?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
       </select>
     </div>`;
   }).join('');
@@ -2588,7 +2779,7 @@ function autoFillSlots(){
   // - Bulan lalu cuma 0-1x (jarang bertugas) -> diprioritaskan (running dikurangi).
   // - Bulan lalu 2x atau lebih (sudah lumayan/cukup) -> dapat keringanan (running ditambah).
   const running = {};
-  petugasList.filter(p=>!p.opsional && !p.nonaktif).forEach(p=>{
+  petugasList.filter(p=>!p.opsional && !p.nonaktif && !p.dihapus).forEach(p=>{
     const iniBulan = hitungTugasBulan(p.id, bulan, tahun);
     const bulanLalu = hitungTugasBulan(p.id, lalu.bulan, lalu.tahun);
     const penyesuaian = bulanLalu <= 1 ? -1 : (bulanLalu - 1);
@@ -2600,7 +2791,7 @@ function autoFillSlots(){
   currentSlots.forEach(s=>{
     for(let i=0;i<2;i++){
       if(!s.petugas[i]){
-        const candidates = shuffleArray(petugasList.filter(p=> !p.opsional && !p.nonaktif && !s.petugas.includes(p.id)));
+        const candidates = shuffleArray(petugasList.filter(p=> !p.opsional && !p.nonaktif && !p.dihapus && !s.petugas.includes(p.id)));
         if(candidates.length===0) continue;
         candidates.sort((a,b)=> (running[a.id]||0) - (running[b.id]||0));
         const pick = candidates[0];
@@ -2628,7 +2819,7 @@ async function simpanJadwal(){
   };
   jadwalList.push(entry);
   await saveList('jadwal-list', jadwalList);
-  catatLog(`menambah jadwal baru "${namaMisa}"`);
+  catatLog(`Jadwal "${namaMisa}" sudah dibuat — segera isi petugas di kartu jadwal.`);
   showToast('Jadwal tersimpan');
   resetForm();
   populateFilters();
