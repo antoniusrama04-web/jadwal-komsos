@@ -2794,13 +2794,14 @@ function bukaPerbaikanReferensi(){
     const selectId = `perbaikiSelect_${i}`;
     return `<div class="profil-edit-block">
       <div class="section-sub" style="margin:0 0 8px;"><b style="color:var(--text);">ID nyasar (${kemunculan.length}x muncul)</b> — cocokkan ini ke nama yang benar sambil cek rekap lamamu:<br>${contoh}${sisaLagi}</div>
-      <div style="display:flex; gap:8px;">
+      <div style="display:flex; gap:8px; margin-bottom:6px;">
         <select id="${selectId}" class="modal-field" style="flex:1;">
           <option value="">— pilih nama yang benar —</option>
           ${opsiPetugas}
         </select>
         <button class="btn-secondary" onclick="terapkanPerbaikanReferensi('${pid}', document.getElementById('${selectId}').value)">Terapkan</button>
       </div>
+      <a onclick="kosongkanReferensiRusak('${pid}')" style="font-size:12px; color:var(--muted); text-decoration:underline; cursor:pointer;">🗑️ Ini bukan siapa-siapa (slot emang kosong dari awal) — kosongkan aja</a>
     </div>`;
   }).join('');
   document.getElementById('modalBody').innerHTML = `
@@ -2808,6 +2809,29 @@ function bukaPerbaikanReferensi(){
     ${daftarHtml}
   `;
   document.getElementById('modalOverlay').classList.add('open');
+}
+
+async function kosongkanReferensiRusak(idNyasar){
+  const kemunculan = cariReferensiRusak()[idNyasar] || [];
+  const ok = confirm(`Kosongkan ${kemunculan.length}x kemunculan ID nyasar ini (dianggap bukan siapa-siapa / slot memang belum keisi)?\n\nAksi ini nggak bisa dibatalkan.`);
+  if(!ok) return;
+  showToast('Mengosongkan slot, mohon tunggu...');
+  let jumlahSlotDiubah = 0;
+  jadwalList.forEach(j=>{
+    j.slots.forEach(s=>{
+      if(!Array.isArray(s.petugas)) return;
+      if(s.petugas.includes(idNyasar)){
+        s.petugas = s.petugas.filter(pid=>pid!==idNyasar);
+        jumlahSlotDiubah++;
+      }
+    });
+  });
+  if(jumlahSlotDiubah > 0) await saveList('jadwal-list', jadwalList);
+  catatLog(`mengosongkan ${jumlahSlotDiubah} slot dengan referensi petugas rusak (bukan orang beneran)`);
+  renderPetugas();
+  refreshHomeViews();
+  showToast(`${jumlahSlotDiubah} slot dikosongkan.`);
+  bukaPerbaikanReferensi();
 }
 
 async function terapkanPerbaikanReferensi(idNyasar, targetId){
