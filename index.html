@@ -668,6 +668,7 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
         <input type="text" id="newPetugasName" placeholder="Nama petugas baru">
         <button class="btn-primary" onclick="tambahPetugas()">Tambah</button>
       </div>
+      <button class="btn-secondary" id="btnPerbaikanReferensi" style="width:100%; margin-bottom:14px; display:none; font-size:12.5px; opacity:0.8;" onclick="bukaPerbaikanReferensi()">🛠️ Perbaiki Referensi Petugas Rusak</button>
       <div id="petugasListArea"></div>
     </div>
 
@@ -1712,6 +1713,7 @@ function applyRoleUI(){
     document.getElementById('petugasAddRow').style.display = 'flex';
     document.getElementById('testNotifBox').style.display = 'flex';
     document.getElementById('logAktivitasLink').style.display = 'flex';
+    document.getElementById('btnPerbaikanReferensi').style.display = 'block';
   }else{
     badge.textContent = nama || 'Mode Lihat';
     badge.classList.remove('editor');
@@ -1719,6 +1721,7 @@ function applyRoleUI(){
     document.getElementById('petugasAddRow').style.display = 'none';
     document.getElementById('testNotifBox').style.display = 'none';
     document.getElementById('logAktivitasLink').style.display = 'none';
+    document.getElementById('btnPerbaikanReferensi').style.display = 'none';
   }
   updateLogDotDanBadge();
 }
@@ -2744,6 +2747,108 @@ async function konfirmasiGabungRiwayat(sourceId, targetId){
   renderPetugas();
   openPetugasDetail(targetId);
   showToast(`Riwayat "${source.nama}" sudah digabung ke "${target.nama}".`);
+}
+
+/* ---------------- PERBAIKI REFERENSI PETUGAS RUSAK ----------------
+   Lapisan kedua buat kasus yang lebih parah dari "Gabungkan Riwayat": dulu
+   (sebelum ada soft-delete) hapus petugas = hapus PERMANEN total dari
+   daftar, nggak nyisain jejak apa pun. Jadi ID lama yang masih nempel di
+   slot jadwal lama itu udah nggak nunjuk ke SIAPA PUN — bukan "tersembunyi",
+   tapi beneran "nyasar" (orphan). Nggak ada cara otomatis buat nebak itu
+   dulu siapa (nama aslinya nggak kesimpen di mana pun lagi), jadi PJ yang
+   harus cocokin manual sambil liat rekap lama sebagai rujukan. */
+function cariReferensiRusak(){
+  const idAktif = new Set(petugasList.map(p=>p.id));
+  const grup = {}; // { [idNyasar]: [{jadwalId, namaMisa, hari, tanggal, jam}] }
+  jadwalList.forEach(j=>{
+    j.slots.forEach(s=>{
+      if(!Array.isArray(s.petugas)) return;
+      s.petugas.forEach(pid=>{
+        if(idAktif.has(pid)) return;
+        if(!grup[pid]) grup[pid] = [];
+        grup[pid].push({jadwalId:j.id, namaMisa:j.namaMisa, hari:s.hari, tanggal:s.tanggal, jam:s.jam});
+      });
+    });
+  });
+  return grup;
+}
+
+function bukaPerbaikanReferensi(){
+  const grup = cariReferensiRusak();
+  const idNyasar = Object.keys(grup).sort((a,b)=>grup[b].length-grup[a].length);
+  document.getElementById('modalTitle').textContent = '🛠️ Perbaiki Referensi Petugas Rusak';
+  if(idNyasar.length===0){
+    document.getElementById('modalBody').innerHTML = `<div class="empty-note">Nggak ketemu referensi yang rusak. Semua ID petugas di jadwal masih nyambung ke daftar petugas aktif. 👍</div>`;
+    document.getElementById('modalOverlay').classList.add('open');
+    return;
+  }
+  const opsiPetugas = petugasList.filter(p=>!p.dihapus).sort((a,b)=>a.nama.localeCompare(b.nama))
+    .map(p=>`<option value="${p.id}">${escapeHtml(p.nama)}</option>`).join('');
+  const daftarHtml = idNyasar.map((pid,i)=>{
+    const kemunculan = grup[pid];
+    const contoh = kemunculan.slice(0,5).map(k=>{
+      const tglStr = new Date(k.tanggal).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+      return `${k.hari}, ${tglStr} (${k.jam}) — ${escapeHtml(k.namaMisa)}`;
+    }).join('<br>');
+    const sisaLagi = kemunculan.length > 5 ? `<br><span style="opacity:0.7;">...dan ${kemunculan.length-5} kemunculan lainnya</span>` : '';
+    const selectId = `perbaikiSelect_${i}`;
+    return `<div class="profil-edit-block">
+      <div class="section-sub" style="margin:0 0 8px;"><b style="color:var(--text);">ID nyasar (${kemunculan.length}x muncul)</b> — cocokkan ini ke nama yang benar sambil cek rekap lamamu:<br>${contoh}${sisaLagi}</div>
+      <div style="display:flex; gap:8px;">
+        <select id="${selectId}" class="modal-field" style="flex:1;">
+          <option value="">— pilih nama yang benar —</option>
+          ${opsiPetugas}
+        </select>
+        <button class="btn-secondary" onclick="terapkanPerbaikanReferensi('${pid}', document.getElementById('${selectId}').value)">Terapkan</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('modalBody').innerHTML = `
+    <div class="section-sub" style="margin:0 0 12px;">Ketemu ${idNyasar.length} ID petugas di data jadwal lama yang udah nggak nyambung ke siapa pun di daftar petugas aktif. Ini biasanya sisa dari petugas yang dulu pernah dihapus total sebelum ada perbaikan penyimpanan riwayat. Cocokkan tiap ID ke nama yang benar berdasarkan tanggal & jam kemunculannya (bandingkan sama rekap lamamu).</div>
+    ${daftarHtml}
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+async function terapkanPerbaikanReferensi(idNyasar, targetId){
+  if(!targetId){ showToast('Pilih dulu nama yang benar.'); return; }
+  const target = petugasList.find(x=>x.id===targetId);
+  if(!target) return;
+  const kemunculan = cariReferensiRusak()[idNyasar] || [];
+  const ok = confirm(`Ganti ${kemunculan.length}x kemunculan ID nyasar ini jadi "${target.nama}"?\n\nAksi ini nggak bisa dibatalkan.`);
+  if(!ok) return;
+
+  showToast('Memperbaiki referensi, mohon tunggu...');
+  let jumlahSlotDiubah = 0;
+  jadwalList.forEach(j=>{
+    j.slots.forEach(s=>{
+      if(!Array.isArray(s.petugas)) return;
+      if(s.petugas.includes(idNyasar)){
+        s.petugas = s.petugas
+          .map(pid => pid===idNyasar ? targetId : pid)
+          .filter((pid,idx,arr) => arr.indexOf(pid)===idx);
+        jumlahSlotDiubah++;
+      }
+    });
+  });
+  if(jumlahSlotDiubah > 0) await saveList('jadwal-list', jadwalList);
+
+  const jadwalTerdampak = jadwalList.filter(j => j.slots.some(s=>Array.isArray(s.petugas) && s.petugas.includes(targetId)));
+  for(const j of jadwalTerdampak){
+    try{
+      const doc = await db.collection(KOMSOS_COLLECTION).doc(`chat-${j.id}`).get();
+      if(!doc.exists) continue;
+      const pesan = doc.data().payload || [];
+      let berubah = false;
+      pesan.forEach(m=>{ if(m.petugasId===idNyasar){ m.petugasId = targetId; berubah = true; } });
+      if(berubah) await saveList(`chat-${j.id}`, pesan);
+    }catch(e){ console.error('gagal memperbaiki obrolan lama', j.id, e); }
+  }
+
+  catatLog(`memperbaiki ${jumlahSlotDiubah} referensi petugas rusak jadi "${target.nama}"`);
+  renderPetugas();
+  showToast(`${jumlahSlotDiubah} slot diperbaiki jadi "${target.nama}". Buka lagi daftarnya kalau masih ada ID nyasar lain.`);
+  bukaPerbaikanReferensi();
 }
 
 function closeModal(){
