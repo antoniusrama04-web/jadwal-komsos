@@ -91,6 +91,7 @@ exports.handler = async function () {
           // cuma dapat SATU notifikasi, bukan dobel.
           const tokenSet = new Set();
           for (const pid of s.petugas) {
+            if (!pid) continue; // slot belum terisi (null) — jangan query, jangan kirim ke siapa pun
             const usersSnap = await db.collection(USERS_COLLECTION).where('petugasId', '==', pid).get();
             usersSnap.forEach((userDoc) => {
               (userDoc.data().fcmTokens || []).forEach((tok) => tokenSet.add(tok));
