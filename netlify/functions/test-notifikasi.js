@@ -58,6 +58,9 @@ exports.handler = async function (event) {
         title: '🔔 Uji Coba Notifikasi KOMSOS',
         body: 'Kalau HP kamu bunyi & notifikasi ini muncul, sistemnya berhasil! 🎉',
       },
+      android: {
+        notification: { channelId: 'komsos-pengingat' },
+      },
     });
 
     return {
