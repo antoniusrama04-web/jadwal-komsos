@@ -1124,6 +1124,11 @@ async function aktifkanNotifikasiNative(){
     });
     if(!res.ok){ throw new Error('sinkron-token gagal'); }
     punyaTokenTersimpan = true;
+    // Penanda LOKAL di HP ini (bukan di akun/Firestore). Kalau app di-uninstall
+    // total, localStorage ini ikut kehapus otomatis -> banner "Aktifkan" akan
+    // muncul lagi di instalasi baru, walau akun yang login sama & Firestore
+    // masih nyimpen token lama dari instalasi sebelumnya.
+    try{ localStorage.setItem('komsosNativeTokenRegisteredDiHPIni', '1'); }catch(e){}
     showToast('Notifikasi pengingat aktif!');
   }
   renderNotifBanner();
@@ -1227,10 +1232,13 @@ function renderNotifBanner(){
   const el = document.getElementById('notifBanner');
   if(!el) return;
   if(isNativeApp){
-    // Di APK, izin sistem dicek ulang tiap kali tombol "Aktifkan" diklik
-    // (lewat PN.checkPermissions()) — jadi status banner cukup ngikutin
-    // apakah token udah kesimpan atau belum, nggak perlu API Notification web.
-    el.style.display = punyaTokenTersimpan ? 'none' : 'flex';
+    // Cek penanda LOKAL di HP ini, BUKAN status akun di Firestore — supaya
+    // fresh install (uninstall lalu install ulang) selalu diminta aktifkan
+    // ulang, walau login pakai akun yang sebelumnya sudah pernah aktifin
+    // notifikasi di HP lain / instalasi lama.
+    let sudahDiHPIni = false;
+    try{ sudahDiHPIni = localStorage.getItem('komsosNativeTokenRegisteredDiHPIni') === '1'; }catch(e){}
+    el.style.display = sudahDiHPIni ? 'none' : 'flex';
     return;
   }
   const supported = ('Notification' in window) && firebase.messaging.isSupported && firebase.messaging.isSupported();
