@@ -1082,6 +1082,22 @@ if(isNativeApp && window.Capacitor.Plugins && window.Capacitor.Plugins.PushNotif
 async function aktifkanNotifikasiNative(){
   const PN = window.Capacitor.Plugins.PushNotifications;
   if(!PN){ showToast('Plugin notifikasi native tidak ditemukan di build APK ini.'); return; }
+
+  // Bikin "kanal notifikasi" khusus KOMSOS pakai suara custom (bel).
+  // File suaranya WAJIB ada di android/app/src/main/res/raw/notif_bell.wav
+  // (nama file harus persis 'notif_bell', huruf kecil semua, tanpa spasi).
+  // Aman dipanggil berkali-kali — kalau kanal sudah ada, ini nggak akan error/dobel.
+  try{
+    await PN.createChannel({
+      id: 'komsos-pengingat',
+      name: 'Pengingat KOMSOS',
+      description: 'Notifikasi pengingat jadwal tugas operator',
+      importance: 5,      // MAX — biar muncul heads-up + bunyi walau layar terkunci
+      visibility: 1,
+      sound: 'notif_bell', // TANPA ekstensi .wav, Android otomatis cari di res/raw/
+    });
+  }catch(e){ console.warn('Gagal membuat notification channel (mungkin sudah ada):', e); }
+
   let permStatus = await PN.checkPermissions();
   if(permStatus.receive !== 'granted'){
     permStatus = await PN.requestPermissions();
