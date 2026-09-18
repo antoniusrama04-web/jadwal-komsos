@@ -633,6 +633,10 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
             <span class="hm-icon">📊</span>
             <span class="hm-label">Rekap Jadwal</span>
           </button>
+          <button class="home-menu-btn" onclick="showHomePanel('absensi')">
+            <span class="hm-icon">✅</span>
+            <span class="hm-label">Rekap Absensi</span>
+          </button>
           <button class="home-menu-btn" onclick="openSaranModal()">
             <span class="hm-icon">💬</span>
             <span class="hm-label">Kotak Saran</span>
@@ -655,6 +659,17 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
           <select id="filterTahun"></select>
         </div>
         <div id="rekapListArea"></div>
+      </div>
+
+      <div id="homePanel-absensi" class="home-panel">
+        <div class="panel-back" onclick="showHomePanel('menu')"><span class="pb-arrow">&#8592;</span>Kembali ke Beranda</div>
+        <div class="section-title" style="font-size:22px; padding-bottom:10px; margin-bottom:14px;">Rekap Absensi</div>
+        <div class="section-sub">Kehadiran petugas operator per bulan — otomatis tercatat dari tombol "Absen Sekarang" di tiap jadwal.</div>
+        <div class="filter-row">
+          <select id="filterBulanAbsensi"></select>
+          <select id="filterTahunAbsensi"></select>
+        </div>
+        <div id="absensiListArea"></div>
       </div>
     </div>
 
@@ -1014,6 +1029,90 @@ let chatEditingId = null; // id pesan yang lagi diedit (null kalau lagi nulis pe
 // Project settings → Cloud Messaging → Web configuration → Generate key pair.
 const VAPID_KEY = "BGC0Z9RA1tFpQH_hu923uBkcuB57cI-Tz81j4hc91L_oWNAleCtjebhUsRaanGCcOKdEIYdhfF6hYMhYnUOzKN0";
 
+// Deteksi apakah app ini lagi jalan di dalam APK (dibungkus Capacitor) atau di
+// browser biasa. window.Capacitor cuma ada kalau app-nya dibuka lewat APK —
+// disuntikkan otomatis oleh WebView native, nggak perlu <script> tambahan apa
+// pun di sini. Kalau dibuka lewat Chrome/Safari biasa, ini selalu false, jadi
+// seluruh kode di bawah ini nggak berpengaruh sama sekali ke versi web.
+const isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+
+// Firebase Web SDK (firebase.messaging()) yang dipakai jalur web di bawah TIDAK
+// jalan dengan andal di dalam WebView Android (itu kenapa APK ini dibikin pakai
+// Capacitor) — jadi kalau native, kita pakai plugin @capacitor/push-notifications
+// yang mengakses sistem notifikasi Android ASLI, bukan lewat mesin Chrome/Service
+// Worker. Listener-nya didaftarkan sekali di sini (bukan tiap kali tombol
+// "Aktifkan" diklik), supaya token & notifikasi masuk tetap tertangani walau
+// listener "registration" native itu sifatnya event-based, bukan promise biasa.
+let resolveNativeToken = null;
+if(isNativeApp && window.Capacitor.Plugins && window.Capacitor.Plugins.PushNotifications){
+  const PN = window.Capacitor.Plugins.PushNotifications;
+  PN.addListener('registration', async (tokenData) => {
+    const token = tokenData && tokenData.value;
+    if(resolveNativeToken){ resolveNativeToken(token); resolveNativeToken = null; }
+    // Kalau ini bukan hasil klik tombol "Aktifkan" (misal token native
+    // di-refresh sendiri oleh sistem Android), tetap sinkron ke server kalau
+    // user lagi login, biar token yang lama otomatis ter-update.
+    if(token && currentUser){
+      try{
+        const idToken = await currentUser.getIdToken();
+        await fetch('/.netlify/functions/sinkron-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+          body: JSON.stringify({ token })
+        });
+        punyaTokenTersimpan = true;
+        renderNotifBanner();
+      }catch(e){ console.error('Gagal sinkron token native', e); }
+    }
+  });
+  PN.addListener('registrationError', (err) => {
+    console.error('Push registration error (native):', err);
+    if(resolveNativeToken){ resolveNativeToken(null); resolveNativeToken = null; }
+  });
+  // Notifikasi masuk waktu app lagi dibuka (foreground) — pengganti
+  // firebase.messaging().onMessage() versi web di bawah.
+  PN.addListener('pushNotificationReceived', (notification) => {
+    const title = (notification && notification.title) || 'Pengingat KOMSOS';
+    const body = (notification && notification.body) || '';
+    playNotifSound();
+    showToast(`${title} — ${body}`);
+  });
+}
+
+async function aktifkanNotifikasiNative(){
+  const PN = window.Capacitor.Plugins.PushNotifications;
+  if(!PN){ showToast('Plugin notifikasi native tidak ditemukan di build APK ini.'); return; }
+  let permStatus = await PN.checkPermissions();
+  if(permStatus.receive !== 'granted'){
+    permStatus = await PN.requestPermissions();
+  }
+  if(permStatus.receive !== 'granted'){
+    showToast('Izin notifikasi ditolak/ditutup.');
+    renderNotifBanner();
+    return;
+  }
+  const token = await new Promise((resolve)=>{
+    resolveNativeToken = resolve;
+    PN.register();
+    // Pengaman kalau listener 'registration' nggak pernah kepanggil (jaringan
+    // bermasalah dll) — jangan sampai nunggu selamanya.
+    setTimeout(()=>{ if(resolveNativeToken){ resolveNativeToken(null); resolveNativeToken = null; } }, 12000);
+  });
+  if(!token){ showToast('Gagal mengaktifkan notifikasi. Coba lagi ya.'); return; }
+  if(currentUser){
+    const idToken = await currentUser.getIdToken();
+    const res = await fetch('/.netlify/functions/sinkron-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+      body: JSON.stringify({ token })
+    });
+    if(!res.ok){ throw new Error('sinkron-token gagal'); }
+    punyaTokenTersimpan = true;
+    showToast('Notifikasi pengingat aktif!');
+  }
+  renderNotifBanner();
+}
+
 // Chrome/Android sering membungkam suara yang diputar dari kode (bukan langsung
 // dari sentuhan tombol) kalau audio-nya belum pernah "dibuka" lewat interaksi user.
 // Trik ini: begitu user menyentuh apa pun di halaman (sekali saja), kita diam-diam
@@ -1072,6 +1171,10 @@ function playNotifSound(){
 
 async function aktifkanNotifikasi(){
   try{
+    if(isNativeApp){
+      await aktifkanNotifikasiNative();
+      return;
+    }
     if(!('Notification' in window) || !firebase.messaging.isSupported()){
       showToast('HP/browser kamu belum dukung notifikasi push.');
       return;
@@ -1107,6 +1210,13 @@ async function aktifkanNotifikasi(){
 function renderNotifBanner(){
   const el = document.getElementById('notifBanner');
   if(!el) return;
+  if(isNativeApp){
+    // Di APK, izin sistem dicek ulang tiap kali tombol "Aktifkan" diklik
+    // (lewat PN.checkPermissions()) — jadi status banner cukup ngikutin
+    // apakah token udah kesimpan atau belum, nggak perlu API Notification web.
+    el.style.display = punyaTokenTersimpan ? 'none' : 'flex';
+    return;
+  }
   const supported = ('Notification' in window) && firebase.messaging.isSupported && firebase.messaging.isSupported();
   // Jangan cuma andalkan izin browser (Notification.permission) untuk sembunyikan tombol —
   // izin bisa saja sudah "granted" dari percobaan sebelumnya walau tokennya gagal tersimpan
@@ -1165,7 +1275,7 @@ async function kirimNotifikasiUjiCoba(){
   }
 }
 
-if(firebase.messaging.isSupported()){
+if(!isNativeApp && firebase.messaging.isSupported()){
   firebase.messaging().onMessage(payload=>{
     const title = payload.notification?.title || 'Pengingat KOMSOS';
     const body = payload.notification?.body || '';
@@ -1872,6 +1982,15 @@ function populateFilters(){
   ft.value = now.getFullYear();
   fb.onchange = renderRekap;
   ft.onchange = renderRekap;
+
+  const fba = document.getElementById('filterBulanAbsensi');
+  const fta = document.getElementById('filterTahunAbsensi');
+  fba.innerHTML = BULAN_NAMA.map((b,i)=>`<option value="${i}">${b}</option>`).join('');
+  fba.value = now.getMonth();
+  fta.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  fta.value = now.getFullYear();
+  fba.onchange = renderRekapAbsensi;
+  fta.onchange = renderRekapAbsensi;
 }
 
 function jadwalUntukBulan(bulan, tahun){
@@ -1898,6 +2017,29 @@ function jadwalSudahLewat(j){
   if(!j.slots || j.slots.length===0) return false;
   const tglTerakhir = j.slots.reduce((max,s)=> Math.max(max, new Date(s.tanggal).getTime()), 0);
   return Date.now() > tglTerakhir + 24*3600*1000;
+}
+
+/* ---------------- ABSENSI KEHADIRAN PER SLOT ----------------
+   Disimpan langsung di s.absensi = { [petugasId]: {status, waktu, telat, alasan} }
+   di dalam jadwal-list yang sudah ada — konsisten sama cara slot.petugas disimpan,
+   nggak perlu koleksi/rules Firestore baru. */
+function slotDateTime(s){
+  const d = new Date(s.tanggal);
+  const [h,m] = (s.jam || '00:00').split(':').map(Number);
+  d.setHours(h || 0, m || 0, 0, 0);
+  return d;
+}
+// Jendela absen: mulai 2 jam sebelum jam tugas, tutup di akhir hari yang sama.
+function jendelaAbsenTerbuka(s){
+  const mulai = slotDateTime(s).getTime() - 2*3600*1000;
+  const akhirHari = new Date(s.tanggal); akhirHari.setHours(23,59,59,999);
+  const now = Date.now();
+  return now >= mulai && now <= akhirHari.getTime();
+}
+// Dipakai buat status "belum absen" di rekap — true kalau hari tugasnya sudah lewat sepenuhnya.
+function slotSudahLewatUntukAbsen(s){
+  const akhirHari = new Date(s.tanggal); akhirHari.setHours(23,59,59,999);
+  return Date.now() > akhirHari.getTime();
 }
 
 // Nyalakan titik kecil di tombol "💬 Obrolan" kalau jadwal itu punya obrolan.
@@ -1927,13 +2069,27 @@ function buildJadwalCardsHtml(list){
     const slots = j.slots.map(s=>{
       const tgl = new Date(s.tanggal);
       const tglStr = tgl.toLocaleDateString('id-ID', {day:'2-digit', month:'short'});
-      const namaTerisi = s.petugas.map(id=>escapeHtml(namaPetugas(id)));
+      const namaTerisi = s.petugas.map(id=>{
+        const nama = escapeHtml(namaPetugas(id));
+        const rec = s.absensi ? s.absensi[id] : null;
+        let badge = '';
+        if(rec){
+          badge = rec.status==='hadir' ? (rec.telat ? ' ⚠️' : ' ✅') : ' ❌';
+        }else if(slotSudahLewatUntukAbsen(s)){
+          badge = ' ⏳';
+        }
+        return nama + badge;
+      });
       const sisaSeat = Math.max(0, 2 - s.petugas.length);
       const sudahIkut = currentPetugasId && s.petugas.includes(currentPetugasId);
 
       let aksi = '';
       if(sudahIkut){
         aksi = ` <a onclick="batalkanSlotSendiri('${j.id}','${s.id}')" style="color:var(--maroon); text-decoration:underline; cursor:pointer; font-size:12.5px; white-space:nowrap;">(batal)</a>`;
+        const recSaya = s.absensi ? s.absensi[currentPetugasId] : null;
+        if(!recSaya && jendelaAbsenTerbuka(s)){
+          aksi += ` <a onclick="bukaAbsenModal('${j.id}','${s.id}')" style="color:var(--blue-deep); text-decoration:underline; cursor:pointer; font-size:12.5px; white-space:nowrap;">| Absen Sekarang</a>`;
+        }
       }else if(sisaSeat > 0 && currentPetugasId){
         aksi = ` <a onclick="isiSlotSendiri('${j.id}','${s.id}')" style="color:var(--blue-deep); text-decoration:underline; cursor:pointer; font-size:12.5px; white-space:nowrap;">+ isi slot ini</a>`;
       }
@@ -1948,6 +2104,7 @@ function buildJadwalCardsHtml(list){
     return `<div class="jadwal-card">
       <div class="judul">PETUGAS OPERATOR ${escapeHtml(j.namaMisa.toUpperCase())}</div>
       ${musimBadge}
+      <div style="font-size:11px; color:var(--muted); margin-bottom:8px;">Absen: ✅ hadir · ⚠️ telat · ❌ tidak hadir · ⏳ belum absen</div>
       ${slots}
       <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
         ${tombolObrolan}
@@ -1990,6 +2147,59 @@ async function batalkanSlotSendiri(jadwalId, slotId){
   showToast('Kamu dibatalkan dari slot ini.');
 }
 
+/* ---------------- ABSENSI: MODAL & SIMPAN ---------------- */
+function bukaAbsenModal(jadwalId, slotId){
+  if(!currentPetugasId){ showToast('Akun kamu belum terhubung ke data petugas.'); return; }
+  const j = jadwalList.find(x=>x.id===jadwalId);
+  if(!j) return;
+  const s = j.slots.find(x=>x.id===slotId);
+  if(!s) return;
+  if(!s.petugas.includes(currentPetugasId)){ showToast('Kamu tidak bertugas di slot ini.'); return; }
+  const telat = Date.now() > slotDateTime(s).getTime();
+  const tglStr = new Date(s.tanggal).toLocaleDateString('id-ID', {day:'2-digit', month:'long'});
+
+  document.getElementById('modalTitle').textContent = 'Absen Kehadiran';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="section-sub" style="margin-bottom:10px;">${escapeHtml(j.namaMisa)} — ${s.hari}, ${tglStr} jam ${s.jam}</div>
+    ${telat ? `<div class="section-sub" style="color:var(--maroon); margin-bottom:4px;">⚠️ Sudah lewat jam mulai tugas. Kalau kamu pilih "Saya Hadir", wajib isi alasan keterlambatan dulu.</div>` : ''}
+    <div id="absenAlasanWrap" style="display:${telat ? 'block' : 'none'}; margin:10px 0;">
+      <label style="display:block; font-size:11.5px; font-weight:600; color:var(--muted); margin-bottom:6px;">Alasan Terlambat <span style="color:var(--maroon);">*wajib</span></label>
+      <textarea id="absenAlasan" class="modal-field" maxlength="200" placeholder="Contoh: macet di jalan, ada urusan mendadak, dst."></textarea>
+    </div>
+    <div style="display:flex; gap:10px; margin-top:6px;">
+      <button class="btn-primary" style="flex:1;" onclick="submitAbsen('${jadwalId}','${slotId}','hadir')">✅ Saya Hadir</button>
+      <button class="btn-secondary" style="flex:1; color:var(--maroon); border-color:var(--maroon-bg);" onclick="submitAbsen('${jadwalId}','${slotId}','tidak_hadir')">❌ Tidak Hadir</button>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+async function submitAbsen(jadwalId, slotId, status){
+  if(!currentPetugasId) return;
+  const j = jadwalList.find(x=>x.id===jadwalId);
+  if(!j) return;
+  const s = j.slots.find(x=>x.id===slotId);
+  if(!s) return;
+  const telat = Date.now() > slotDateTime(s).getTime();
+  let alasan = '';
+  if(status === 'hadir' && telat){
+    const el = document.getElementById('absenAlasan');
+    alasan = el ? el.value.trim() : '';
+    if(!alasan){ showToast('Alasan keterlambatan wajib diisi.'); return; }
+  }
+  if(!s.absensi) s.absensi = {};
+  s.absensi[currentPetugasId] = {
+    status, waktu: new Date().toISOString(),
+    telat: status === 'hadir' ? telat : false,
+    alasan,
+  };
+  await saveList('jadwal-list', jadwalList);
+  catatLog(`absen "${status==='hadir' ? (telat?'hadir (telat)':'hadir') : 'tidak hadir'}" untuk slot ${s.hari} ${s.jam} jadwal "${j.namaMisa}"${alasan ? ` — alasan: "${alasan}"` : ''}`);
+  closeModal();
+  refreshHomeViews();
+  showToast(status === 'hadir' ? (telat ? 'Absen tercatat (terlambat).' : 'Absen hadir tercatat. Terima kasih! 🙏') : 'Absen tidak hadir tercatat.');
+}
+
 /* ---------------- OBROLAN PER JADWAL ----------------
    Satu grup obrolan kecil per jadwal (per akhir pekan misa), biar petugas yang
    kebagian di jadwal itu bisa saling infoin sesuatu tanpa keluar dari app.
@@ -2009,10 +2219,12 @@ function bukaObrolanJadwal(jadwalId){
   const j = jadwalList.find(x=>x.id===jadwalId);
   if(!j) return;
   const peserta = getPesertaObrolan(j);
-  const pesertaIds = [...new Set(j.slots.flatMap(s=>s.petugas || []))];
-  const bolehAkses = currentRole === 'editor' || (currentPetugasId && pesertaIds.includes(currentPetugasId));
-  if(!bolehAkses){
-    showToast('Obrolan ini cuma buat petugas yang bertugas di jadwal ini.');
+  // Sengaja dibuka untuk SEMUA yang login (bukan cuma yang kebagian slot di jadwal
+  // ini) — supaya siapa pun bisa kasih keterangan begitu kartu jadwal baru terbit
+  // (mis. alasan nggak bisa tugas, info tukar, dsb), bukan cuma obrolan tertutup
+  // buat orang yang namanya sudah kepasang di slot.
+  if(!currentUserData){
+    showToast('Kamu harus login untuk membuka obrolan.');
     return;
   }
   const jadwalLewat = jadwalSudahLewat(j);
@@ -2028,8 +2240,8 @@ function bukaObrolanJadwal(jadwalId){
       <button class="btn-primary" id="chatKirimBtn" onclick="kirimPesanChat('${jadwalId}')">Kirim</button>
     </div>`;
   document.getElementById('modalBody').innerHTML = `
-    <div class="section-sub" style="margin:0 0 4px;">Obrolan ini cuma buat koordinasi jadwal ini. Arsipnya tersimpan permanen, bisa dibaca lagi kapan saja.</div>
-    <div class="section-sub" style="margin:0 0 12px;">👥 Petugas: ${peserta.length ? escapeHtml(peserta.join(', ')) : '-'}</div>
+    <div class="section-sub" style="margin:0 0 4px;">Obrolan terbuka untuk semua anggota KOMSOS — cocok buat kasih keterangan (mis. alasan berhalangan), info tukar tugas, atau koordinasi lain soal jadwal ini. Arsipnya tersimpan permanen.</div>
+    <div class="section-sub" style="margin:0 0 12px;">👥 Petugas bertugas: ${peserta.length ? escapeHtml(peserta.join(', ')) : '-'}</div>
     <div id="chatMessagesArea" class="chat-messages"></div>
     ${inputHtml}
   `;
@@ -2057,6 +2269,8 @@ function renderChatMessages(jadwalId){
   const area = document.getElementById('chatMessagesArea');
   if(!area) return;
   const pesanList = chatCache[jadwalId] || [];
+  const jTerkait = jadwalList.find(x=>x.id===jadwalId);
+  const modeBacaArsip = jTerkait ? jadwalSudahLewat(jTerkait) : false;
   if(pesanList.length===0){
     area.innerHTML = '<div class="empty-note">Belum ada obrolan. Jadi yang pertama nulis pesan!</div>';
   }else{
@@ -2072,10 +2286,16 @@ function renderChatMessages(jadwalId){
         ? `<div class="chat-quote"><b>${escapeHtml(m.replyTo.nama)}</b>: ${escapeHtml(m.replyTo.teks)}</div>`
         : '';
       const editedTag = m.diedit ? ' <span style="opacity:0.6;">(diedit)</span>' : '';
-      const aksi = [`<a onclick="mulaiBalasChat('${jadwalId}','${m.id}')">Balas</a>`];
-      if(milikSendiri){
-        aksi.push(`<a onclick="mulaiEditChat('${jadwalId}','${m.id}')">Edit</a>`);
-        aksi.push(`<a onclick="hapusPesanChat('${jadwalId}','${m.id}')">Hapus</a>`);
+      // Mode baca-arsip (jadwal sudah lewat) nggak punya kotak input sama sekali,
+      // jadi tombol Balas/Edit di sini nggak akan diberi aksi apa pun.
+      let aksiHtml = '';
+      if(!modeBacaArsip){
+        const aksi = [`<a onclick="mulaiBalasChat('${jadwalId}','${m.id}')">Balas</a>`];
+        if(milikSendiri){
+          aksi.push(`<a onclick="mulaiEditChat('${jadwalId}','${m.id}')">Edit</a>`);
+          aksi.push(`<a onclick="hapusPesanChat('${jadwalId}','${m.id}')">Hapus</a>`);
+        }
+        aksiHtml = `<div class="chat-actions">${aksi.join(' · ')}</div>`;
       }
       return `<div class="chat-bubble-row ${milikSendiri?'sendiri':''}">
         ${avatarHtml(profil, namaTampil, 30)}
@@ -2084,7 +2304,7 @@ function renderChatMessages(jadwalId){
           ${quoteHtml}
           <div class="chat-teks">${escapeHtml(m.teks)}${editedTag}</div>
           <div class="chat-waktu">${waktu}</div>
-          <div class="chat-actions">${aksi.join(' · ')}</div>
+          ${aksiHtml}
         </div>
       </div>`;
     }).join('');
@@ -2230,8 +2450,10 @@ function showHomePanel(name){
   document.getElementById('homeMenuWrap').style.display = (name==='menu') ? 'block' : 'none';
   document.getElementById('homePanel-jadwalIni').classList.toggle('active', name==='jadwalIni');
   document.getElementById('homePanel-rekap').classList.toggle('active', name==='rekap');
+  document.getElementById('homePanel-absensi').classList.toggle('active', name==='absensi');
   if(name==='jadwalIni') renderJadwalBulanIni();
   if(name==='rekap') renderRekap();
+  if(name==='absensi') renderRekapAbsensi();
 }
 
 async function hapusJadwal(jadwalId){
@@ -2437,6 +2659,67 @@ function hitungTugasBulan(petugasId, bulan, tahun){
   });
   return count;
 }
+
+function hitungAbsensiBulan(petugasId, bulan, tahun){
+  let hadir=0, telat=0, tidakHadir=0, belum=0;
+  const alasanTelat = [], alasanTidakHadir = [];
+  jadwalUntukBulan(bulan, tahun).forEach(j=>{
+    j.slots.forEach(s=>{
+      if(!s.petugas.includes(petugasId)) return;
+      const rec = s.absensi ? s.absensi[petugasId] : null;
+      if(rec){
+        if(rec.status === 'hadir'){
+          if(rec.telat){ telat++; if(rec.alasan) alasanTelat.push(rec.alasan); }
+          else hadir++;
+        }else{
+          tidakHadir++; if(rec.alasan) alasanTidakHadir.push(rec.alasan);
+        }
+      }else if(slotSudahLewatUntukAbsen(s)){
+        belum++;
+      }
+    });
+  });
+  return {hadir, telat, tidakHadir, belum, alasanTelat, alasanTidakHadir};
+}
+
+function renderRekapAbsensi(){
+  const area = document.getElementById('absensiListArea');
+  if(!area) return;
+  const bulan = parseInt(document.getElementById('filterBulanAbsensi').value);
+  const tahun = parseInt(document.getElementById('filterTahunAbsensi').value);
+  if(petugasList.length===0){
+    area.innerHTML = `<div class="empty-note">Belum ada data petugas.</div>`;
+    return;
+  }
+  const sorted = [...petugasList].filter(p=>!p.dihapus).sort((a,b)=>a.nama.localeCompare(b.nama));
+  const rows = sorted.map(p=>{
+    const r = hitungAbsensiBulan(p.id, bulan, tahun);
+    const total = r.hadir + r.telat + r.tidakHadir + r.belum;
+    if(total === 0) return '';
+    const chips = [
+      r.hadir ? `✅ ${r.hadir} tepat waktu` : '',
+      r.telat ? `⚠️ ${r.telat} telat` : '',
+      r.tidakHadir ? `❌ ${r.tidakHadir} tidak hadir` : '',
+      r.belum ? `⏳ ${r.belum} belum absen` : '',
+    ].filter(Boolean).join(' · ');
+    const semuaAlasan = [
+      ...r.alasanTelat.map(a=>`⚠️ "${escapeHtml(a)}"`),
+      ...r.alasanTidakHadir.map(a=>`❌ "${escapeHtml(a)}"`),
+    ];
+    const alasanBlock = semuaAlasan.length
+      ? `<div class="section-sub" style="margin:4px 0 0; font-size:12px; line-height:1.5;">${semuaAlasan.join('<br>')}</div>`
+      : '';
+    const perlu = r.telat > 0 || r.belum > 0;
+    return `<div class="petugas-row" style="cursor:default; flex-direction:column; align-items:flex-start; gap:2px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:10px;">
+        <span class="nm">${escapeHtml(p.nama)}</span>
+        <span class="count-pill ${perlu ? 'full' : ''}" style="white-space:normal; text-align:right;">${chips}</span>
+      </div>
+      ${alasanBlock}
+    </div>`;
+  }).filter(Boolean).join('');
+  area.innerHTML = rows || `<div class="empty-note">Belum ada catatan absensi untuk bulan ini.</div>`;
+}
 function riwayatPetugas(petugasId){
   const rows = [];
   jadwalList.forEach(j=>{
@@ -2482,7 +2765,7 @@ function renderPetugas(){
     if(p.nonaktif){
       return `<div class="petugas-row" onclick="openPetugasDetail('${p.id}')" style="opacity:0.55;">
         ${namaBlok}
-        <span class="count-pill nonaktif">Nonaktif</span>
+        <span class="count-pill nonaktif" title="${escapeHtml(p.alasanNonaktif||'Tidak ada alasan tercatat')}">Nonaktif</span>
       </div>`;
     }
     if(p.opsional){
@@ -2511,6 +2794,9 @@ function openPetugasDetail(id){
   const ultahBadge = ulangTahunHariIni(id)
     ? `<div class="ultah-badge">🎂 Ulang tahun hari ini!</div>`
     : (profil.tglLahir ? `<div style="font-size:12.5px; color:var(--muted);">🎈 Lahir ${formatTglLahir(profil.tglLahir)}</div>` : '');
+  const alasanNonaktifBadge = p.nonaktif
+    ? `<div style="font-size:12.5px; color:var(--maroon); margin-top:4px;">🚫 Nonaktif sementara — ${escapeHtml(p.alasanNonaktif || 'tidak ada alasan tercatat')}</div>`
+    : '';
 
   const fotoInputId = `fotoInput_${id}`;
   const kepalaProfil = `
@@ -2519,6 +2805,7 @@ function openPetugasDetail(id){
       <div>
         <div class="nama-besar">${escapeHtml(p.nama)}</div>
         ${ultahBadge}
+        ${alasanNonaktifBadge}
       </div>
     </div>
     ${profil.bio ? `<div class="profil-bio">${escapeHtml(profil.bio)}</div>` : (isDiriSendiri ? `<div class="profil-bio" style="opacity:0.6;">Belum ada bio. Isi di bawah biar teman-teman kenal kamu lebih dekat.</div>` : '')}
@@ -2635,9 +2922,18 @@ async function simpanNamaSendiri(id){
 async function toggleNonaktifPetugas(id){
   const p = petugasList.find(x=>x.id===id);
   if(!p) return;
-  p.nonaktif = !p.nonaktif;
+  const akanNonaktif = !p.nonaktif;
+  let alasan = '';
+  if(akanNonaktif){
+    alasan = prompt('Kamu mau nonaktifkan diri sementara. Tolong isi alasannya dulu ya (wajib), biar teman-teman & PJ tahu kenapa:', '');
+    if(alasan === null) return; // batal
+    alasan = alasan.trim();
+    if(!alasan){ showToast('Alasan wajib diisi ya.'); return; }
+  }
+  p.nonaktif = akanNonaktif;
+  p.alasanNonaktif = akanNonaktif ? alasan : '';
   await saveList('petugas-list', petugasList);
-  catatLog(`${p.nonaktif ? 'menonaktifkan' : 'mengaktifkan'} petugas "${p.nama}"`);
+  catatLog(akanNonaktif ? `menonaktifkan petugas "${p.nama}" (alasan: "${alasan}")` : `mengaktifkan petugas "${p.nama}"`);
   renderPetugas();
   openPetugasDetail(id); // refresh isi modal biar tombolnya ikut berubah
   showToast(p.nonaktif ? `${p.nama} ditandai nonaktif` : `${p.nama} diaktifkan kembali`);
