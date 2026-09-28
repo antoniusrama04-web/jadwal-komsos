@@ -505,6 +505,37 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
   background:linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 37%, rgba(255,255,255,0.04) 63%);
   background-size:400px 100%; animation:shimmer 1.4s infinite linear;
 }
+
+/* --- Tombol kecil di slot kartu jadwal --- */
+.slot-aksi{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; margin-top:6px;}
+.btn-mini{
+  padding:7px 14px; border-radius:999px; border:1px solid var(--line);
+  background:rgba(255,255,255,0.06); color:var(--text); font-family:'Plus Jakarta Sans';
+  font-size:12.5px; font-weight:700; cursor:pointer; white-space:nowrap;
+  transition:transform 0.12s, filter 0.15s, border-color 0.15s;
+}
+.btn-mini:hover{border-color:var(--blue);}
+.btn-mini:active{transform:scale(0.96);}
+.btn-mini.absen{background:var(--grad); border:none; color:#fff; box-shadow:0 2px 10px rgba(59,99,217,0.35);}
+.btn-mini.absen:hover{filter:brightness(1.1);}
+.btn-mini.batal{color:var(--maroon); border-color:var(--maroon-bg); background:var(--maroon-bg);}
+.slot-input-row{display:flex; gap:8px; margin:8px 0 4px;}
+.slot-input-row input{flex:1; min-width:0; padding:9px 10px; border-radius:10px; border:1px solid var(--line); background:var(--field-bg); color:#1A2033; font-family:'Plus Jakarta Sans'; font-size:14px;}
+.jadwal-sub{font-family:'Sora',sans-serif; font-weight:700; font-size:14px; color:var(--muted); margin:18px 0 10px;}
+
+/* --- Foto profil layar penuh (lightbox) --- */
+img.avatar-zoom{cursor:zoom-in;}
+#fotoLightbox{
+  position:fixed; inset:0; z-index:10000; display:none; flex-direction:column;
+  align-items:center; justify-content:center; background:rgba(0,0,0,0.92); padding:20px;
+}
+#fotoLightbox.open{display:flex;}
+#fotoLightbox img{max-width:100%; max-height:78vh; object-fit:contain; border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,0.6);}
+#fotoLightbox .lb-nama{margin-top:14px; color:#fff; font-family:'Sora',sans-serif; font-weight:700; font-size:17px;}
+#fotoLightbox .lb-tutup{
+  position:absolute; top:calc(14px + env(safe-area-inset-top, 0px)); right:16px; width:40px; height:40px;
+  border-radius:50%; border:none; background:rgba(255,255,255,0.16); color:#fff; font-size:20px; cursor:pointer;
+}
 </style>
 </head>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -919,8 +950,15 @@ function getWarnaMusim(d){
    Setiap kali app di-upgrade, naikkan APP_VERSION & tambah entri baru di atas
    CHANGELOG. Status "sudah dilihat" disimpan per-HP/browser lewat localStorage
    (bukan Firestore), jadi nggak perlu ubah Firestore Rules buat fitur ini. */
-const APP_VERSION = '1.2.0';
+const APP_VERSION = '1.3.0';
 const CHANGELOG = [
+  {versi:'1.3.0', tanggal:'28 Sep 2026', catatan:[
+    'Foto profil bisa diketuk buat dilihat layar penuh, mirip Instagram. Foto baru diunggah lebih tajam (foto lama tetap seperti semula sampai diunggah ulang).',
+    'Log Aktivitas sekarang otomatis dihapus kalau umurnya lebih dari 30 hari.',
+    'Perbaikan \"Isi Otomatis\": nama yang sudah kamu taruh manual di jadwal itu nggak akan terpilih lagi di slot lain.',
+    'Perbaikan: jadwal bulan depan (mis. Misa Jumat Pertama) sekarang tampil di Beranda sebagai \"Jadwal Mendatang\". Slot manual juga bisa diatur tanggal & jamnya.',
+    'Tombol \"Absen Sekarang\", \"Isi slot ini\", dan \"Batal\" sekarang berbentuk tombol.'
+  ]},
   {versi:'1.2.0', tanggal:'12 Sep 2026', catatan:[
     'Perbaikan bug: popup Pembaruan Aplikasi dulu nggak pernah muncul sama sekali di update pertama — sekarang beres.',
     'Fitur baru: PJ bisa "Gabungkan Riwayat Petugas" — buat nyambungin riwayat tugas lama ke akun petugas yang aktif sekarang (berguna kalau petugas pernah dihapus & ditambah ulang, dan riwayatnya kebetulan kepisah).',
@@ -1370,7 +1408,8 @@ async function saveProfil(petugasId, data){
 function avatarHtml(profil, nama, size){
   size = size || 40;
   if(profil && profil.foto){
-    return `<img src="${profil.foto}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; flex-shrink:0; border:1px solid var(--line);">`;
+    const zoom = size >= 30 ? ` class="avatar-zoom" data-nama="${escapeHtml(nama||'')}"` : '';
+    return `<img${zoom} src="${profil.foto}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; flex-shrink:0; border:1px solid var(--line);">`;
   }
   const inisial = (nama||'?').trim().charAt(0).toUpperCase();
   return `<div style="width:${size}px; height:${size}px; border-radius:50%; background:var(--grad); display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-weight:800; color:#fff; font-size:${Math.round(size*0.4)}px; flex-shrink:0;">${inisial}</div>`;
@@ -1405,7 +1444,8 @@ function renderUlangTahunBanner(){
 /* ---------------- UPLOAD & KOMPRES FOTO PROFIL ----------------
    Foto disimpan langsung sebagai data URL base64 di Firestore (bukan Firebase
    Storage), makanya WAJIB dikompres dulu di sisi HP biar dokumennya nggak
-   kegedean. Target: sisi terpanjang 240px, JPEG kualitas 0.6 (~15-30KB/foto). */
+   kegedean. Target: sisi terpanjang 640px, JPEG kualitas 0.75 (~40-80KB/foto) —
+   cukup tajam buat dilihat layar penuh, tapi tetap jauh di bawah batas 1MB dokumen. */
 function resizeImageFile(file, maxDim, quality){
   return new Promise((resolve, reject)=>{
     const reader = new FileReader();
@@ -1433,7 +1473,7 @@ async function handleFotoUpload(inputEl, petugasId){
   if(!file.type.startsWith('image/')){ showToast('File harus berupa gambar.'); return; }
   try{
     showToast('Mengunggah foto...');
-    const dataUrl = await resizeImageFile(file, 240, 0.6);
+    const dataUrl = await resizeImageFile(file, 640, 0.75);
     await saveProfil(petugasId, {foto: dataUrl});
     showToast('Foto profil diperbarui.');
     renderPetugas();
@@ -1482,10 +1522,26 @@ async function simpanTglLahirWajib(){
 // Dipanggil di setiap aksi PJ/petugas yang mengubah data, biar ada jejak audit.
 // Nggak pernah melempar error ke pemanggilnya — kalau gagal simpan log, aksi
 // utamanya (tambah jadwal, dsb) tetap jalan seperti biasa.
+// Log Aktivitas cuma disimpan LOG_MAKS_HARI hari. Log ini satu dokumen Firestore
+// ('log-aktivitas') yang isinya array & selalu ditimpa — jadi nggak menumpuk jadi
+// dokumen baru — tapi tetap dirapikan biar dokumennya kecil & nggak berisi sampah lama.
+const LOG_MAKS_HARI = 30;
+function bersihkanLogLama(){
+  try{
+    const batas = Date.now() - LOG_MAKS_HARI*24*3600*1000;
+    const bersih = logAktivitas.filter(l=> new Date(l.waktu).getTime() >= batas);
+    if(bersih.length !== logAktivitas.length){
+      logAktivitas = bersih;
+      saveList('log-aktivitas', logAktivitas).catch(e=>console.error(e));
+      updateLogDotDanBadge();
+    }
+  }catch(e){ console.error('bersihkanLogLama gagal', e); }
+}
 function catatLog(aksi, siapaOverride){
   try{
     const siapa = siapaOverride || ((currentUserData && currentUserData.nama) ? currentUserData.nama : 'Sistem');
     logAktivitas.unshift({ waktu: new Date().toISOString(), siapa, aksi });
+    logAktivitas = logAktivitas.filter(l=> Date.now() - new Date(l.waktu).getTime() <= LOG_MAKS_HARI*24*3600*1000);
     if(logAktivitas.length > 200) logAktivitas = logAktivitas.slice(0, 200);
     saveList('log-aktivitas', logAktivitas).catch(e=>console.error(e));
     updateLogDotDanBadge();
@@ -1520,8 +1576,8 @@ function bukaLogAktivitas(){
   document.getElementById('modalTitle').textContent = 'Log Aktivitas';
   const isi = logAktivitas.length===0
     ? '<div class="empty-note">Belum ada aktivitas tercatat.</div>'
-    : `<div class="section-sub" style="margin-bottom:10px;">Menampilkan ${Math.min(logAktivitas.length,100)} aktivitas terakhir.</div>` +
-      logAktivitas.slice(0,100).map(l=>{
+    : `<div class="section-sub" style="margin-bottom:10px;">${logAktivitas.length} aktivitas dalam ${LOG_MAKS_HARI} hari terakhir. Yang lebih lama dihapus otomatis.</div>` +
+      logAktivitas.map(l=>{
         const d = new Date(l.waktu).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
         return `<div class="hist-line"><span><b>${escapeHtml(l.siapa)}</b> ${escapeHtml(l.aksi)}</span><span style="color:var(--muted); white-space:nowrap; margin-left:8px;">${d}</span></div>`;
       }).join('');
@@ -1771,7 +1827,7 @@ async function enterApp(){
   document.getElementById('loadingOverlay').style.display = 'none';
   cekWajibProfil();
   cekPembaruanVersi();
-  if(currentRole === 'editor') perbaikiJudulJadwalLama();
+  if(currentRole === 'editor'){ perbaikiJudulJadwalLama(); bersihkanLogLama(); }
 }
 
 // Jadwal Jan-Agu 2026 yang diimpor dulu (id diawali 'imp2026-') sempat tersimpan
@@ -2109,17 +2165,18 @@ function buildJadwalCardsHtml(list){
 
       let aksi = '';
       if(sudahIkut){
-        aksi = ` <a onclick="batalkanSlotSendiri('${j.id}','${s.id}')" style="color:var(--maroon); text-decoration:underline; cursor:pointer; font-size:12.5px; white-space:nowrap;">(batal)</a>`;
+        aksi = `<button class="btn-mini batal" onclick="batalkanSlotSendiri('${j.id}','${s.id}')">Batal</button>`;
         const recSaya = s.absensi ? s.absensi[currentPetugasId] : null;
         if(!recSaya && jendelaAbsenTerbuka(s)){
-          aksi += ` <a onclick="bukaAbsenModal('${j.id}','${s.id}')" style="color:var(--blue-deep); text-decoration:underline; cursor:pointer; font-size:12.5px; white-space:nowrap;">| Absen Sekarang</a>`;
+          aksi = `<button class="btn-mini absen" onclick="bukaAbsenModal('${j.id}','${s.id}')">✋ Absen Sekarang</button>` + aksi;
         }
+        aksi = `<span class="slot-aksi">${aksi}</span>`;
       }else if(sisaSeat > 0 && currentPetugasId){
-        aksi = ` <a onclick="isiSlotSendiri('${j.id}','${s.id}')" style="color:var(--blue-deep); text-decoration:underline; cursor:pointer; font-size:12.5px; white-space:nowrap;">+ isi slot ini</a>`;
+        aksi = `<span class="slot-aksi"><button class="btn-mini" onclick="isiSlotSendiri('${j.id}','${s.id}')">+ Isi slot ini</button></span>`;
       }
 
       const nm = namaTerisi.length ? namaTerisi.join(' & ') : '<span style="color:var(--muted);">(kosong)</span>';
-      return `<div class="slot-line"><span class="waktu">${s.hari}, ${tglStr} — ${s.jam}</span><span class="nama">${nm}${aksi}</span></div>`;
+      return `<div class="slot-line"><span class="waktu">${tgl.toLocaleDateString('id-ID',{weekday:'long'})}, ${tglStr} — ${s.jam}</span><span class="nama">${nm}${aksi}</span></div>`;
     }).join('');
     const jadwalLewat = jadwalSudahLewat(j);
     const tombolObrolan = jadwalLewat
@@ -2442,11 +2499,29 @@ function renderJadwalBulanIni(){
   const area = document.getElementById('jadwalIniListArea');
   if(!area) return;
   const now = new Date();
-  const list = jadwalUntukBulan(now.getMonth(), now.getFullYear());
-  area.innerHTML = list.length>0
-    ? buildJadwalCardsHtml(list)
-    : `<div class="empty-note">Belum ada jadwal untuk ${BULAN_NAMA[now.getMonth()]} ${now.getFullYear()}.</div>`;
-  if(list.length>0) tandaiObrolanAktifDiKartu(list);
+  const bln = now.getMonth(), thn = now.getFullYear();
+  const tglAwal = (j)=> j.slots && j.slots.length ? Math.min(...j.slots.map(s=>new Date(s.tanggal).getTime())) : new Date(j.tglSabtu).getTime();
+  // Jadwal "bulan ini" = yang punya slot di bulan ini (atau tglSabtu-nya di bulan ini).
+  const bulanIni = jadwalList.filter(j=>{
+    const d = new Date(j.tglSabtu);
+    if(d.getMonth()===bln && d.getFullYear()===thn) return true;
+    return (j.slots||[]).some(s=>{ const t=new Date(s.tanggal); return t.getMonth()===bln && t.getFullYear()===thn; });
+  }).sort((a,b)=>tglAwal(a)-tglAwal(b));
+  // Jadwal mendatang di bulan-bulan berikutnya (mis. Misa Jumat Pertama bulan depan)
+  // yang belum lewat — dulu ini nggak tampil sama sekali sampai bulannya tiba.
+  const idBulanIni = new Set(bulanIni.map(j=>j.id));
+  const mendatang = jadwalList.filter(j=> !idBulanIni.has(j.id) && !jadwalSudahLewat(j) && tglAwal(j) > Date.now() - 24*3600*1000)
+    .sort((a,b)=>tglAwal(a)-tglAwal(b));
+
+  let html = bulanIni.length>0
+    ? buildJadwalCardsHtml(bulanIni)
+    : `<div class="empty-note">Belum ada jadwal untuk ${BULAN_NAMA[bln]} ${thn}.</div>`;
+  if(mendatang.length>0){
+    html += `<div class="jadwal-sub">Jadwal Mendatang</div>` + buildJadwalCardsHtml(mendatang);
+  }
+  area.innerHTML = html;
+  const semua = bulanIni.concat(mendatang);
+  if(semua.length>0) tandaiObrolanAktifDiKartu(semua);
 }
 
 function renderRekap(){
@@ -3256,6 +3331,19 @@ function terapkanSaranLiturgi(){
   document.getElementById('namaMisa').value = saranLiturgiSekarang;
 }
 
+function tglLokalStr(iso){
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function setSlotTanggal(idx, val){
+  if(!val) return;
+  currentSlots[idx].tanggal = new Date(val + 'T00:00:00').toISOString();
+  renderSlotEditor();
+}
+function setSlotJam(idx, val){
+  if(val) currentSlots[idx].jam = val;
+  renderSlotEditor();
+}
 function addManualSlot(){
   const sabtuVal = document.getElementById('tglSabtu').value;
   const base = sabtuVal ? new Date(sabtuVal+'T00:00:00') : new Date();
@@ -3285,6 +3373,7 @@ function renderSlotEditor(){
     const sel2 = s.petugas[1] || '';
     return `<div class="slot-editor">
       <div class="slot-head"><span>${tglStr} — ${s.jam}</span><span class="remove-slot" onclick="removeSlot(${idx})">Hapus</span></div>
+      ${s.hari==='Lainnya' ? `<div class="slot-input-row"><input type="date" value="${tglLokalStr(s.tanggal)}" onchange="setSlotTanggal(${idx},this.value)"><input type="time" value="${s.jam}" onchange="setSlotJam(${idx},this.value)"></div>` : ''}
       <select onchange="setSlotPetugas(${idx},0,this.value)">
         <option value="">— Pilih petugas 1 —</option>
         ${petugasList.filter(p=>!p.dihapus).map(p=>`<option value="${p.id}" ${p.id===sel1?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
@@ -3340,15 +3429,23 @@ function autoFillSlots(){
   });
   currentSlots.forEach(s=> s.petugas.forEach(pid=>{ if(pid && running.hasOwnProperty(pid)) running[pid] = (running[pid]||0)+1; }));
 
+  // Siapa saja yang SUDAH ditaruh di jadwal ini (manual maupun hasil acak) nggak boleh
+  // terpilih lagi selama masih ada petugas lain yang belum kebagian jadwal ini.
+  const sudahDipakai = new Set();
+  currentSlots.forEach(s=> s.petugas.forEach(pid=>{ if(pid) sudahDipakai.add(pid); }));
+
   let filledAny = false;
   currentSlots.forEach(s=>{
     for(let i=0;i<2;i++){
       if(!s.petugas[i]){
-        const candidates = shuffleArray(petugasList.filter(p=> !p.opsional && !p.nonaktif && !p.dihapus && !s.petugas.includes(p.id)));
-        if(candidates.length===0) continue;
-        candidates.sort((a,b)=> (running[a.id]||0) - (running[b.id]||0));
-        const pick = candidates[0];
+        const semua = petugasList.filter(p=> !p.opsional && !p.nonaktif && !p.dihapus && !s.petugas.includes(p.id));
+        if(semua.length===0) continue;
+        const belumDipakai = semua.filter(p=>!sudahDipakai.has(p.id));
+        const kandidat = shuffleArray(belumDipakai.length>0 ? belumDipakai : semua);
+        kandidat.sort((a,b)=> (running[a.id]||0) - (running[b.id]||0));
+        const pick = kandidat[0];
         s.petugas[i] = pick.id;
+        sudahDipakai.add(pick.id);
         running[pick.id] = (running[pick.id]||0)+1;
         filledAny = true;
       }
@@ -3381,6 +3478,33 @@ async function simpanJadwal(){
   goPage('home');
   showHomePanel('menu');
 }
+
+/* ---------------- FOTO PROFIL LAYAR PENUH ---------------- */
+function bukaFotoBesar(src, nama){
+  const lb = document.getElementById('fotoLightbox');
+  if(!lb || !src) return;
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lbNama').textContent = nama || '';
+  lb.classList.add('open');
+}
+function tutupFotoBesar(){
+  const lb = document.getElementById('fotoLightbox');
+  if(lb) lb.classList.remove('open');
+}
+// Capture phase: klik foto profil selalu buka layar penuh, tanpa ikut memicu
+// klik kartu/baris di belakangnya (mis. buka detail petugas).
+document.addEventListener('click', (e)=>{
+  const img = e.target && e.target.closest ? e.target.closest('img.avatar-zoom') : null;
+  if(!img) return;
+  e.preventDefault(); e.stopPropagation();
+  bukaFotoBesar(img.src, img.getAttribute('data-nama'));
+}, true);
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') tutupFotoBesar(); });
 </script>
+<div id="fotoLightbox" onclick="tutupFotoBesar()">
+  <button class="lb-tutup" onclick="tutupFotoBesar()" aria-label="Tutup">✕</button>
+  <img id="lbImg" alt="Foto profil">
+  <div class="lb-nama" id="lbNama"></div>
+</div>
 </body>
 </html>
