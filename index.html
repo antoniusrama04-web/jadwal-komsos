@@ -256,6 +256,20 @@ main{flex:1; padding:28px 22px 110px; max-width:680px; width:100%; margin:0 auto
 .nm-b{flex-shrink:0; width:22px; text-align:center;}
 .belum-akun{display:inline-block; margin-top:3px; font-size:11px; font-weight:700; padding:2px 9px; border-radius:20px; background:var(--maroon-bg); color:var(--maroon);}
 body.modal-open{overflow:hidden;}
+.peng-btn{display:flex;flex-direction:column;align-items:center;border:none;background:var(--grad);color:#fff;border-radius:14px;padding:5px 10px;font:700 12px 'Plus Jakarta Sans',sans-serif;line-height:1.1;cursor:pointer;}
+.peng-n{font-size:9px;font-weight:700;margin-top:3px;background:#fff;color:var(--maroon);border-radius:8px;padding:1px 6px;}
+.peng-card{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;}
+.peng-card img{width:100%;border-radius:10px;margin:8px 0;display:block;}
+.ed-wrap{position:fixed;inset:0;z-index:3000;background:#0b0f1a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;color:#fff;touch-action:none;}
+.ed-stage{position:relative;overflow:hidden;background:#000;touch-action:none;}
+.ed-stage img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;user-select:none;-webkit-user-drag:none;}
+.ed-dim{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at center,transparent 0 calc(50% - 1px),rgba(0,0,0,.6) 50%);}
+.ed-grid{position:absolute;inset:0;pointer-events:none;border-radius:50%;overflow:hidden;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7);
+background:linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 33.33% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 66.66% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 0 33.33%/100% 1px no-repeat,linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 0 66.66%/100% 1px no-repeat;}
+.scan-wrap{position:fixed;inset:0;z-index:3500;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;padding:16px;}
+.scan-wrap video{width:min(92vw,420px);aspect-ratio:1;object-fit:cover;border-radius:18px;background:#111;}
+#kiosk{position:fixed;inset:0;z-index:4000;background:#fff;color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:20px;}
+#kiosk img{width:min(78vw,68vh);image-rendering:pixelated;}
 .modal-overlay{overscroll-behavior:contain;}
 .modal-sheet{overscroll-behavior:contain;}
 .empty-note{color:var(--muted); font-size:15px; text-align:center; padding:36px 10px;}
@@ -612,6 +626,7 @@ img.avatar-zoom{cursor:zoom-in;}
   <header class="appbar">
     <div class="mark"><span class="kom">KOM</span><span class="sos">SOS</span></div>
     <div class="header-actions">
+      <button id="pengBtn" class="peng-btn" onclick="bukaPengumuman()" aria-label="Pengumuman"><span>Pengumuman</span><span class="peng-n" id="pengNote" style="display:none;">Ada Pengumuman</span></button>
       <button class="icon-action-btn" onclick="bukaPembaruan()" title="Pembaruan Aplikasi" aria-label="Pembaruan Aplikasi">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 11l18-5v12L3 13v-2z"></path>
@@ -958,8 +973,13 @@ function getWarnaMusim(d){
    Setiap kali app di-upgrade, naikkan APP_VERSION & tambah entri baru di atas
    CHANGELOG. Status "sudah dilihat" disimpan per-HP/browser lewat localStorage
    (bukan Firestore), jadi nggak perlu ubah Firestore Rules buat fitur ini. */
-const APP_VERSION = '1.4.0';
+const APP_VERSION = '1.5.0';
 const CHANGELOG = [
+  {versi:'1.5.0', tanggal:'29 Sep 2026', catatan:[
+    'Foto profil bisa diatur posisinya: geser dan cubit di dalam bingkai bulat dengan garis bantu 3x3.',
+    'Fitur Pengumuman: PJ bisa kirim foto dan catatan; muncul sebagai popup saat buka aplikasi dan penanda "Ada Pengumuman" di atas.',
+    'Absen sekarang lewat scan QR di meja operator, lokasi ikut tercatat dan bisa dicek PJ.'
+  ]},
   {versi:'1.4.0', tanggal:'29 Sep 2026', catatan:[
     'Tombol Back di HP sekarang menutup sheet/foto besar, lalu kembali ke Beranda, baru keluar aplikasi.',
     'Sheet (Profil, dll) bisa ditutup dengan geser ke bawah, dan halaman di belakangnya tidak ikut ter-scroll lagi.',
@@ -1488,26 +1508,6 @@ function resizeImageFile(file, maxDim, quality){
     reader.readAsDataURL(file);
   });
 }
-async function handleFotoUpload(inputEl, petugasId){
-  const file = inputEl.files && inputEl.files[0];
-  if(!file) return;
-  if(!file.type.startsWith('image/')){ showToast('File harus berupa gambar.'); return; }
-  try{
-    showToast('Mengunggah foto...');
-    const dataUrl = await resizeImageFile(file, 640, 0.75);
-    await saveProfil(petugasId, {foto: dataUrl});
-    showToast('Foto profil diperbarui.');
-    renderPetugas();
-    if(petugasId===currentPetugasId) renderNavProfilAvatar();
-    openPetugasDetail(petugasId);
-  }catch(e){
-    console.error(e);
-    showToast('Gagal mengunggah foto. Coba lagi.');
-  }finally{
-    inputEl.value = '';
-  }
-}
-
 /* ---------------- WAJIB ISI TANGGAL LAHIR (sekali, sesudah login) ---------------- */
 function cekWajibProfil(){
   if(!currentPetugasId) return;
@@ -1657,7 +1657,7 @@ let authReady = new Promise(resolve=>{
       }catch(e){
         currentUserData = {petugasId:null, nama:user.email, role:'viewer'};
       }
-      currentRole = currentUserData.role === 'editor' ? 'editor' : 'viewer';
+      currentRole = currentUserData.role === 'editor' ? 'editor' : (currentUserData.role === 'kiosk' ? 'kiosk' : 'viewer');
       currentPetugasId = currentUserData.petugasId || null;
     }else{
       currentUser = null;
@@ -1832,6 +1832,8 @@ async function tryResetPassword(){
 }
 
 async function enterApp(){
+  if(currentRole === 'kiosk'){ mulaiKiosk(); return; }
+  mulaiPengumuman();
   await dataReady;
   document.getElementById('gate').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
@@ -2046,7 +2048,9 @@ function goPage(name, dariPop){
    Setiap sheet/foto besar yang terbuka & tiap pindah halaman dicatat di riwayat browser,
    jadi tombol back HP menutup sheet dulu, lalu kembali ke Beranda, baru keluar app. */
 try{ history.replaceState({page:'home'}, ''); }catch(e){}
-let sheetPushed = false, lbPushed = false, suppressPop = 0;
+let sheetPushed = false, lbPushed = false, suppressPop = 0, lapFn = null;
+function lapisanBuka(fn){ lapFn = fn; history.pushState({lap:1}, ''); }
+function lapisanTutup(){ if(lapFn){ lapFn = null; suppressPop++; history.back(); } }
 const _ov = document.getElementById('modalOverlay');
 const _sheet = _ov.querySelector('.modal-sheet');
 new MutationObserver(()=>{
@@ -2064,6 +2068,7 @@ if(_lb) new MutationObserver(()=>{
 }).observe(_lb, {attributes:true, attributeFilter:['class']});
 window.addEventListener('popstate', (e)=>{
   if(suppressPop>0){ suppressPop--; return; }
+  if(lapFn){ const f = lapFn; lapFn = null; f(); return; }
   if(lbPushed){ lbPushed = false; tutupFotoBesar(); return; }
   if(sheetPushed){
     if(modalLocked){ history.pushState({modal:1}, ''); return; }
@@ -2098,6 +2103,252 @@ window.addEventListener('popstate', (e)=>{
     } else { _sheet.style.transform=''; }
   });
 })();
+
+
+/* ================= LIB, PANGGIL SERVER ================= */
+function muatLib(url, glob){
+  return new Promise((res, rej)=>{
+    if(window[glob]) return res();
+    const sc = document.createElement('script'); sc.src = url; sc.onload = res;
+    sc.onerror = ()=>rej(new Error('Gagal memuat pustaka.')); document.head.appendChild(sc);
+  });
+}
+const LIB_JSQR = 'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
+const LIB_QR = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+async function panggilAbsen(body){
+  const t = await auth.currentUser.getIdToken();
+  const r = await fetch('/.netlify/functions/absen-qr', {method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer '+t}, body:JSON.stringify(body)});
+  const d = await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(d.error || 'Gagal terhubung ke server.');
+  return d;
+}
+
+/* ================= EDITOR FOTO PROFIL (bulat + grid 3x3) ================= */
+async function handleFotoUpload(inputEl, petugasId){
+  const file = inputEl.files && inputEl.files[0];
+  inputEl.value = '';
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ showToast('File harus berupa gambar.'); return; }
+  bukaEditorFoto(file, async (dataUrl)=>{
+    try{
+      showToast('Menyimpan foto...');
+      await saveProfil(petugasId, {foto: dataUrl});
+      showToast('Foto profil diperbarui.');
+      renderPetugas();
+      if(petugasId===currentPetugasId) renderNavProfilAvatar();
+      openPetugasDetail(petugasId);
+    }catch(e){ console.error(e); showToast('Gagal menyimpan foto. Coba lagi.'); }
+  });
+}
+function bukaEditorFoto(file, onSave){
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = ()=>{
+    const S = Math.min(window.innerWidth-40, 340);
+    const w = img.naturalWidth, h = img.naturalHeight;
+    const min = S/Math.min(w,h);
+    let sc = min, tx = (S-w*sc)/2, ty = (S-h*sc)/2;
+    const wrap = document.createElement('div'); wrap.className='ed-wrap';
+    wrap.innerHTML = `<div style="font-weight:700;">Atur posisi foto</div>
+      <div class="ed-stage" style="width:${S}px;height:${S}px;"><div class="ed-dim"></div><div class="ed-grid"></div></div>
+      <div style="font-size:12px;opacity:.7;">Geser dan cubit untuk mengatur</div>
+      <div style="display:flex;gap:10px;width:${S}px;"><button class="btn-secondary" id="edBatal" style="flex:1;">Batal</button><button class="btn-primary" id="edSimpan" style="flex:1;">Simpan</button></div>`;
+    const stage = wrap.querySelector('.ed-stage');
+    img.style.width = w+'px'; img.style.height = h+'px';
+    stage.insertBefore(img, stage.firstChild);
+    document.body.appendChild(wrap);
+    const clamp = ()=>{ tx = Math.min(0, Math.max(S-w*sc, tx)); ty = Math.min(0, Math.max(S-h*sc, ty)); };
+    const draw = ()=>{ clamp(); img.style.transform = `translate(${tx}px,${ty}px) scale(${sc})`; };
+    draw();
+    const ptr = new Map(); let d0=0, sc0=1;
+    const zoomKe = (ns, cx, cy)=>{ ns = Math.min(min*5, Math.max(min, ns)); tx = cx-(cx-tx)*ns/sc; ty = cy-(cy-ty)*ns/sc; sc = ns; draw(); };
+    stage.addEventListener('pointerdown', e=>{ stage.setPointerCapture(e.pointerId); ptr.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(ptr.size===2){ const [a,b]=[...ptr.values()]; d0=Math.hypot(a.x-b.x,a.y-b.y); sc0=sc; } });
+    stage.addEventListener('pointermove', e=>{
+      if(!ptr.has(e.pointerId)) return;
+      const o = ptr.get(e.pointerId), n = {x:e.clientX,y:e.clientY};
+      if(ptr.size===1){ tx += n.x-o.x; ty += n.y-o.y; ptr.set(e.pointerId,n); draw(); }
+      else{ ptr.set(e.pointerId,n); const [a,b]=[...ptr.values()]; zoomKe(sc0*Math.hypot(a.x-b.x,a.y-b.y)/d0, S/2, S/2); }
+    });
+    const lepas = e=>{ ptr.delete(e.pointerId); };
+    stage.addEventListener('pointerup', lepas); stage.addEventListener('pointercancel', lepas);
+    stage.addEventListener('wheel', e=>{ e.preventDefault(); const r=stage.getBoundingClientRect(); zoomKe(sc*(e.deltaY<0?1.08:0.92), e.clientX-r.left, e.clientY-r.top); }, {passive:false});
+    const tutup = ()=>{ wrap.remove(); URL.revokeObjectURL(url); };
+    lapisanBuka(tutup);
+    wrap.querySelector('#edBatal').onclick = ()=>{ tutup(); lapisanTutup(); };
+    wrap.querySelector('#edSimpan').onclick = ()=>{
+      const c = document.createElement('canvas'); c.width = c.height = 800;
+      c.getContext('2d').drawImage(img, -tx/sc, -ty/sc, S/sc, S/sc, 0, 0, 800, 800);
+      const data = c.toDataURL('image/jpeg', 0.85);
+      tutup(); lapisanTutup(); onSave(data);
+    };
+  };
+  img.onerror = ()=>showToast('Foto tidak bisa dibuka.');
+  img.src = url;
+}
+
+/* ================= PENGUMUMAN ================= */
+const PENG_COL = 'komsos-pengumuman';
+let pengList = [], pengStarted = false, pengPopupDone = false;
+const pengDilihat = ()=>{ try{ return JSON.parse(localStorage.getItem('komsos_peng_seen')||'[]'); }catch(e){ return []; } };
+function pengBaru(){ const sd = new Set(pengDilihat()); return pengList.filter(p=>!sd.has(p.id)); }
+function updatePengNote(){ const el = document.getElementById('pengNote'); if(el) el.style.display = pengBaru().length ? 'block' : 'none'; }
+function mulaiPengumuman(){
+  if(pengStarted) return; pengStarted = true;
+  db.collection(PENG_COL).orderBy('dibuat','desc').onSnapshot(snap=>{
+    pengList = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    updatePengNote();
+    if(document.getElementById('pengOpen')) isiPengumuman();
+    if(!pengPopupDone){
+      pengPopupDone = true;
+      setTimeout(()=>{ if(!modalLocked && pengBaru().length && !document.getElementById('modalOverlay').classList.contains('open')) bukaPengumuman(); }, 700);
+    }
+  }, e=>console.error('Pengumuman gagal dimuat', e));
+}
+function isiPengumuman(){
+  const isi = pengList.length ? pengList.map(p=>`<div class="peng-card">
+      <div style="font-size:11.5px;color:var(--muted);">${new Date(p.dibuat).toLocaleString('id-ID',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}${p.oleh?` · ${escapeHtml(p.oleh)}`:''}</div>
+      ${p.foto?`<img src="${p.foto}" alt="Pengumuman" onclick="bukaFotoBesar(this.src,'Pengumuman')">`:''}
+      ${p.teks?`<div style="white-space:pre-wrap;font-size:15px;">${escapeHtml(p.teks)}</div>`:''}
+      ${currentRole==='editor'?`<button class="btn-secondary" style="margin-top:10px;color:var(--maroon);border-color:var(--maroon-bg);" onclick="hapusPengumuman('${p.id}')">🗑 Hapus</button>`:''}
+    </div>`).join('') : '<div class="empty-note">Belum ada pengumuman.</div>';
+  document.getElementById('modalBody').innerHTML = `<div id="pengOpen">${currentRole==='editor'?'<button class="btn-primary" style="width:100%;margin-bottom:14px;" onclick="formPengumuman()">＋ Buat Pengumuman</button>':''}${isi}</div>`;
+}
+function bukaPengumuman(){
+  document.getElementById('modalTitle').textContent = 'Pengumuman';
+  isiPengumuman();
+  document.getElementById('modalOverlay').classList.add('open');
+  localStorage.setItem('komsos_peng_seen', JSON.stringify(pengList.map(p=>p.id)));
+  updatePengNote();
+}
+function formPengumuman(){
+  document.getElementById('modalBody').innerHTML = `
+    <textarea id="pengTeks" class="modal-field" maxlength="1000" rows="5" placeholder="Tulis catatan pengumuman (boleh dikosongkan kalau hanya foto)"></textarea>
+    <input type="file" id="pengFoto" accept="image/*" class="modal-field" style="margin-top:8px;" onchange="const f=this.files[0];document.getElementById('pengPrev').src=f?URL.createObjectURL(f):'';">
+    <img id="pengPrev" style="width:100%;border-radius:10px;margin-top:8px;">
+    <div style="display:flex;gap:10px;margin-top:12px;"><button class="btn-secondary" style="flex:1;" onclick="bukaPengumuman()">Batal</button><button class="btn-primary" style="flex:1;" id="pengKirim" onclick="kirimPengumuman()">Kirim</button></div>`;
+}
+async function kirimPengumuman(){
+  const teks = document.getElementById('pengTeks').value.trim();
+  const f = document.getElementById('pengFoto').files[0];
+  if(!teks && !f){ showToast('Isi catatan atau pilih foto dulu.'); return; }
+  const btn = document.getElementById('pengKirim'); btn.disabled = true; btn.textContent = 'Mengirim...';
+  try{
+    let foto = null;
+    if(f){
+      let dim = 1600, q = 0.85; foto = await resizeImageFile(f, dim, q);
+      while(foto.length > 850000 && dim > 800){ dim -= 200; q -= 0.05; foto = await resizeImageFile(f, dim, q); }
+      if(foto.length > 950000) throw new Error('Foto terlalu besar.');
+    }
+    await db.collection(PENG_COL).add({teks, foto, dibuat:new Date().toISOString(), oleh:(currentUserData&&currentUserData.nama)||''});
+    catatLog('membuat pengumuman baru');
+    showToast('Pengumuman terkirim.'); bukaPengumuman();
+  }catch(e){ console.error(e); showToast('Gagal mengirim pengumuman.'); btn.disabled = false; btn.textContent = 'Kirim'; }
+}
+async function hapusPengumuman(id){
+  if(!confirm('Hapus pengumuman ini untuk semua orang?')) return;
+  try{ await db.collection(PENG_COL).doc(id).delete(); catatLog('menghapus pengumuman'); showToast('Pengumuman dihapus.'); }
+  catch(e){ console.error(e); showToast('Gagal menghapus.'); }
+}
+
+/* ================= ABSEN QR: SCANNER (petugas) ================= */
+async function mulaiScanAbsen(jid, sid){
+  const j = jadwalList.find(x=>x.id===jid); const s = j && j.slots.find(x=>x.id===sid);
+  if(!s) return;
+  const telat = Date.now() > slotDateTime(s).getTime();
+  let alasan = '';
+  if(telat){
+    const el = document.getElementById('absenAlasan'); alasan = el ? el.value.trim() : '';
+    if(!alasan){ showToast('Alasan keterlambatan wajib diisi.'); return; }
+  }
+  try{ await muatLib(LIB_JSQR, 'jsQR'); }catch(e){ showToast('Tidak bisa memuat pemindai. Cek koneksi.'); return; }
+  let stream;
+  try{ stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false}); }
+  catch(e){ showToast('Izin kamera ditolak. Aktifkan izin kamera untuk situs ini di Chrome.'); return; }
+  const gps = new Promise(r=>{
+    if(!navigator.geolocation) return r(null);
+    navigator.geolocation.getCurrentPosition(p=>r({lat:p.coords.latitude, lng:p.coords.longitude, akurasi:Math.round(p.coords.accuracy)}), ()=>r(null), {enableHighAccuracy:true, timeout:12000, maximumAge:0});
+  });
+  const wrap = document.createElement('div'); wrap.className = 'scan-wrap';
+  wrap.innerHTML = `<div style="font-weight:700;">Arahkan kamera ke QR di meja operator</div><video playsinline muted></video><div id="scanInfo" style="font-size:13px;opacity:.8;">Mencari QR...</div><button class="btn-secondary" id="scanBatal">Batal</button>`;
+  document.body.appendChild(wrap);
+  const video = wrap.querySelector('video'); video.srcObject = stream; await video.play().catch(()=>{});
+  let aktif = true;
+  const tutup = ()=>{ aktif = false; stream.getTracks().forEach(t=>t.stop()); wrap.remove(); };
+  lapisanBuka(tutup);
+  wrap.querySelector('#scanBatal').onclick = ()=>{ tutup(); lapisanTutup(); };
+  const c = document.createElement('canvas'), cx = c.getContext('2d', {willReadFrequently:true});
+  const info = wrap.querySelector('#scanInfo');
+  const loop = async ()=>{
+    if(!aktif) return;
+    if(video.videoWidth){
+      c.width = video.videoWidth; c.height = video.videoHeight; cx.drawImage(video, 0, 0);
+      const hasil = window.jsQR(cx.getImageData(0,0,c.width,c.height).data, c.width, c.height);
+      if(hasil && hasil.data.startsWith('KOMSOSABSEN:')){
+        aktif = false; info.textContent = 'Memverifikasi...';
+        try{
+          const lokasi = await gps;
+          const r = await panggilAbsen({action:'scan', kode:hasil.data.slice(12), jadwalId:jid, slotId:sid, alasan, lokasi});
+          tutup(); lapisanTutup(); closeModal();
+          catatLog(`absen "hadir${r.telat?' (telat)':''}" via QR untuk slot ${s.hari} ${s.jam} jadwal "${j.namaMisa}"`);
+          showToast(r.telat ? 'Absen tercatat (terlambat).' : 'Absen hadir tercatat. Terima kasih! 🙏');
+        }catch(e){
+          info.textContent = e.message + ' — arahkan lagi ke QR.'; aktif = true;
+        }
+      }
+    }
+    setTimeout(loop, 180);
+  };
+  loop();
+}
+function lihatAbsen(jid, sid, pid){
+  const j = jadwalList.find(x=>x.id===jid); const s = j && j.slots.find(x=>x.id===sid);
+  const rec = s && s.absensi && s.absensi[pid]; if(!rec) return;
+  const lok = rec.lat!=null ? `${rec.jarak!=null?`±${rec.jarak} m dari gereja · `:''}<a href="https://www.google.com/maps?q=${rec.lat},${rec.lng}" target="_blank" rel="noopener">Lihat di peta</a> (akurasi ±${rec.akurasi||'?'} m)` : 'Lokasi tidak tersedia';
+  document.getElementById('modalTitle').textContent = 'Detail Absen';
+  document.getElementById('modalBody').innerHTML = `<div style="line-height:1.7;font-size:15px;">
+    <b>${escapeHtml(namaPetugas(pid))}</b><br>
+    Status: ${rec.status==='hadir' ? (rec.telat?'⚠️ Hadir (telat)':'✅ Hadir tepat waktu') : '❌ Tidak hadir'}<br>
+    Waktu: ${new Date(rec.waktu).toLocaleString('id-ID')}<br>
+    ${rec.alasan?`Alasan: ${escapeHtml(rec.alasan)}<br>`:''}
+    ${rec.status==='hadir' ? `Verifikasi: ${rec.metode==='qr'?'✅ Scan QR':'⚠️ Manual (tanpa scan QR)'}<br>Lokasi: ${lok}` : ''}</div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+/* ================= ABSEN QR: LAYAR KIOSK (komputer operator) ================= */
+async function mulaiKiosk(){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+  try{ await muatLib(LIB_QR, 'qrcode'); }catch(e){}
+  const k = document.createElement('div'); k.id = 'kiosk';
+  k.innerHTML = `<div id="kioskJudul" style="font-size:clamp(22px,4vw,38px);font-weight:800;">Silakan scan untuk absensi kehadiran</div>
+    <img id="kioskQR" alt=""><div style="width:min(78vw,68vh);height:8px;background:#e5e7eb;border-radius:8px;overflow:hidden;"><div id="kioskBar" style="height:100%;background:var(--blue);width:100%;"></div></div>
+    <div style="color:#666;font-size:15px;">Buka aplikasi KOMSOS → Absen Sekarang → Scan QR &amp; Hadir</div><div id="kioskErr" style="color:#b91c1c;font-size:13px;"></div>`;
+  document.body.appendChild(k);
+  try{ navigator.wakeLock && await navigator.wakeLock.request('screen'); }catch(e){}
+  let n=0; for(const el of ['kioskJudul']){ document.getElementById(el).onclick = async ()=>{
+    if(++n < 5) return; n = 0;
+    const pw = prompt('Kata sandi akun ini untuk keluar:'); if(!pw) return;
+    try{ await auth.signInWithEmailAndPassword(auth.currentUser.email, pw); await auth.signOut(); location.reload(); }catch(e){ alert('Kata sandi salah.'); }
+  }; }
+  let daftar = [], base = 0, offset = 0, sedangAmbil = false, terakhir = -1;
+  const ambil = async ()=>{
+    if(sedangAmbil) return; sedangAmbil = true;
+    try{ const r = await panggilAbsen({action:'token'}); daftar = r.kode; base = r.base; offset = r.now - Date.now(); document.getElementById('kioskErr').textContent = ''; }
+    catch(e){ document.getElementById('kioskErr').textContent = 'Menghubungi server: ' + e.message; }
+    sedangAmbil = false;
+  };
+  await ambil();
+  setInterval(()=>{
+    const now = Date.now() + offset, n = Math.floor(now/30000), i = n - base;
+    if(i >= daftar.length - 4 || i < 0) ambil();
+    if(i >= 0 && i < daftar.length && n !== terakhir){
+      terakhir = n;
+      const q = window.qrcode(0, 'M'); q.addData('KOMSOSABSEN:' + n + ':' + daftar[i]); q.make();
+      document.getElementById('kioskQR').src = q.createDataURL(8, 4);
+    }
+    document.getElementById('kioskBar').style.width = (100 - (now % 30000)/300) + '%';
+  }, 500);
+}
 
 /* ---------------- TAB PROFIL (bottom nav, gaya Instagram) ----------------
    Tab ini bukan "halaman" biasa (nggak ada div .page buat dia) — tapi
@@ -2237,7 +2488,8 @@ function buildJadwalCardsHtml(list){
         }else if(slotSudahLewatUntukAbsen(s)){
           badge = ' ⏳';
         }
-        return `<span class="nm-row"><span class="nm-t">${nama}</span><span class="nm-b">${badge.trim()}</span></span>`;
+        const klik = (currentRole==='editor' && rec) ? ` onclick="lihatAbsen('${j.id}','${s.id}','${id}')" style="cursor:pointer;"` : '';
+        return `<span class="nm-row"><span class="nm-t">${nama}</span><span class="nm-b"${klik}>${badge.trim()}</span></span>`;
       });
       const sisaSeat = Math.max(0, 2 - s.petugas.length);
       const sudahIkut = currentPetugasId && s.petugas.includes(currentPetugasId);
@@ -2327,7 +2579,7 @@ function bukaAbsenModal(jadwalId, slotId){
       <textarea id="absenAlasan" class="modal-field" maxlength="200" placeholder="Contoh: macet di jalan, ada urusan mendadak, dst."></textarea>
     </div>
     <div style="display:flex; gap:10px; margin-top:6px;">
-      <button class="btn-primary" style="flex:1;" onclick="submitAbsen('${jadwalId}','${slotId}','hadir')">✅ Saya Hadir</button>
+      <button class="btn-primary" style="flex:1;" onclick="mulaiScanAbsen('${jadwalId}','${slotId}')">📷 Scan QR &amp; Hadir</button>
       <button class="btn-secondary" style="flex:1; color:var(--maroon); border-color:var(--maroon-bg);" onclick="submitAbsen('${jadwalId}','${slotId}','tidak_hadir')">❌ Tidak Hadir</button>
     </div>
   `;
