@@ -973,8 +973,10 @@ function getWarnaMusim(d){
    Setiap kali app di-upgrade, naikkan APP_VERSION & tambah entri baru di atas
    CHANGELOG. Status "sudah dilihat" disimpan per-HP/browser lewat localStorage
    (bukan Firestore), jadi nggak perlu ubah Firestore Rules buat fitur ini. */
-const APP_VERSION = '1.5.2';
+const APP_VERSION = '1.5.4';
 const CHANGELOG = [
+  {versi:'1.5.4', tanggal:'29 Sep 2026', catatan:['Lokasi absen QR memakai jaringan dan GPS sekaligus supaya cepat terkunci, dan menunggu maksimal 15 detik.']},
+  {versi:'1.5.3', tanggal:'29 Sep 2026', catatan:['Absen QR menunggu lokasi terkunci (maks 25 detik) sebelum mengirim, supaya koordinat tidak kosong.']},
   {versi:'1.5.2', tanggal:'29 Sep 2026', catatan:['Absen QR: lokasi dipantau selama kamera terbuka dan statusnya tampil di layar scan, jadi lokasi tidak mudah gagal tercatat.']},
   {versi:'1.5.1', tanggal:'29 Sep 2026', catatan:['Perbaikan pemindai QR absen: memakai pemindai bawaan Chrome dan cadangan pustaka, jadi tidak gagal memuat lagi.']},
   {versi:'1.5.0', tanggal:'29 Sep 2026', catatan:[
@@ -2273,18 +2275,19 @@ async function mulaiScanAbsen(jid, sid){
   try{ stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false}); }
   catch(e){ showToast('Izin kamera ditolak. Aktifkan izin kamera untuk situs ini di Chrome.'); return; }
   // Lokasi dipantau terus selama kamera terbuka, jadi tidak gagal hanya karena scan agak lama.
-  let posisi = null, gpsDitolak = false;
+  let posisi = null, gpsDitolak = false; const tMulai = Date.now();
   const setGps = (t)=>{ const g = document.getElementById('scanGps'); if(g) g.textContent = t; };
-  const wid = navigator.geolocation ? navigator.geolocation.watchPosition(
-    p=>{ posisi = {lat:p.coords.latitude, lng:p.coords.longitude, akurasi:Math.round(p.coords.accuracy)}; setGps('📍 Lokasi siap (±' + posisi.akurasi + ' m)'); },
-    e=>{ if(e.code===1){ gpsDitolak = true; setGps('📍 Izin lokasi ditolak. Aktifkan di pengaturan situs Chrome.'); } else setGps('📍 Lokasi belum tersedia, coba dekat jendela...'); },
-    {enableHighAccuracy:true, maximumAge:15000, timeout:30000}) : null;
+  // Dua pemantau sekaligus: jaringan (cepat, cukup di dalam ruangan) dan GPS (lebih akurat). Dipakai yang paling akurat.
+  const wids = [];
+  const terimaPos = p=>{ const a = Math.round(p.coords.accuracy); if(!posisi || a <= posisi.akurasi) posisi = {lat:p.coords.latitude, lng:p.coords.longitude, akurasi:a}; setGps('📍 Lokasi siap (±' + posisi.akurasi + ' m)'); };
+  const galatPos = e=>{ if(e.code===1){ gpsDitolak = true; setGps('📍 Izin lokasi ditolak. Aktifkan di pengaturan situs Chrome.'); } else if(!posisi) setGps('📍 Lokasi belum tersedia, pastikan Lokasi HP menyala...'); };
+  if(navigator.geolocation) [false, true].forEach(h=>wids.push(navigator.geolocation.watchPosition(terimaPos, galatPos, {enableHighAccuracy:h, maximumAge:15000, timeout:30000})));
   const wrap = document.createElement('div'); wrap.className = 'scan-wrap';
   wrap.innerHTML = `<div style="font-weight:700;">Arahkan kamera ke QR di meja operator</div><video playsinline muted></video><div id="scanInfo" style="font-size:13px;opacity:.8;">Mencari QR...</div><div id="scanGps" style="font-size:12px;opacity:.8;">📍 Mencari lokasi...</div><button class="btn-secondary" id="scanBatal">Batal</button>`;
   document.body.appendChild(wrap);
   const video = wrap.querySelector('video'); video.srcObject = stream; await video.play().catch(()=>{});
   let aktif = true;
-  const tutup = ()=>{ aktif = false; if(wid!==null) navigator.geolocation.clearWatch(wid); stream.getTracks().forEach(t=>t.stop()); wrap.remove(); };
+  const tutup = ()=>{ aktif = false; wids.forEach(i=>navigator.geolocation.clearWatch(i)); stream.getTracks().forEach(t=>t.stop()); wrap.remove(); };
   lapisanBuka(tutup);
   wrap.querySelector('#scanBatal').onclick = ()=>{ tutup(); lapisanTutup(); };
   const c = document.createElement('canvas'), cx = c.getContext('2d', {willReadFrequently:true});
@@ -2300,6 +2303,8 @@ async function mulaiScanAbsen(jid, sid){
         if(h) teks = h.data;
       }
       if(teks && teks.startsWith('KOMSOSABSEN:')){
+        // Pemindai bisa membaca QR dalam sekejap, tapi GPS butuh beberapa detik: tunggu lokasi dulu (maks 25 detik).
+        if(!posisi && !gpsDitolak && Date.now()-tMulai < 15000){ info.textContent = 'QR terbaca. Menunggu lokasi... (maks 15 detik)'; setTimeout(loop, 500); return; }
         aktif = false; info.textContent = 'Memverifikasi...';
         try{
           for(let i=0; i<10 && !posisi && !gpsDitolak; i++) await new Promise(r=>setTimeout(r,500));
