@@ -973,8 +973,9 @@ function getWarnaMusim(d){
    Setiap kali app di-upgrade, naikkan APP_VERSION & tambah entri baru di atas
    CHANGELOG. Status "sudah dilihat" disimpan per-HP/browser lewat localStorage
    (bukan Firestore), jadi nggak perlu ubah Firestore Rules buat fitur ini. */
-const APP_VERSION = '1.5.0';
+const APP_VERSION = '1.5.1';
 const CHANGELOG = [
+  {versi:'1.5.1', tanggal:'29 Sep 2026', catatan:['Perbaikan pemindai QR absen: memakai pemindai bawaan Chrome dan cadangan pustaka, jadi tidak gagal memuat lagi.']},
   {versi:'1.5.0', tanggal:'29 Sep 2026', catatan:[
     'Foto profil bisa diatur posisinya: geser dan cubit di dalam bingkai bulat dengan garis bantu 3x3.',
     'Fitur Pengumuman: PJ bisa kirim foto dan catatan; muncul sebagai popup saat buka aplikasi dan penanda "Ada Pengumuman" di atas.',
@@ -2106,15 +2107,18 @@ window.addEventListener('popstate', (e)=>{
 
 
 /* ================= LIB, PANGGIL SERVER ================= */
-function muatLib(url, glob){
-  return new Promise((res, rej)=>{
-    if(window[glob]) return res();
-    const sc = document.createElement('script'); sc.src = url; sc.onload = res;
-    sc.onerror = ()=>rej(new Error('Gagal memuat pustaka.')); document.head.appendChild(sc);
-  });
+async function muatLib(urls, glob){
+  if(window[glob]) return;
+  for(const url of [].concat(urls)){
+    try{
+      await new Promise((res, rej)=>{ const sc = document.createElement('script'); sc.src = url; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
+      if(window[glob]) return;
+    }catch(e){}
+  }
+  throw new Error('Gagal memuat pustaka.');
 }
-const LIB_JSQR = 'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
-const LIB_QR = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+const LIB_JSQR = ['https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js','https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js','https://unpkg.com/jsqr@1.4.0/dist/jsQR.js'];
+const LIB_QR = ['https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js','https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js','https://unpkg.com/qrcode-generator@1.4.4/qrcode.js'];
 async function panggilAbsen(body){
   const t = await auth.currentUser.getIdToken();
   const r = await fetch('/.netlify/functions/absen-qr', {method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer '+t}, body:JSON.stringify(body)});
@@ -2260,7 +2264,10 @@ async function mulaiScanAbsen(jid, sid){
     const el = document.getElementById('absenAlasan'); alasan = el ? el.value.trim() : '';
     if(!alasan){ showToast('Alasan keterlambatan wajib diisi.'); return; }
   }
-  try{ await muatLib(LIB_JSQR, 'jsQR'); }catch(e){ showToast('Tidak bisa memuat pemindai. Cek koneksi.'); return; }
+  // Pemindai bawaan Chrome (tanpa internet) dipakai dulu; kalau tidak ada, muat jsQR.
+  let bd = null;
+  try{ if('BarcodeDetector' in window) bd = new BarcodeDetector({formats:['qr_code']}); }catch(e){}
+  if(!bd){ try{ await muatLib(LIB_JSQR, 'jsQR'); }catch(e){ showToast('Pemindai gagal dimuat. Coba pindah jaringan (mis. data seluler) lalu ulangi.'); return; } }
   let stream;
   try{ stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false}); }
   catch(e){ showToast('Izin kamera ditolak. Aktifkan izin kamera untuk situs ini di Chrome.'); return; }
@@ -2281,13 +2288,18 @@ async function mulaiScanAbsen(jid, sid){
   const loop = async ()=>{
     if(!aktif) return;
     if(video.videoWidth){
-      c.width = video.videoWidth; c.height = video.videoHeight; cx.drawImage(video, 0, 0);
-      const hasil = window.jsQR(cx.getImageData(0,0,c.width,c.height).data, c.width, c.height);
-      if(hasil && hasil.data.startsWith('KOMSOSABSEN:')){
+      let teks = null;
+      if(bd){ try{ const r = await bd.detect(video); if(r[0]) teks = r[0].rawValue; }catch(e){} }
+      else{
+        c.width = video.videoWidth; c.height = video.videoHeight; cx.drawImage(video, 0, 0);
+        const h = window.jsQR(cx.getImageData(0,0,c.width,c.height).data, c.width, c.height);
+        if(h) teks = h.data;
+      }
+      if(teks && teks.startsWith('KOMSOSABSEN:')){
         aktif = false; info.textContent = 'Memverifikasi...';
         try{
           const lokasi = await gps;
-          const r = await panggilAbsen({action:'scan', kode:hasil.data.slice(12), jadwalId:jid, slotId:sid, alasan, lokasi});
+          const r = await panggilAbsen({action:'scan', kode:teks.slice(12), jadwalId:jid, slotId:sid, alasan, lokasi});
           tutup(); lapisanTutup(); closeModal();
           catatLog(`absen "hadir${r.telat?' (telat)':''}" via QR untuk slot ${s.hari} ${s.jam} jadwal "${j.namaMisa}"`);
           showToast(r.telat ? 'Absen tercatat (terlambat).' : 'Absen hadir tercatat. Terima kasih! 🙏');
@@ -2338,7 +2350,8 @@ async function mulaiKiosk(){
     sedangAmbil = false;
   };
   await ambil();
-  setInterval(()=>{
+  setInterval(async ()=>{
+    if(!window.qrcode){ try{ await muatLib(LIB_QR, 'qrcode'); }catch(e){ document.getElementById('kioskErr').textContent = 'Pustaka QR gagal dimuat. Periksa internet lalu tekan F5.'; return; } }
     const now = Date.now() + offset, n = Math.floor(now/30000), i = n - base;
     if(i >= daftar.length - 4 || i < 0) ambil();
     if(i >= 0 && i < daftar.length && n !== terakhir){
