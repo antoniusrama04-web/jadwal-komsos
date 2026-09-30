@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KOMSOS — Jadwal Petugas Operator</title>
+<script>try{ if(localStorage.getItem('komsosTheme')==='light') document.documentElement.setAttribute('data-theme','light'); }catch(e){}</script>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#182130">
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
@@ -34,7 +35,43 @@
   --green: #34D399;
   --grad: linear-gradient(135deg, var(--blue) 0%, var(--gold) 100%);
   --field-bg: #EEF2FA;
+  --tint-1: rgba(255,255,255,0.04);
+  --tint-2: rgba(255,255,255,0.06);
+  --tint-3: rgba(255,255,255,0.09);
+  --tint-line: rgba(255,255,255,0.12);
 }
+/* ---------- MODE TERANG ---------- */
+:root[data-theme="light"]{
+  --ink: #F3F5FB;
+  --ink-soft: #FFFFFF;
+  --blue: #3B63D9;
+  --blue-deep: #2A4FC4;
+  --blue-light: #3B63D9;
+  --gold: #7C3AED;
+  --gold-soft: #6D28D9;
+  --sos-blue: #0284C7;
+  --paper: #F7F8FC;
+  --paper-card: rgba(20,25,45,0.045);
+  --text: #171B2B;
+  --muted: #5B6478;
+  --line: rgba(15,20,40,0.12);
+  --maroon: #DC2626;
+  --maroon-bg: rgba(220,38,38,0.10);
+  --green: #0D9488;
+  --field-bg: #FFFFFF;
+  --tint-1: rgba(15,20,40,0.04);
+  --tint-2: rgba(15,20,40,0.06);
+  --tint-3: rgba(15,20,40,0.09);
+  --tint-line: rgba(15,20,40,0.12);
+}
+:root[data-theme="light"] body{
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(59,99,217,0.07), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 10%, rgba(124,58,237,0.06), transparent 55%),
+    var(--paper);
+}
+:root[data-theme="light"] .icon-action-btn:hover{color:#171B2B;}
+:root[data-theme="light"] .toast{background:#171B2B; color:#fff;}
 *{box-sizing:border-box; margin:0; padding:0;}
 body{
   font-family:'Plus Jakarta Sans', sans-serif;
@@ -109,7 +146,7 @@ h1,h2,h3,.display{font-family:'Sora', sans-serif;}
   display:none; align-items:center; justify-content:center; padding:24px;
 }
 .gate-card{
-  background:rgba(255,255,255,0.06); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  background:var(--tint-2); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
   border:1px solid var(--line); border-radius:24px; position:relative; overflow:hidden;
   padding:38px 32px; width:100%; max-width:380px; text-align:center;
   box-shadow:0 24px 60px rgba(0,0,0,0.45);
@@ -162,7 +199,7 @@ header.appbar .mark{font-family:'Sora'; font-weight:800; font-size:21px;}
 header.appbar .kom{color:#fff;} header.appbar .sos{color:var(--sos-blue);}
 .role-badge{
   font-size:12.5px; padding:5px 12px; border-radius:20px; font-weight:600;
-  background:rgba(255,255,255,0.08); color:#C7D2E2; letter-spacing:0.02em;
+  background:var(--tint-3); color:#C7D2E2; letter-spacing:0.02em;
   border:1px solid var(--line);
 }
 .role-badge.editor{background:rgba(139,92,246,0.18); color:var(--gold-soft); border-color:rgba(139,92,246,0.35);}
@@ -171,7 +208,7 @@ header.appbar .kom{color:#fff;} header.appbar .sos{color:var(--sos-blue);}
 .icon-action-btn{
   display:flex; align-items:center; justify-content:center;
   width:34px; height:34px; border-radius:50%; flex-shrink:0;
-  background:rgba(255,255,255,0.06); border:1px solid var(--line);
+  background:var(--tint-2); border:1px solid var(--line);
   color:var(--muted); cursor:pointer; padding:0; margin:0;
   font-family:inherit; -webkit-tap-highlight-color:transparent;
   transition:border-color 0.18s ease, background 0.18s ease, color 0.18s ease, transform 0.18s ease;
@@ -189,7 +226,7 @@ header.appbar .kom{color:#fff;} header.appbar .sos{color:var(--sos-blue);}
 main{flex:1; padding:28px 22px 110px; max-width:680px; width:100%; margin:0 auto;}
 .section-title{
   font-family:'Sora', sans-serif; font-size:26px; font-weight:700; letter-spacing:-0.01em;
-  margin-bottom:8px; color:#fff;
+  margin-bottom:8px; color:var(--text);
 }
 .section-sub{color:var(--muted); font-size:15px; margin-bottom:22px; line-height:1.55;}
 
@@ -202,9 +239,9 @@ main{flex:1; padding:28px 22px 110px; max-width:680px; width:100%; margin:0 auto
   background:linear-gradient(135deg, rgba(79,142,247,0.16), rgba(139,92,246,0.06));
   border-color:rgba(79,142,247,0.35);
 }
-.pengingat-card .judul{font-family:'Sora', sans-serif; font-weight:700; font-size:16px; margin-bottom:6px; color:#fff;}
+.pengingat-card .judul{font-family:'Sora', sans-serif; font-weight:700; font-size:16px; margin-bottom:6px; color:var(--text);}
 .pengingat-card .isi{font-size:14.5px; line-height:1.6; color:var(--text);}
-.pengingat-card .sub-list{margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.12); font-size:13px; color:var(--muted); line-height:1.7;}
+.pengingat-card .sub-list{margin-top:10px; padding-top:10px; border-top:1px solid var(--tint-line); font-size:13px; color:var(--muted); line-height:1.7;}
 
 .filter-row{display:flex; gap:10px; margin-bottom:22px;}
 .filter-row select{
@@ -220,12 +257,12 @@ main{flex:1; padding:28px 22px 110px; max-width:680px; width:100%; margin:0 auto
 .jadwal-card::before{
   content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--grad);
 }
-.jadwal-card .judul{font-family:'Sora', sans-serif; font-weight:700; font-size:16.5px; margin-bottom:2px; color:#fff; letter-spacing:0.01em; word-break:break-word;}
+.jadwal-card .judul{font-family:'Sora', sans-serif; font-weight:700; font-size:16.5px; margin-bottom:2px; color:var(--text); letter-spacing:0.01em; word-break:break-word;}
 .jadwal-card .judul.judul-md{font-size:14px;}
 .jadwal-card .judul.judul-sm{font-size:12.5px;}
 .musim-badge{
   display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700;
-  padding:3px 10px 3px 8px; border-radius:20px; background:rgba(255,255,255,0.07);
+  padding:3px 10px 3px 8px; border-radius:20px; background:var(--tint-2);
   color:var(--muted); margin-bottom:12px; letter-spacing:0.02em;
 }
 .musim-badge .dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
@@ -266,8 +303,8 @@ body.modal-open{overflow:hidden;}
 .ed-stage{position:relative;overflow:hidden;background:#000;touch-action:none;}
 .ed-stage img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;user-select:none;-webkit-user-drag:none;}
 .ed-dim{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at center,transparent 0 calc(50% - 1px),rgba(0,0,0,.6) 50%);}
-.ed-grid{position:absolute;inset:0;pointer-events:none;border-radius:50%;overflow:hidden;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7);
-background:linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 33.33% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 66.66% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 0 33.33%/100% 1px no-repeat,linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 0 66.66%/100% 1px no-repeat;}
+.ed-grid{position:absolute;inset:0;pointer-events:none;border-radius:50%;overflow:hidden;box-shadow:inset 0 0 0 1.5px var(--tint-3);
+background:linear-gradient(var(--tint-3),var(--tint-3)) 33.33% 0/1px 100% no-repeat,linear-gradient(var(--tint-3),var(--tint-3)) 66.66% 0/1px 100% no-repeat,linear-gradient(var(--tint-3),var(--tint-3)) 0 33.33%/100% 1px no-repeat,linear-gradient(var(--tint-3),var(--tint-3)) 0 66.66%/100% 1px no-repeat;}
 .scan-wrap{position:fixed;inset:0;z-index:3500;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;padding:16px;}
 .scan-wrap video{width:min(92vw,420px);aspect-ratio:1;object-fit:cover;border-radius:18px;background:#111;}
 #kiosk{position:fixed;inset:0;z-index:4000;background:#fff;color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:20px;}
@@ -278,7 +315,7 @@ background:linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 33.33% 0/1
 
 .saran-trigger{
   width:100%; margin-top:28px; padding:15px; border:1px solid var(--line); border-radius:14px;
-  background:var(--paper-card); backdrop-filter:blur(14px); color:#fff; font-weight:600; font-size:15px; cursor:pointer; font-family:'Plus Jakarta Sans';
+  background:var(--paper-card); backdrop-filter:blur(14px); color:var(--text); font-weight:600; font-size:15px; cursor:pointer; font-family:'Plus Jakarta Sans';
   transition:border-color 0.15s;
 }
 .saran-trigger:hover{border-color:var(--blue);}
@@ -296,13 +333,13 @@ background:linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 33.33% 0/1
   font-size:22px; width:44px; height:44px; flex-shrink:0; border-radius:12px;
   display:flex; align-items:center; justify-content:center; background:var(--grad);
 }
-.home-menu-btn .hm-label{font-family:'Sora', sans-serif; font-weight:700; font-size:16.5px; color:#fff;}
+.home-menu-btn .hm-label{font-family:'Sora', sans-serif; font-weight:700; font-size:16.5px; color:var(--text);}
 .home-panel{display:none;}
 .home-panel.active{display:block;}
 .panel-back{
   display:inline-flex; align-items:center; gap:9px; cursor:pointer; margin-bottom:18px;
   padding:8px 16px 8px 10px; border-radius:999px;
-  background:rgba(255,255,255,0.05); border:1px solid var(--line);
+  background:var(--tint-2); border:1px solid var(--line);
   color:var(--text); font-size:13.5px; font-weight:700; font-family:'Plus Jakarta Sans';
   transition:border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
@@ -329,14 +366,14 @@ textarea.modal-field{min-height:90px;}
 .btn-primary:hover{filter:brightness(1.1);}
 .btn-primary:active{transform:scale(0.98);}
 .btn-secondary{
-  padding:12px 20px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,0.05);
+  padding:12px 20px; border:1px solid var(--line); border-radius:12px; background:var(--tint-2);
   color:var(--text); font-weight:600; font-size:15px; cursor:pointer; font-family:'Plus Jakarta Sans';
   transition:border-color 0.15s;
 }
 .btn-secondary:hover{border-color:var(--blue);}
 .saran-list{margin-top:14px; border-top:1px solid var(--line); padding-top:12px;}
 .saran-item{font-size:14px; padding:8px 0; color:var(--text); line-height:1.5;}
-.saran-item b{color:#fff; font-family:'Sora', sans-serif;}
+.saran-item b{color:var(--text); font-family:'Sora', sans-serif;}
 .saran-item span{color:var(--muted);}
 
 /* Petugas list */
@@ -350,15 +387,15 @@ textarea.modal-field{min-height:90px;}
   padding:15px 6px; border-bottom:1px solid var(--line); cursor:pointer;
   transition:background 0.15s;
 }
-.petugas-row:hover{background:rgba(255,255,255,0.04);}
-.petugas-row .nm{font-family:'Sora', sans-serif; font-weight:700; font-size:15.5px; color:#fff;}
+.petugas-row:hover{background:var(--tint-1);}
+.petugas-row .nm{font-family:'Sora', sans-serif; font-weight:700; font-size:15.5px; color:var(--text);}
 .count-pill{
   font-size:12.5px; font-weight:700; padding:4px 11px; border-radius:20px;
-  background:rgba(255,255,255,0.08); color:var(--muted); flex-shrink:0;
+  background:var(--tint-3); color:var(--muted); flex-shrink:0;
 }
 .count-pill.full{background:var(--maroon-bg); color:var(--maroon);}
-.count-pill.zero{background:rgba(255,255,255,0.06); color:var(--muted);}
-.count-pill.nonaktif{background:rgba(255,255,255,0.05); color:#6B7690;}
+.count-pill.zero{background:var(--tint-2); color:var(--muted);}
+.count-pill.nonaktif{background:var(--tint-2); color:#6B7690;}
 
 /* Modal */
 .modal-overlay{
@@ -378,7 +415,7 @@ textarea.modal-field{min-height:90px;}
   display:flex; align-items:center; justify-content:center;
   background:var(--grad); color:#fff; font-family:'Sora',sans-serif; font-weight:800; font-size:28px;
 }
-.profil-head .nama-besar{font-family:'Sora', sans-serif; font-weight:700; font-size:19px; color:#fff; margin-bottom:4px;}
+.profil-head .nama-besar{font-family:'Sora', sans-serif; font-weight:700; font-size:19px; color:var(--text); margin-bottom:4px;}
 .profil-head .ultah-badge{
   display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:20px;
   background:linear-gradient(135deg, rgba(255,180,80,0.25), rgba(255,107,107,0.18)); color:#FFD08A;
@@ -393,7 +430,7 @@ textarea.modal-field{min-height:90px;}
 .profil-foto-row{display:flex; align-items:center; gap:14px; margin-bottom:4px;}
 .btn-ganti-foto{
   padding:9px 14px; border-radius:10px; border:1px solid var(--line);
-  background:rgba(255,255,255,0.06); color:#fff; font-family:'Plus Jakarta Sans'; font-weight:600;
+  background:var(--tint-2); color:var(--text); font-family:'Plus Jakarta Sans'; font-weight:600;
   font-size:13px; cursor:pointer; transition:border-color 0.15s;
 }
 .btn-ganti-foto:hover{border-color:var(--blue);}
@@ -423,7 +460,7 @@ textarea.modal-field{min-height:90px;}
 .chat-input-row input{flex:1; margin-bottom:0;}
 .chat-quote{
   border-left:2.5px solid var(--blue-light); padding:3px 8px; margin-bottom:5px;
-  font-size:11.5px; color:var(--muted); background:rgba(255,255,255,0.04); border-radius:4px;
+  font-size:11.5px; color:var(--muted); background:var(--tint-1); border-radius:4px;
 }
 .chat-actions{margin-top:3px; font-size:10.5px;}
 .chat-actions a{color:var(--muted); cursor:pointer; text-decoration:underline;}
@@ -444,7 +481,7 @@ textarea.modal-field{min-height:90px;}
   content:''; display:block; width:40px; height:4px; border-radius:4px; background:var(--line);
   margin:0 auto 20px;
 }
-.modal-sheet h3{font-family:'Sora', sans-serif; font-weight:700; font-size:21px; margin-bottom:16px; color:#fff;}
+.modal-sheet h3{font-family:'Sora', sans-serif; font-weight:700; font-size:21px; margin-bottom:16px; color:var(--text);}
 .close-x{float:right; cursor:pointer; color:var(--muted); font-size:20px;}
 .hist-line{
   display:flex; justify-content:space-between; padding:11px 0; border-top:1px solid var(--line);
@@ -464,7 +501,7 @@ textarea.modal-field{min-height:90px;}
   padding:16px 18px; margin-bottom:12px;
 }
 .slot-editor .slot-head{
-  display:flex; justify-content:space-between; font-size:14.5px; font-weight:700; color:#fff;
+  display:flex; justify-content:space-between; font-size:14.5px; font-weight:700; color:var(--text);
   margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);
 }
 .slot-editor select{
@@ -489,7 +526,7 @@ nav.bottomnav button{
   font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; transition:background 0.15s, color 0.15s;
 }
 nav.bottomnav button .ic{display:block; font-size:20px; margin-bottom:3px;}
-nav.bottomnav button.active{color:#fff; background:rgba(255,255,255,0.08);}
+nav.bottomnav button.active{color:var(--text); background:var(--tint-3);}
 nav.bottomnav button.active .ic{filter:none;}
 nav.bottomnav button .ic-avatar-wrap{display:flex; justify-content:center; margin-bottom:3px;}
 nav.bottomnav button .ic-avatar-wrap img,
@@ -513,7 +550,7 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
 @keyframes spin{ to{ transform:rotate(360deg); } }
 .spinner{
   width:34px; height:34px; border-radius:50%;
-  border:3px solid rgba(255,255,255,0.18); border-top-color:var(--sos-blue);
+  border:3px solid var(--tint-3); border-top-color:var(--sos-blue);
   animation:spin 0.8s linear infinite;
 }
 #loadingOverlay{
@@ -526,15 +563,17 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
 @keyframes shimmer{ 0%{background-position:-200px 0;} 100%{background-position:200px 0;} }
 .skeleton-card{
   height:64px; border-radius:14px; margin-bottom:12px;
-  background:linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 37%, rgba(255,255,255,0.04) 63%);
+  background:linear-gradient(90deg, var(--tint-1) 25%, var(--tint-3) 37%, var(--tint-1) 63%);
   background-size:400px 100%; animation:shimmer 1.4s infinite linear;
 }
+.skeleton-stack{width:100%; max-width:380px; padding:0 28px; margin-top:4px;}
+.skeleton-stack .skeleton-card:last-child{margin-bottom:0;}
 
 /* --- Tombol kecil di slot kartu jadwal --- */
 .slot-aksi{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; margin-top:6px;}
 .btn-mini{
   padding:7px 14px; border-radius:999px; border:1px solid var(--line);
-  background:rgba(255,255,255,0.06); color:var(--text); font-family:'Plus Jakarta Sans';
+  background:var(--tint-2); color:var(--text); font-family:'Plus Jakarta Sans';
   font-size:12.5px; font-weight:700; cursor:pointer; white-space:nowrap;
   transition:transform 0.12s, filter 0.15s, border-color 0.15s;
 }
@@ -545,6 +584,10 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
 .btn-mini.batal{color:var(--maroon); border-color:var(--maroon-bg); background:var(--maroon-bg);}
 .slot-input-row{display:flex; gap:8px; margin:8px 0 4px;}
 .slot-input-row input{flex:1; min-width:0; padding:9px 10px; border-radius:10px; border:1px solid var(--line); background:var(--field-bg); color:#1A2033; font-family:'Plus Jakarta Sans'; font-size:14px;}
+.jam-cepat-row{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 10px;}
+.jam-cepat-btn{padding:6px 12px; border-radius:999px; border:1px solid var(--line); background:var(--tint-2); color:var(--text); font-family:'Plus Jakarta Sans'; font-size:12.5px; font-weight:600; cursor:pointer; white-space:nowrap;}
+.jam-cepat-btn:hover{border-color:var(--blue);}
+.jam-cepat-btn:active{transform:scale(0.94);}
 .jadwal-sub{font-family:'Sora',sans-serif; font-weight:700; font-size:14px; color:var(--muted); margin:18px 0 10px;}
 
 /* --- Foto profil layar penuh (lightbox) --- */
@@ -558,7 +601,7 @@ img.avatar-zoom{cursor:zoom-in;}
 #fotoLightbox .lb-nama{margin-top:14px; color:#fff; font-family:'Sora',sans-serif; font-weight:700; font-size:17px;}
 #fotoLightbox .lb-tutup{
   position:absolute; top:calc(14px + env(safe-area-inset-top, 0px)); right:16px; width:40px; height:40px;
-  border-radius:50%; border:none; background:rgba(255,255,255,0.16); color:#fff; font-size:20px; cursor:pointer;
+  border-radius:50%; border:none; background:var(--tint-3); color:#fff; font-size:20px; cursor:pointer;
 }
 
 /* ===== 1.6.0 PERAPIAN & FITUR BARU ===== */
@@ -580,26 +623,26 @@ button:active{transform:scale(.97);}
 .slot-line{padding:13px 0; gap:12px;}
 .slot-line .waktu{flex:0 0 98px; min-width:0; display:flex; flex-direction:column; gap:2px;}
 .slot-line .waktu .w-hari{font-size:12px; color:var(--muted);}
-.slot-line .waktu .w-jam{font-size:18px; font-weight:800; color:#fff; font-family:'Sora',sans-serif;}
+.slot-line .waktu .w-jam{font-size:18px; font-weight:800; color:var(--text); font-family:'Sora',sans-serif;}
 .slot-line .nama{gap:4px;}
 .slot-aksi{margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;}
 @keyframes fadeUp{from{opacity:0; transform:translateY(8px);}to{opacity:1; transform:none;}}
 .menu-user{padding:2px 4px 14px;}
 .menu-user small{display:block; color:var(--muted); margin-top:2px;}
-.menu-item{display:flex; align-items:center; gap:14px; width:100%; padding:14px 12px; border:none; background:rgba(255,255,255,.06); color:#fff; border-radius:14px; font:600 15px 'Plus Jakarta Sans',sans-serif; margin-bottom:8px; text-align:left; cursor:pointer;}
+.menu-item{display:flex; align-items:center; gap:14px; width:100%; padding:14px 12px; border:none; background:var(--tint-2); color:var(--text); border-radius:14px; font:600 15px 'Plus Jakarta Sans',sans-serif; margin-bottom:8px; text-align:left; cursor:pointer;}
 .menu-item.danger{color:#ff8a8a;}
 .menu-item .mi-ic{font-size:20px; width:26px; text-align:center;}
 .tugas-card{border:1px solid rgba(79,142,247,.4); background:linear-gradient(135deg,rgba(79,142,247,.18),rgba(139,92,246,.14)); border-radius:18px; padding:16px;}
 .tugas-card .tk{font-size:11.5px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; font-weight:700;}
 .tugas-card .tj{font-family:'Sora',sans-serif; font-weight:800; font-size:21px; margin:6px 0 2px;}
 .tugas-card .ts{color:var(--muted); font-size:13.5px; margin-bottom:12px; line-height:1.4;}
-.rg-card{border:1px solid var(--line); background:rgba(255,255,255,.04); border-radius:18px; padding:14px; cursor:pointer;}
+.rg-card{border:1px solid var(--line); background:var(--tint-1); border-radius:18px; padding:14px; cursor:pointer;}
 .rg-card .rk{font-size:12.5px; color:var(--muted); margin-bottom:10px;}
 .rg-row{display:flex; gap:8px;}
-.rg-chip{flex:1; text-align:center; padding:10px 4px; border-radius:14px; background:rgba(255,255,255,.06); font-size:11.5px; color:var(--muted);}
-.rg-chip b{display:block; font-size:21px; color:#fff; font-family:'Sora',sans-serif;}
+.rg-chip{flex:1; text-align:center; padding:10px 4px; border-radius:14px; background:var(--tint-2); font-size:11.5px; color:var(--muted);}
+.rg-chip b{display:block; font-size:21px; color:var(--text); font-family:'Sora',sans-serif;}
 .rg-note{margin-top:10px; font-size:12.5px; color:var(--gold-soft);}
-.mode-switch{display:flex; gap:6px; margin-bottom:16px; background:rgba(255,255,255,.05); padding:4px; border-radius:14px;}
+.mode-switch{display:flex; gap:6px; margin-bottom:16px; background:var(--tint-2); padding:4px; border-radius:14px;}
 .mode-switch button{flex:1; padding:10px 6px; border:none; border-radius:10px; background:transparent; color:var(--muted); font:700 13.5px 'Plus Jakarta Sans',sans-serif; cursor:pointer;}
 .mode-switch button.on{background:var(--grad); color:#fff;}
 .ok-pop{position:fixed; inset:0; z-index:5000; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.5); animation:okfade 1.5s ease forwards; pointer-events:none;}
@@ -608,6 +651,23 @@ button:active{transform:scale(.97);}
 .ok-pop .t{stroke-dasharray:48; stroke-dashoffset:48; animation:okd .35s .5s ease forwards;}
 @keyframes okd{to{stroke-dashoffset:0;}}
 @keyframes okfade{0%{opacity:0;}12%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
+
+:root[data-theme="light"] .modal-sheet{background:#FFFFFF; box-shadow:0 -20px 60px rgba(15,20,40,0.18);}
+:root[data-theme="light"] nav.bottomnav{background:rgba(255,255,255,0.9); box-shadow:0 12px 40px rgba(15,20,40,0.15);}
+:root[data-theme="light"] .gate-card{background:rgba(255,255,255,0.85); box-shadow:0 24px 60px rgba(15,20,40,0.15);}
+:root[data-theme="light"] .mini-mark .kom, :root[data-theme="light"] .gate-card .mini-mark .kom{color:var(--text);}
+:root[data-theme="light"] .watermark .kom{color:#171B2B;}
+
+/* ===== Ikon SVG (pengganti emoji) ===== */
+.ico{width:1.1em; height:1.1em; display:inline-block; vertical-align:-0.2em; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0;}
+.ico-ok{color:var(--green);} .ico-warn{color:#F59E0B;} .ico-bad{color:var(--maroon);} .ico-wait{color:var(--muted);}
+.hm-icon .ico{width:24px; height:24px; color:#fff;}
+.mi-ic .ico{width:20px; height:20px;}
+.pw-eye .ico{width:18px; height:18px;}
+.close-x .ico{width:20px; height:20px;}
+.btn-mini .ico, .btn-secondary .ico, .btn-primary .ico{margin-right:4px;}
+.slot-line .nm-b .ico{width:15px; height:15px; vertical-align:-0.15em;}
+.legend-abs .ico{width:14px; height:14px; margin-right:2px;}
 </style>
 </head>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -615,6 +675,7 @@ button:active{transform:scale(.97);}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol><symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M17.9 17.9A10.9 10.9 0 0 1 12 19c-6.5 0-10-7-10-7a18 18 0 0 1 4.1-5"/><path d="M9.9 5.2A10 10 0 0 1 12 5c6.5 0 10 7 10 7a18 18 0 0 1-2.2 3.2"/><path d="M14.1 14.1a3 3 0 0 1-4.2-4.2"/><path d="M2 2l20 20"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol><symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12.5l2.7 2.7L16 9.5"/></symbol><symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="i-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol><symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 3v4M17 5h4"/></symbol><symbol id="i-cake" viewBox="0 0 24 24"><path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16c1.5 0 2-1 4-1s2.5 1 4 1 2.5-1 4-1 2.5 1 4 1"/><path d="M2 21h20"/><path d="M12 11V8"/><path d="M12 4c.6.8.6 1.6 0 2.5-.6-.9-.6-1.7 0-2.5z"/></symbol><symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol><symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M4.9 4.9l14.2 14.2"/></symbol><symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol><symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6"/><path d="M10 3v6L4.5 19a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 9V3"/><path d="M7.5 15h9"/></symbol><symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.5-.5-2.5z"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol><symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14.5a7 7 0 0 1 4 6.5"/></symbol><symbol id="i-user-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M6.2 18.5a7 7 0 0 1 11.6 0"/></symbol><symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"/><path d="M12 17h.01"/></symbol><symbol id="i-hand" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-4 0v4"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 0 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-5.9-2.4L3.4 16a2 2 0 0 1 3-2.6L8 15"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></symbol><symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></symbol><symbol id="i-bar-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol><symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></symbol><symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 13h6M9 17h4"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol><symbol id="i-log-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></symbol><symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></symbol><symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol><symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></symbol><symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol><symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol></defs></svg>
 
 <div class="watermark"><span class="kom">KOM</span><span class="sos">SOS</span></div>
 
@@ -633,7 +694,7 @@ button:active{transform:scale(.97);}
       <input type="email" id="loginEmail" placeholder="Email" autocomplete="username" style="margin-bottom:14px;" onkeydown="if(event.key==='Enter') tryLogin()">
       <div style="position:relative; margin-bottom:8px;">
         <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" style="margin-bottom:0; padding-right:44px;" onkeydown="if(event.key==='Enter') tryLogin()">
-        <span class="pw-eye" onclick="togglePw('loginPassword', this)">👁️</span>
+        <span class="pw-eye" onclick="togglePw('loginPassword', this)"><svg class="ico"><use href="#i-eye"/></svg></span>
       </div>
       <div class="auth-forgot"><span onclick="showAuthView('forgot')">Lupa password?</span></div>
       <button id="loginBtn" onclick="tryLogin()">Masuk</button>
@@ -648,7 +709,7 @@ button:active{transform:scale(.97);}
       <input type="email" id="regEmail" placeholder="Email" autocomplete="username" style="margin-bottom:14px;" onkeydown="if(event.key==='Enter') tryRegister()">
       <div style="position:relative; margin-bottom:14px;">
         <input type="password" id="regPassword" placeholder="Buat password (min. 6 karakter)" autocomplete="new-password" style="margin-bottom:0; padding-right:44px;" onkeydown="if(event.key==='Enter') tryRegister()">
-        <span class="pw-eye" onclick="togglePw('regPassword', this)">👁️</span>
+        <span class="pw-eye" onclick="togglePw('regPassword', this)"><svg class="ico"><use href="#i-eye"/></svg></span>
       </div>
       <button id="registerBtn" onclick="tryRegister()">Daftar</button>
       <div class="gate-error" id="registerError"></div>
@@ -667,7 +728,7 @@ button:active{transform:scale(.97);}
     </div>
 
     <div id="storageWarning" style="display:none; margin-top:16px; padding:12px 14px; background:var(--maroon-bg); color:var(--maroon); border-radius:2px; font-size:13px; text-align:left; line-height:1.5;">
-      ⚠️ Gagal terhubung ke database. Pastikan HP kamu terkoneksi internet, lalu coba muat ulang halaman ini.
+      <svg class="ico ico-warn"><use href="#i-alert"/></svg> Gagal terhubung ke database. Pastikan HP kamu terkoneksi internet, lalu coba muat ulang halaman ini.
     </div>
   </div>
 </div>
@@ -719,11 +780,11 @@ button:active{transform:scale(.97);}
       <div id="ulangTahunArea" style="margin-bottom:14px;"></div>
       <div id="infoLiturgiHariIni"></div>
       <div id="notifBanner" style="display:none; background:rgba(139,92,246,0.12); border:1px solid rgba(139,92,246,0.35); border-radius:16px; padding:14px 16px; margin-bottom:14px; align-items:center; justify-content:space-between; gap:10px; backdrop-filter:blur(10px);">
-        <span style="font-size:14px; color:var(--text);">🔔 Aktifkan notifikasi biar diingatkan otomatis pas mau bertugas.</span>
+        <span style="font-size:14px; color:var(--text);"><svg class="ico"><use href="#i-bell"/></svg> Aktifkan notifikasi biar diingatkan otomatis pas mau bertugas.</span>
         <button class="btn-secondary" style="white-space:nowrap;" onclick="aktifkanNotifikasi()">Aktifkan</button>
       </div>
       <div id="testNotifBox" style="display:none; background:rgba(79,142,247,0.1); border:1px solid rgba(79,142,247,0.35); border-radius:16px; padding:14px 16px; margin-bottom:14px; align-items:center; justify-content:space-between; gap:10px; backdrop-filter:blur(10px);">
-        <span style="font-size:14px; color:var(--text);">🧪 Mode PJ: kirim notifikasi uji coba ke semua HP yang sudah aktifkan (cocok buat demo/presentasi).</span>
+        <span style="font-size:14px; color:var(--text);"><svg class="ico"><use href="#i-flask"/></svg> Mode PJ: kirim notifikasi uji coba ke semua HP yang sudah aktifkan (cocok buat demo/presentasi).</span>
         <button class="btn-secondary" id="btnUjiNotif" style="white-space:nowrap;" onclick="kirimNotifikasiUjiCoba()">Kirim Sekarang</button>
       </div>
       <div id="tugasSayaArea"></div>
@@ -735,19 +796,19 @@ button:active{transform:scale(.97);}
         <div class="section-sub">Pilih menu di bawah ini.</div>
         <div class="home-menu">
           <button class="home-menu-btn" onclick="showHomePanel('jadwalIni')">
-            <span class="hm-icon">📅</span>
+            <span class="hm-icon"><svg class="ico"><use href="#i-calendar"/></svg></span>
             <span class="hm-label">Jadwal Bulan Ini</span>
           </button>
           <button class="home-menu-btn" onclick="showHomePanel('rekap')">
-            <span class="hm-icon">📊</span>
+            <span class="hm-icon"><svg class="ico"><use href="#i-bar-chart"/></svg></span>
             <span class="hm-label">Rekap Jadwal</span>
           </button>
           <button class="home-menu-btn" onclick="showHomePanel('absensi')">
-            <span class="hm-icon">✅</span>
+            <span class="hm-icon"><svg class="ico ico-ok"><use href="#i-check-circle"/></svg></span>
             <span class="hm-label">Rekap Absensi</span>
           </button>
           <button class="home-menu-btn" onclick="openSaranModal()">
-            <span class="hm-icon">💬</span>
+            <span class="hm-icon"><svg class="ico"><use href="#i-message"/></svg></span>
             <span class="hm-label">Kotak Saran</span>
           </button>
         </div>
@@ -786,13 +847,13 @@ button:active{transform:scale(.97);}
     <div class="page" id="page-petugas">
       <div class="section-title">Nama Petugas</div>
       <div class="section-sub">Daftar anggota KOMSOS yang bertugas sebagai operator.</div>
-      <button class="btn-secondary" style="width:100%; margin-bottom:14px;" onclick="shareRekapBulanan()">📤 Bagikan Rekap Bulan Ini ke WhatsApp</button>
+      <button class="btn-secondary" style="width:100%; margin-bottom:14px;" onclick="shareRekapBulanan()"><svg class="ico"><use href="#i-share"/></svg> Bagikan Rekap Bulan Ini ke WhatsApp</button>
 
       <div class="petugas-add" id="petugasAddRow" style="display:none;">
         <input type="text" id="newPetugasName" maxlength="30" placeholder="Nama petugas baru">
         <button class="btn-primary" onclick="tambahPetugas()">Tambah</button>
       </div>
-      <button class="btn-secondary" id="btnPerbaikanReferensi" style="width:100%; margin-bottom:14px; display:none; font-size:12.5px; opacity:0.8;" onclick="bukaPerbaikanReferensi()">🛠️ Perbaiki Referensi Petugas Rusak</button>
+      <button class="btn-secondary" id="btnPerbaikanReferensi" style="width:100%; margin-bottom:14px; display:none; font-size:12.5px; opacity:0.8;" onclick="bukaPerbaikanReferensi()"><svg class="ico"><use href="#i-wrench"/></svg> Perbaiki Referensi Petugas Rusak</button>
       <div id="petugasListArea"></div>
     </div>
 
@@ -830,23 +891,31 @@ button:active{transform:scale(.97);}
   </main>
 
   <nav class="bottomnav">
-    <button class="active" data-page="home" onclick="goPage('home')"><span class="ic">⌂</span>Beranda</button>
-    <button data-page="petugas" onclick="goPage('petugas')"><span class="ic">☺</span>Petugas</button>
-    <button data-page="tambah" onclick="goPage('tambah')" id="navTambah" style="display:none;"><span class="ic">+</span>Jadwal Baru</button>
-    <button data-page="profil" id="navProfil" onclick="bukaProfilSendiri()"><span class="ic-avatar-wrap" id="navProfilAvatarWrap"><span class="ic">◎</span></span>Profil</button>
+    <button class="active" data-page="home" onclick="goPage('home')"><span class="ic"><svg class="ico"><use href="#i-home"/></svg></span>Beranda</button>
+    <button data-page="petugas" onclick="goPage('petugas')"><span class="ic"><svg class="ico"><use href="#i-users"/></svg></span>Petugas</button>
+    <button data-page="tambah" onclick="goPage('tambah')" id="navTambah" style="display:none;"><span class="ic"><svg class="ico"><use href="#i-plus"/></svg></span>Jadwal Baru</button>
+    <button data-page="profil" id="navProfil" onclick="bukaProfilSendiri()"><span class="ic-avatar-wrap" id="navProfilAvatarWrap"><span class="ic"><svg class="ico"><use href="#i-user-circle"/></svg></span></span>Profil</button>
   </nav>
 </div>
 
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
   <div class="modal-sheet">
-    <span class="close-x" onclick="closeModal()">✕</span>
+    <span class="close-x" onclick="closeModal()"><svg class="ico"><use href="#i-x"/></svg></span>
     <h3 id="modalTitle"></h3>
     <div id="modalBody"></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
-<div id="loadingOverlay"><div class="spinner"></div><span>Memuat...</span></div>
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <span>Memuat...</span>
+  <div class="skeleton-stack">
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+  </div>
+</div>
 <audio id="bellSound" src="./mixkit-happy-bells-notification-937.wav" preload="auto"></audio>
 
 <script>
@@ -863,7 +932,7 @@ const PETUGAS_AWAL = ["Abet","Agung","Andreas Che","Angel","Anton","Apra","Aris"
 
 // Nama-nama ini (huruf kecil) statusnya OPSIONAL: masih boleh dipilih manual buat
 // bertugas sewaktu-waktu, tapi TIDAK dihitung dalam kuota 3x/bulan, tidak kena
-// peringatan ⚠️, dan tidak ikut dipilih oleh "Isi Otomatis". Sekarang digantikan
+// peringatan, dan tidak ikut dipilih oleh "Isi Otomatis". Sekarang digantikan
 // oleh fitur "Nonaktif" yang bisa di-toggle sendiri oleh tiap petugas.
 const NAMA_OPSIONAL = [];
 function tandaiOpsional(list){
@@ -978,9 +1047,6 @@ function getInfoLiturgi(tanggalInput){
     if(dataResmi) return dataResmi;
   }
 
-  const tetap = HARI_RAYA_TETAP.find(h => d.getMonth()+1===h.bulan && d.getDate()===h.tgl);
-  if(tetap) return {nama: tetap.nama, warna: tetap.warna, musim:'Hari Raya'};
-
   const paskahIni = hitungPaskahBatas(tahun);
   const natalLalu = hitungNatalBatas(tahun-1); // Epifani & Pembaptisan Januari tahun ini
   const natalIni  = hitungNatalBatas(tahun);   // Natal & Keluarga Kudus Desember tahun ini
@@ -1015,6 +1081,14 @@ function getInfoLiturgi(tanggalInput){
   for(let n=1;n<=5;n++){
     if(samaTanggalLiturgi(d, tambahHari(paskahIni.rabuAbu, 4 + (n-1)*7))) return {nama:`Hari Minggu Prapaskah ${ROMAWI_LITURGI[n]}`, warna:'ungu', musim:'Prapaskah'};
   }
+  // Aturan pemindahan (transfer rule): Hari Minggu musim istimewa (Adven/Prapaskah/Paskah,
+  // dicek di atas) tingkatnya LEBIH TINGGI daripada Hari Raya bertanggal tetap seperti
+  // Maria Dikandung Tanpa Noda (8 Des) -- makanya "tetap" BARU dicek di sini, setelah
+  // semua Minggu musim istimewa itu, tapi tetap SEBELUM Minggu Biasa di bawah (karena
+  // Hari Raya tetap justru menang atas Minggu Biasa biasa). Kasus tabrakan ini jarang
+  // (baru terjadi lagi di 2030, 2041, 2047), tapi begini urutan resminya.
+  const tetap = HARI_RAYA_TETAP.find(h => d.getMonth()+1===h.bulan && d.getDate()===h.tgl);
+  if(tetap) return {nama: tetap.nama, warna: tetap.warna, musim:'Hari Raya'};
   if(d.getDay()===0){
     if(d > natalLalu.pembaptisan && d < paskahIni.rabuAbu){
       const n = Math.round((d - natalLalu.pembaptisan)/(7*86400000)) + 1;
@@ -1047,12 +1121,57 @@ function getWarnaMusim(d){
   return 'hijau'; // Masa Biasa
 }
 
+/* ================= STATUS PEKERJAAN (dibaca sesi Claude mana pun) =================
+   Ini catatan status buat siapa pun (akun/sesi Claude lain) yang lanjut kerjakan file
+   ini, biar nggak kerja dobel atau bingung progress-nya sampai mana. Update baris di
+   bawah tiap kali salah satu poin ini mulai/selesai dikerjakan.
+
+   STATUS-SELESAI  : Transfer rule Paskah (Hari Raya tanggal tetap vs Minggu Adven/
+                      Prapaskah/Paskah) -- lihat getInfoLiturgi(), urutan sudah dibetulkan
+                      30 Sep 2026. Minggu musim istimewa sekarang menang atas Hari Raya
+                      tanggal tetap (sesuai aturan resmi Gereja), tapi Hari Raya tanggal
+                      tetap tetap menang atas Minggu Biasa biasa.
+   STATUS-SELESAI  : Tombol jam cepat -- lihat renderJamCepatHtml(), dipasang di kedua
+                      <input type="time"> (edit slot & slot manual "Lainnya").
+   STATUS-SELESAI  : Skeleton loading -- CSS .skeleton-card sekarang dipakai di
+                      #loadingOverlay (30 Sep 2026): 3 kartu shimmer nampil di balik
+                      spinner selagi nunggu dataReady (jadwal-list/saran-list/log-
+                      aktivitas) kelar dimuat, ganti alih-alih spinner polos doang.
+                      CATATAN: baru dipasang di overlay boot awal, BELUM di titik lain
+                      yang mungkin juga kerasa lag (mis. buka panel Rekap/Absensi
+                      pertama kali) -- longgar buat lanjutan kalau kerasa perlu.
+   STATUS-SELESAI  : Mode terang (light mode) -- toggle di menu Akun, tersimpan di
+                      localStorage['komsosTheme']. Semua latar rgba(255,255,255,0.0x)
+                      hardcode sudah diganti variabel --tint-1/2/3/--tint-line (gelap:
+                      putih transparan, terang: biru-tua transparan), plus override
+                      modal-sheet, bottomnav, gate-card & watermark utk mode terang
+                      (30 Sep 2026). header.appbar TETAP gelap di kedua mode (keputusan
+                      desain, bukan bug).
+   STATUS-SELESAI  : Ikon pengganti emoji (30 Sep 2026, v1.10.0). Sprite SVG <symbol>
+                      ada tepat setelah <body>; pakai <svg class="ico"><use href="#i-nama"/>
+                      </svg>. Emoji di teks polos (toast, judul modal, <option>, setGps)
+                      sengaja DIBUANG saja karena SVG tidak bisa dipakai di sana.
+                      Tambah ikon baru = tambah <symbol id="i-xxx"> di sprite.
+   ===================================================================================== */
+
 /* ---------------- PEMBARUAN APLIKASI (changelog in-app) ----------------
    Setiap kali app di-upgrade, naikkan APP_VERSION & tambah entri baru di atas
    CHANGELOG. Status "sudah dilihat" disimpan per-HP/browser lewat localStorage
    (bukan Firestore), jadi nggak perlu ubah Firestore Rules buat fitur ini. */
-const APP_VERSION = '1.7.1';
+const APP_VERSION = '1.10.0';
 const CHANGELOG = [
+  {versi:'1.10.0', tanggal:'30 Sep 2026', catatan:[
+    'Semua emoji di tampilan diganti ikon garis satu gaya (menu, tombol, status absen, profil, obrolan), jadi lebih rapi dan warnanya ikut tema.',
+    'Mode Terang dirapikan: latar tombol, badge, dan kartu kini ikut berubah sehingga kontrasnya nyaman dibaca.'
+  ]},
+  {versi:'1.9.0', tanggal:'30 Sep 2026', catatan:[
+    'Mode Terang ditambahkan — ganti lewat menu Akun (titik tiga) > Mode Terang/Gelap. Pilihanmu diingat otomatis di HP ini.',
+    'Layar "Memuat..." sekarang nampilin skeleton kartu (efek kilau) alih-alih spinner polos, biar kerasa lebih responsif.'
+  ]},
+  {versi:'1.8.0', tanggal:'30 Sep 2026', catatan:[
+    'Perbaikan urutan prioritas Kalender Liturgi: Hari Minggu Adven/Prapaskah/Paskah sekarang benar menang atas Hari Raya bertanggal tetap (mis. Maria Dikandung Tanpa Noda 8 Des) kalau kebetulan jatuh di tanggal yang sama -- kasus ini muncul lagi di 2030, 2041, dan 2047.',
+    'Tombol jam cepat (06:00, 07:00, 09:00, dst) ditambahkan di form jam slot, jadi nggak perlu muter-muter di jam picker bawaan HP tiap kali.'
+  ]},
   {versi:'1.7.1', tanggal:'30 Sep 2026', catatan:[
     'Perbaikan bug: beberapa nama peringatan di Kalender Liturgi 2026 & 2027 terpotong di tengah kata (mis. \"...pujangga Ger\" jadi lengkap \"...pujangga Gereja\") -- penyebabnya kesalahan pemrosesan data, sudah diperbaiki total.',
     'Perbaikan bug: Saran Nama Misa di Jadwal Baru (mode Pola Akhir Pekan) dulu selalu mengambil liturgi H+1 walau tanggal yang dipilih bukan hari Sabtu, jadi salah saran. Sekarang cuma +1 hari kalau tanggalnya beneran Sabtu.',
@@ -1133,7 +1252,7 @@ function cekPembaruanVersi(){
   }catch(e){ /* localStorage nggak tersedia (mode privat dll) — lewati fitur ini */ }
 }
 function bukaPembaruan(){
-  document.getElementById('modalTitle').textContent = `🎉 Pembaruan Aplikasi`;
+  document.getElementById('modalTitle').textContent = `Pembaruan Aplikasi`;
   document.getElementById('modalBody').innerHTML = CHANGELOG.map((c,idx)=>`
     <div style="margin-bottom:${idx===CHANGELOG.length-1?'0':'18px'}; padding-bottom:${idx===CHANGELOG.length-1?'0':'16px'}; border-bottom:${idx===CHANGELOG.length-1?'none':'1px solid var(--line)'};">
       <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
@@ -1459,7 +1578,7 @@ async function kirimNotifikasiUjiCoba(){
     }else if(!data.terkirim){
       showToast(data.pesan || 'Belum ada HP yang mengaktifkan notifikasi.');
     }else{
-      showToast(`Terkirim ke ${data.terkirim} HP! 🎉`);
+      showToast(`Terkirim ke ${data.terkirim} HP!`);
       playNotifSound();
     }
   }catch(e){
@@ -1575,8 +1694,8 @@ function renderUlangTahunBanner(){
   if(list.length===0){ area.innerHTML=''; return; }
   area.innerHTML = `<div class="pengingat-card" style="background:linear-gradient(135deg, rgba(255,180,80,0.2), rgba(255,107,107,0.08)); border-color:rgba(255,180,80,0.4); display:flex;">
     <div>
-      <div class="judul">🎉 Selamat Ulang Tahun!</div>
-      <div class="isi">${list.map(p=>`🎂 <b>${escapeHtml(p.nama)}</b>`).join(', ')} lagi berulang tahun hari ini. Yuk kirim ucapan ke mereka!</div>
+      <div class="judul"><svg class="ico"><use href="#i-sparkles"/></svg> Selamat Ulang Tahun!</div>
+      <div class="isi">${list.map(p=>`<svg class="ico"><use href="#i-cake"/></svg> <b>${escapeHtml(p.nama)}</b>`).join(', ')} lagi berulang tahun hari ini. Yuk kirim ucapan ke mereka!</div>
     </div>
   </div>`;
 }
@@ -1614,9 +1733,9 @@ function cekWajibProfil(){
   if(!profil.tglLahir) bukaFormWajibLahir();
 }
 function bukaFormWajibLahir(){
-  document.getElementById('modalTitle').textContent = '🎂 Lengkapi Tanggal Lahir';
+  document.getElementById('modalTitle').textContent = 'Lengkapi Tanggal Lahir';
   document.getElementById('modalBody').innerHTML = `
-    <div class="section-sub" style="margin-bottom:14px;">Sebelum lanjut, isi dulu tanggal lahirmu ya — biar teman-teman KOMSOS bisa ikut merayakan hari ulang tahunmu bareng-bareng! 🎉 Data ini wajib diisi untuk semua anggota.</div>
+    <div class="section-sub" style="margin-bottom:14px;">Sebelum lanjut, isi dulu tanggal lahirmu ya — biar teman-teman KOMSOS bisa ikut merayakan hari ulang tahunmu bareng-bareng! Data ini wajib diisi untuk semua anggota.</div>
     <label style="display:block; font-size:11.5px; font-weight:600; color:var(--muted); margin-bottom:6px;">Tanggal Lahir</label>
     <input type="date" id="wajibTglLahir" class="modal-field" max="${new Date().toISOString().slice(0,10)}">
     <div class="gate-error" id="wajibTglLahirError"></div>
@@ -1635,7 +1754,7 @@ async function simpanTglLahirWajib(){
   modalLocked = false;
   document.getElementById('modalOverlay').classList.remove('locked');
   closeModal();
-  showToast('Makasih! Tanggal lahirmu tersimpan 🎂');
+  showToast('Makasih! Tanggal lahirmu tersimpan.');
   renderUlangTahunBanner();
 }
 
@@ -1806,8 +1925,8 @@ window.addEventListener('load', ()=> setTimeout(hideSplash, 3300));
 /* --- Tampilan mata buka/tutup, dipakai di semua input password --- */
 function togglePw(inputId, eyeEl){
   const input = document.getElementById(inputId);
-  if(input.type === 'password'){ input.type = 'text'; eyeEl.textContent = '🙈'; }
-  else{ input.type = 'password'; eyeEl.textContent = '👁️'; }
+  if(input.type === 'password'){ input.type = 'text'; eyeEl.innerHTML = '<svg class="ico"><use href="#i-eye-off"/></svg>'; }
+  else{ input.type = 'password'; eyeEl.innerHTML = '<svg class="ico"><use href="#i-eye"/></svg>'; }
 }
 
 /* --- Pindah antar tampilan Masuk / Daftar / Lupa Password --- */
@@ -1971,7 +2090,7 @@ async function perbaikiJudulJadwalLama(){
   if(berubah){
     await saveList('jadwal-list', jadwalList);
     refreshHomeViews();
-    showToast('Judul jadwal lama otomatis disesuaikan dengan kalender liturgi. 📅');
+    showToast('Judul jadwal lama otomatis disesuaikan dengan kalender liturgi.');
   }
 }
 
@@ -1990,25 +2109,25 @@ function bukaBantuan(){
     <div style="font-size:13.5px; line-height:1.65; color:var(--text);">
       <p style="margin-bottom:14px;"><b>KOMSOS</b> adalah aplikasi jadwal petugas operator misa Paroki Keluarga Kudus Pontianak.</p>
 
-      <p style="margin:0 0 6px; font-weight:700;">📅 Isi slot sendiri</p>
+      <p style="margin:0 0 6px; font-weight:700;"><svg class="ico"><use href="#i-calendar"/></svg> Isi slot sendiri</p>
       <p style="margin-bottom:14px; color:var(--muted);">Di halaman Beranda, kalau ada slot misa yang masih kosong, kamu bisa ketuk "+ isi slot ini" buat masukkan namamu sendiri. Berubah pikiran? Ketuk "(batal)" buat mundur lagi.</p>
 
-      <p style="margin:0 0 6px; font-weight:700;">👤 Nonaktifkan diri sementara</p>
+      <p style="margin:0 0 6px; font-weight:700;"><svg class="ico"><use href="#i-user"/></svg> Nonaktifkan diri sementara</p>
       <p style="margin-bottom:14px; color:var(--muted);">Buka menu Petugas, ketuk namamu sendiri, lalu ketuk "Nonaktifkan Namaku Sementara" kalau lagi nggak bisa bertugas beberapa waktu. Kamu nggak akan dipilih fitur "Isi Otomatis" selama nonaktif. Aktifkan lagi kapan saja dari tempat yang sama.</p>
 
-      <p style="margin:0 0 6px; font-weight:700;">💬 Kotak Saran</p>
+      <p style="margin:0 0 6px; font-weight:700;"><svg class="ico"><use href="#i-message"/></svg> Kotak Saran</p>
       <p style="margin-bottom:14px; color:var(--muted);">Ada masukan buat tim KOMSOS? Tulis lewat tombol "Kotak Saran" di Beranda.</p>
 
-      <p style="margin:0 0 6px; font-weight:700;">🔔 Notifikasi Pengingat</p>
+      <p style="margin:0 0 6px; font-weight:700;"><svg class="ico"><use href="#i-bell"/></svg> Notifikasi Pengingat</p>
       <p style="margin-bottom:14px; color:var(--muted);">Aktifkan notifikasi dari banner di Beranda supaya HP-mu diingatkan otomatis menjelang jadwal tugasmu.</p>
 
-      <p style="margin:0 0 6px; font-weight:700;">📆 Kalender Liturgi Otomatis</p>
+      <p style="margin:0 0 6px; font-weight:700;"><svg class="ico"><use href="#i-calendar"/></svg> Kalender Liturgi Otomatis</p>
       <p style="margin-bottom:14px; color:var(--muted);">Waktu PJ pilih tanggal di "Tambah Jadwal", nama hari Minggu/hari raya akan tersaran otomatis (tinggal ketuk "Gunakan"), dan tiap kartu jadwal menampilkan badge warna liturgi musim itu. Ini cuma saran — tetap bisa diedit manual kapan saja.</p>
 
-      <p style="margin:0 0 6px; font-weight:700;">🎉 Pembaruan Aplikasi</p>
+      <p style="margin:0 0 6px; font-weight:700;"><svg class="ico"><use href="#i-sparkles"/></svg> Pembaruan Aplikasi</p>
       <p style="margin-bottom:14px; color:var(--muted);">Ketuk ikon toa di pojok kanan atas buat lihat riwayat pembaruan & versi KOMSOS yang sedang berjalan.</p>
 
-      <p style="margin:0 0 6px; font-weight:700;">❓ Ada kendala?</p>
+      <p style="margin:0 0 6px; font-weight:700;"><svg class="ico"><use href="#i-help"/></svg> Ada kendala?</p>
       <p style="margin:0; color:var(--muted);">Hubungi PJ KOMSOS lewat WhatsApp seperti biasa kalau ada yang error, data yang salah, atau butuh bantuan lain.</p>
     </div>
   `;
@@ -2085,17 +2204,17 @@ function renderPengingat(){
     const jamHadir = jamMundur(s.jam, 30);
     const selesai = semuaSlotTanggal(todayStr).filter(x=> x.jam < s.jam);
     const subList = selesai.length>0
-      ? `<div class="sub-list">${selesai.map(x=>`✓ Misa ${x.jam} sudah selesai`).join('<br>')}</div>` : '';
+      ? `<div class="sub-list">${selesai.map(x=>`<svg class="ico"><use href="#i-check"/></svg> Misa ${x.jam} sudah selesai`).join('<br>')}</div>` : '';
 
     if(menitLagi > -180 && menitLagi <= 60){
       area.innerHTML = `<div class="pengingat-card">
-        <div class="judul">⏰ Giliranmu sebentar lagi!</div>
+        <div class="judul"><svg class="ico"><use href="#i-clock"/></svg> Giliranmu sebentar lagi!</div>
         <div class="isi">Kamu bertugas hari ini jam <b>${s.jam}</b> (${escapeHtml(s.namaMisa)}). Usahakan sudah hadir jam <b>${jamHadir}</b> (30 menit sebelum misa mulai).</div>
         ${subList}
       </div>`;
     }else if(menitLagi > 60){
       area.innerHTML = `<div class="pengingat-card info">
-        <div class="judul">📋 Kamu bertugas hari ini</div>
+        <div class="judul"><svg class="ico"><use href="#i-clipboard"/></svg> Kamu bertugas hari ini</div>
         <div class="isi">Giliranmu jam <b>${s.jam}</b> (${escapeHtml(s.namaMisa)}). Usahakan hadir jam <b>${jamHadir}</b> (30 menit sebelum misa mulai).</div>
         ${subList}
       </div>`;
@@ -2108,7 +2227,7 @@ function renderPengingat(){
   if(slotBesok.length>0){
     const s = slotBesok[0];
     area.innerHTML = `<div class="pengingat-card info">
-      <div class="judul">🔔 Besok kamu bertugas</div>
+      <div class="judul"><svg class="ico"><use href="#i-bell"/></svg> Besok kamu bertugas</div>
       <div class="isi">Jam <b>${s.jam}</b> pada Misa <b>${escapeHtml(s.namaMisa)}</b>. Jangan lupa siap-siap ya!</div>
     </div>`;
     return;
@@ -2311,7 +2430,7 @@ function isiPengumuman(){
       <div style="font-size:11.5px;color:var(--muted);">${new Date(p.dibuat).toLocaleString('id-ID',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}${p.oleh?` · ${escapeHtml(p.oleh)}`:''}</div>
       ${p.foto?`<img src="${p.foto}" alt="Pengumuman" onclick="bukaFotoBesar(this.src,'Pengumuman')">`:''}
       ${p.teks?`<div style="white-space:pre-wrap;font-size:15px;">${escapeHtml(p.teks)}</div>`:''}
-      ${currentRole==='editor'?`<button class="btn-secondary" style="margin-top:10px;color:var(--maroon);border-color:var(--maroon-bg);" onclick="hapusPengumuman('${p.id}')">🗑 Hapus</button>`:''}
+      ${currentRole==='editor'?`<button class="btn-secondary" style="margin-top:10px;color:var(--maroon);border-color:var(--maroon-bg);" onclick="hapusPengumuman('${p.id}')"><svg class="ico"><use href="#i-trash"/></svg> Hapus</button>`:''}
     </div>`).join('') : '<div class="empty-note">Belum ada pengumuman.</div>';
   document.getElementById('modalBody').innerHTML = `<div id="pengOpen">${currentRole==='editor'?'<button class="btn-primary" style="width:100%;margin-bottom:14px;" onclick="formPengumuman()">＋ Buat Pengumuman</button>':''}${isi}</div>`;
 }
@@ -2374,11 +2493,11 @@ async function mulaiScanAbsen(jid, sid){
   const setGps = (t)=>{ const g = document.getElementById('scanGps'); if(g) g.textContent = t; };
   // Dua pemantau sekaligus: jaringan (cepat, cukup di dalam ruangan) dan GPS (lebih akurat). Dipakai yang paling akurat.
   const wids = [];
-  const terimaPos = p=>{ const a = Math.round(p.coords.accuracy); if(!posisi || a <= posisi.akurasi) posisi = {lat:p.coords.latitude, lng:p.coords.longitude, akurasi:a}; setGps('📍 Lokasi siap (±' + posisi.akurasi + ' m)'); };
-  const galatPos = e=>{ if(e.code===1){ gpsDitolak = true; setGps('📍 Izin lokasi ditolak. Aktifkan di pengaturan situs Chrome.'); } else if(!posisi) setGps('📍 Lokasi belum tersedia, pastikan Lokasi HP menyala...'); };
+  const terimaPos = p=>{ const a = Math.round(p.coords.accuracy); if(!posisi || a <= posisi.akurasi) posisi = {lat:p.coords.latitude, lng:p.coords.longitude, akurasi:a}; setGps('Lokasi siap (±' + posisi.akurasi + ' m)'); };
+  const galatPos = e=>{ if(e.code===1){ gpsDitolak = true; setGps('Izin lokasi ditolak. Aktifkan di pengaturan situs Chrome.'); } else if(!posisi) setGps('Lokasi belum tersedia, pastikan Lokasi HP menyala...'); };
   if(navigator.geolocation) [false, true].forEach(h=>wids.push(navigator.geolocation.watchPosition(terimaPos, galatPos, {enableHighAccuracy:h, maximumAge:15000, timeout:30000})));
   const wrap = document.createElement('div'); wrap.className = 'scan-wrap';
-  wrap.innerHTML = `<div style="font-weight:700;">Arahkan kamera ke QR di meja operator</div><video playsinline muted></video><div id="scanInfo" style="font-size:13px;opacity:.8;">Mencari QR...</div><div id="scanGps" style="font-size:12px;opacity:.8;">📍 Mencari lokasi...</div><button class="btn-secondary" id="scanBatal">Batal</button>`;
+  wrap.innerHTML = `<div style="font-weight:700;">Arahkan kamera ke QR di meja operator</div><video playsinline muted></video><div id="scanInfo" style="font-size:13px;opacity:.8;">Mencari QR...</div><div id="scanGps" style="font-size:12px;opacity:.8;"><svg class="ico"><use href="#i-pin"/></svg> Mencari lokasi...</div><button class="btn-secondary" id="scanBatal">Batal</button>`;
   document.body.appendChild(wrap);
   const video = wrap.querySelector('video'); video.srcObject = stream; await video.play().catch(()=>{});
   let aktif = true;
@@ -2408,7 +2527,7 @@ async function mulaiScanAbsen(jid, sid){
           tutup(); lapisanTutup(); closeModal();
           catatLog(`absen "hadir${r.telat?' (telat)':''}" via QR untuk slot ${namaHariDari(s)} ${s.jam} jadwal "${j.namaMisa}"`);
           efekBerhasil();
-          showToast(r.telat ? 'Absen tercatat (terlambat).' : 'Absen hadir tercatat. Terima kasih! 🙏');
+          showToast(r.telat ? 'Absen tercatat (terlambat).' : 'Absen hadir tercatat. Terima kasih!');
         }catch(e){
           info.textContent = e.message + ' — arahkan lagi ke QR.'; aktif = true;
         }
@@ -2425,10 +2544,10 @@ function lihatAbsen(jid, sid, pid){
   document.getElementById('modalTitle').textContent = 'Detail Absen';
   document.getElementById('modalBody').innerHTML = `<div style="line-height:1.7;font-size:15px;">
     <b>${escapeHtml(namaPetugas(pid))}</b><br>
-    Status: ${rec.status==='hadir' ? (rec.telat?'⚠️ Hadir (telat)':'✅ Hadir tepat waktu') : '❌ Tidak hadir'}<br>
+    Status: ${rec.status==='hadir' ? (rec.telat?'<svg class="ico ico-warn"><use href="#i-alert"/></svg> Hadir (telat)':'<svg class="ico ico-ok"><use href="#i-check-circle"/></svg> Hadir tepat waktu') : '<svg class="ico ico-bad"><use href="#i-x-circle"/></svg> Tidak hadir'}<br>
     Waktu: ${new Date(rec.waktu).toLocaleString('id-ID')}<br>
     ${rec.alasan?`Alasan: ${escapeHtml(rec.alasan)}<br>`:''}
-    ${rec.status==='hadir' ? `Verifikasi: ${rec.metode==='qr'?'✅ Scan QR':'⚠️ Manual (tanpa scan QR)'}<br>Lokasi: ${lok}` : ''}</div>`;
+    ${rec.status==='hadir' ? `Verifikasi: ${rec.metode==='qr'?'<svg class="ico ico-ok"><use href="#i-check-circle"/></svg> Scan QR':'<svg class="ico ico-warn"><use href="#i-alert"/></svg> Manual (tanpa scan QR)'}<br>Lokasi: ${lok}` : ''}</div>`;
   document.getElementById('modalOverlay').classList.add('open');
 }
 
@@ -2476,6 +2595,12 @@ function namaHariDari(s){ return new Date(s.tanggal).toLocaleDateString('id-ID',
   const u = document.getElementById('updateDot'), m = document.getElementById('menuDot');
   if(u && m){ const f = ()=>{ m.style.display = (u.style.display==='none') ? 'none' : 'block'; }; new MutationObserver(f).observe(u,{attributes:true, attributeFilter:['style']}); f(); }
 })();
+function toggleTheme(){
+  const now = document.documentElement.getAttribute('data-theme')==='light' ? 'dark' : 'light';
+  if(now==='light') document.documentElement.setAttribute('data-theme','light');
+  else document.documentElement.removeAttribute('data-theme');
+  try{ localStorage.setItem('komsosTheme', now); }catch(e){}
+}
 function bukaMenuAkun(){
   const p = petugasList.find(x=>x.id===currentPetugasId);
   const nama = (p && p.nama) || (currentUserData && (currentUserData.nama || currentUserData.email)) || 'Akun';
@@ -2483,11 +2608,12 @@ function bukaMenuAkun(){
   const item = (ic, t, fn, cls='')=>`<button class="menu-item ${cls}" onclick="closeModal(); setTimeout(()=>{ ${fn} }, 240);"><span class="mi-ic">${ic}</span><span>${t}</span></button>`;
   document.getElementById('modalTitle').textContent = 'Menu';
   document.getElementById('modalBody').innerHTML = `<div class="menu-user"><b>${escapeHtml(nama)}</b><small>${rb ? escapeHtml(rb.textContent) : ''}</small></div>`
-    + (currentPetugasId ? item('👤','Profil saya','bukaProfilSendiri()') : '')
+    + (currentPetugasId ? item('<svg class="ico"><use href="#i-user"/></svg>','Profil saya','bukaProfilSendiri()') : '')
     + item('🆕','Pembaruan Aplikasi','bukaPembaruan()')
-    + item('❓','Bantuan','bukaBantuan()')
-    + (currentRole==='editor' ? item('🧪','Kirim notifikasi uji coba','kirimNotifikasiUjiCoba()') : '')
-    + item('🚪','Keluar','logout()','danger');
+    + item('<svg class="ico"><use href="#i-help"/></svg>','Bantuan','bukaBantuan()')
+    + item(document.documentElement.getAttribute('data-theme')==='light' ? '<svg class="ico"><use href="#i-moon"/></svg>' : '<svg class="ico"><use href="#i-sun"/></svg>', document.documentElement.getAttribute('data-theme')==='light' ? 'Mode Gelap' : 'Mode Terang', 'toggleTheme()')
+    + (currentRole==='editor' ? item('<svg class="ico"><use href="#i-flask"/></svg>','Kirim notifikasi uji coba','kirimNotifikasiUjiCoba()') : '')
+    + item('<svg class="ico"><use href="#i-log-out"/></svg>','Keluar','logout()','danger');
   document.getElementById('modalOverlay').classList.add('open');
 }
 
@@ -2511,8 +2637,8 @@ function renderTugasSaya(){
   const {j, s, t} = nxt, rec = s.absensi ? s.absensi[currentPetugasId] : null, diff = t - now;
   const kapan = diff <= 0 ? 'Jam tugasmu sudah tiba' : diff < 3600e3 ? `${Math.max(1, Math.round(diff/60000))} menit lagi` : diff < 86400e3 ? `${Math.round(diff/3600e3)} jam lagi` : `${Math.ceil(diff/86400e3)} hari lagi`;
   let aksi = '';
-  if(rec) aksi = `<div style="font-weight:700;">${rec.status==='hadir' ? (rec.telat ? '⚠️ Absen tercatat (telat)' : '✅ Kamu sudah absen') : '❌ Tercatat tidak hadir'}</div>`;
-  else if(jendelaAbsenTerbuka(s)) aksi = `<button class="btn-primary" style="width:100%;" onclick="bukaAbsenModal('${j.id}','${s.id}')">✋ Absen Sekarang</button>`;
+  if(rec) aksi = `<div style="font-weight:700;">${rec.status==='hadir' ? (rec.telat ? '<svg class="ico ico-warn"><use href="#i-alert"/></svg> Absen tercatat (telat)' : '<svg class="ico ico-ok"><use href="#i-check-circle"/></svg> Kamu sudah absen') : '<svg class="ico ico-bad"><use href="#i-x-circle"/></svg> Tercatat tidak hadir'}</div>`;
+  else if(jendelaAbsenTerbuka(s)) aksi = `<button class="btn-primary" style="width:100%;" onclick="bukaAbsenModal('${j.id}','${s.id}')"><svg class="ico"><use href="#i-hand"/></svg> Absen Sekarang</button>`;
   el.innerHTML = `<div class="tugas-card"><div class="tk">Tugasmu berikutnya</div>
     <div class="tj">${namaHariDari(s)}, ${new Date(s.tanggal).toLocaleDateString('id-ID',{day:'2-digit',month:'short'})} · ${s.jam}</div>
     <div class="ts">${escapeHtml(j.namaMisa)} — ${kapan}</div>${aksi}</div>`;
@@ -2544,8 +2670,8 @@ function bukaRingkasanPJ(){
   const d = dataRingkasanPJ(); if(!d) return;
   const blok = (ic, t, arr)=> arr.length ? `<div style="margin-bottom:14px;"><b>${ic} ${t} (${arr.length})</b><div style="color:var(--muted); font-size:14px; line-height:1.7;">${arr.map(x=>`${escapeHtml(x.nama)} · ${x.jam}`).join('<br>')}</div></div>` : '';
   document.getElementById('modalTitle').textContent = 'Ringkasan Absen';
-  document.getElementById('modalBody').innerHTML = blok('✅','Hadir',d.g.hadir) + blok('⚠️','Telat',d.g.telat) + blok('❌','Tidak hadir',d.g.tidak) + blok('⏳','Belum absen',d.g.belum)
-    + (d.tanpaAkun.length ? `<div><b>🚫 Belum punya akun (${d.tanpaAkun.length})</b><div style="color:var(--muted); font-size:14px; line-height:1.7;">${d.tanpaAkun.map(p=>escapeHtml(p.nama)).join(', ')}</div></div>` : '');
+  document.getElementById('modalBody').innerHTML = blok('<svg class="ico ico-ok"><use href="#i-check-circle"/></svg>','Hadir',d.g.hadir) + blok('<svg class="ico ico-warn"><use href="#i-alert"/></svg>','Telat',d.g.telat) + blok('<svg class="ico ico-bad"><use href="#i-x-circle"/></svg>','Tidak hadir',d.g.tidak) + blok('<svg class="ico ico-wait"><use href="#i-clock"/></svg>','Belum absen',d.g.belum)
+    + (d.tanpaAkun.length ? `<div><b><svg class="ico"><use href="#i-ban"/></svg> Belum punya akun (${d.tanpaAkun.length})</b><div style="color:var(--muted); font-size:14px; line-height:1.7;">${d.tanpaAkun.map(p=>escapeHtml(p.nama)).join(', ')}</div></div>` : '');
   document.getElementById('modalOverlay').classList.add('open');
 }
 function renderBerandaExtra(){ renderTugasSaya(); renderRingkasanPJ(); }
@@ -2594,7 +2720,7 @@ function renderNavProfilAvatar(){
   const wrap = document.getElementById('navProfilAvatarWrap');
   if(!wrap) return;
   if(!currentPetugasId){
-    wrap.innerHTML = '<span class="ic">◎</span>';
+    wrap.innerHTML = '<span class="ic"><svg class="ico"><use href="#i-user-circle"/></svg></span>';
     return;
   }
   const profil = getProfil(currentPetugasId);
@@ -2688,7 +2814,7 @@ function slotSudahLewatUntukAbsen(s){
   return Date.now() > akhirHari.getTime();
 }
 
-// Nyalakan titik kecil di tombol "💬 Obrolan" kalau jadwal itu punya obrolan.
+// Nyalakan titik kecil di tombol "Obrolan" kalau jadwal itu punya obrolan.
 // Sengaja pakai get() satu kali (bukan onSnapshot permanen) supaya nggak buka
 // puluhan koneksi realtime sekaligus cuma buat nampilin kartu-kartu di Beranda.
 async function tandaiObrolanAktifDiKartu(list){
@@ -2712,7 +2838,7 @@ function buildJadwalCardsHtml(list){
     // Info konteks "hari ini pesta/peringatan siapa" — cuma nama hari raya/pestanya
     // (bukan bacaan/riwayat orang kudus dari sumber lain), berguna buat salam pembuka slide.
     const infoHariRaya = getInfoLiturgi(anchor);
-    const infoBadge = infoHariRaya ? `<div class="info-hariraya">📌 <b>${escapeHtml(infoHariRaya.nama)}</b></div>` : '';
+    const infoBadge = infoHariRaya ? `<div class="info-hariraya"><svg class="ico"><use href="#i-bookmark"/></svg> <b>${escapeHtml(infoHariRaya.nama)}</b></div>` : '';
     const slots = j.slots.map(s=>{
       const tgl = new Date(s.tanggal);
       const tglStr = tgl.toLocaleDateString('id-ID', {day:'2-digit', month:'short'});
@@ -2721,9 +2847,9 @@ function buildJadwalCardsHtml(list){
         const rec = s.absensi ? s.absensi[id] : null;
         let badge = '';
         if(rec){
-          badge = rec.status==='hadir' ? (rec.telat ? ' ⚠️' : ' ✅') : ' ❌';
+          badge = rec.status==='hadir' ? (rec.telat ? ' <svg class="ico ico-warn"><use href="#i-alert"/></svg>' : ' <svg class="ico ico-ok"><use href="#i-check-circle"/></svg>') : ' <svg class="ico ico-bad"><use href="#i-x-circle"/></svg>';
         }else if(slotSudahLewatUntukAbsen(s)){
-          badge = ' ⏳';
+          badge = ' <svg class="ico ico-wait"><use href="#i-clock"/></svg>';
         }
         const klik = (currentRole==='editor' && rec) ? ` onclick="lihatAbsen('${j.id}','${s.id}','${id}')" style="cursor:pointer;"` : '';
         return `<span class="nm-row"><span class="nm-t">${nama}</span><span class="nm-b"${klik}>${badge.trim()}</span></span>`;
@@ -2736,7 +2862,7 @@ function buildJadwalCardsHtml(list){
         aksi = `<button class="btn-mini batal" onclick="batalkanSlotSendiri('${j.id}','${s.id}')">Batal</button>`;
         const recSaya = s.absensi ? s.absensi[currentPetugasId] : null;
         if(!recSaya && jendelaAbsenTerbuka(s)){
-          aksi = `<button class="btn-mini absen" onclick="bukaAbsenModal('${j.id}','${s.id}')">✋ Absen Sekarang</button>` + aksi;
+          aksi = `<button class="btn-mini absen" onclick="bukaAbsenModal('${j.id}','${s.id}')"><svg class="ico"><use href="#i-hand"/></svg> Absen Sekarang</button>` + aksi;
         }
         aksi = `<span class="slot-aksi">${aksi}</span>`;
       }else if(sisaSeat > 0 && currentPetugasId){
@@ -2748,17 +2874,17 @@ function buildJadwalCardsHtml(list){
     }).join('');
     const jadwalLewat = jadwalSudahLewat(j);
     const tombolObrolan = jadwalLewat
-      ? `<button class="btn-secondary" style="opacity:0.7;" onclick="bukaObrolanJadwal('${j.id}')" title="Jadwal sudah lewat, obrolan ditutup tapi arsip masih bisa dibaca">🔒 Obrolan ditutup (baca arsip)</button>`
-      : `<button class="btn-secondary" style="position:relative;" onclick="bukaObrolanJadwal('${j.id}')">💬 Obrolan<span id="chatDot-${j.id}" class="icon-dot" style="display:none; position:absolute; top:-3px; right:-3px;"></span></button>`;
+      ? `<button class="btn-secondary" style="opacity:0.7;" onclick="bukaObrolanJadwal('${j.id}')" title="Jadwal sudah lewat, obrolan ditutup tapi arsip masih bisa dibaca"><svg class="ico"><use href="#i-lock"/></svg> Obrolan ditutup (baca arsip)</button>`
+      : `<button class="btn-secondary" style="position:relative;" onclick="bukaObrolanJadwal('${j.id}')"><svg class="ico"><use href="#i-message"/></svg> Obrolan<span id="chatDot-${j.id}" class="icon-dot" style="display:none; position:absolute; top:-3px; right:-3px;"></span></button>`;
     return `<div class="jadwal-card">
       <div class="judul${judulTeks.length>58?' judul-sm':(judulTeks.length>40?' judul-md':'')}">${escapeHtml(judulTeks)}</div>
       ${musimBadge}
-      <div class="legend-abs"><span>✅ hadir</span><span>⚠️ telat</span><span>❌ tidak hadir</span><span>⏳ belum absen</span></div>
+      <div class="legend-abs"><span><svg class="ico ico-ok"><use href="#i-check-circle"/></svg> hadir</span><span><svg class="ico ico-warn"><use href="#i-alert"/></svg> telat</span><span><svg class="ico ico-bad"><use href="#i-x-circle"/></svg> tidak hadir</span><span><svg class="ico ico-wait"><use href="#i-clock"/></svg> belum absen</span></div>
       ${slots}
       <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
         ${tombolObrolan}
         ${currentRole==='editor' ? `<button class="btn-secondary" onclick="shareWA('${j.id}')">Bagikan ke WhatsApp</button>` : ''}
-        ${currentRole==='editor' ? `<button class="btn-secondary" onclick="editJadwal('${j.id}')">✏️ Edit</button>` : ''}
+        ${currentRole==='editor' ? `<button class="btn-secondary" onclick="editJadwal('${j.id}')"><svg class="ico"><use href="#i-edit"/></svg> Edit</button>` : ''}
         ${currentRole==='editor' ? `<button class="btn-secondary" style="color:var(--maroon); border-color:var(--maroon-bg);" onclick="hapusJadwal('${j.id}')">Hapus</button>` : ''}
       </div>
     </div>`;
@@ -2779,7 +2905,7 @@ async function isiSlotSendiri(jadwalId, slotId){
   catatLog(`mengisi sendiri slot ${namaHariDari(s)} ${s.jam} di jadwal "${j.namaMisa}"`);
   refreshHomeViews();
   renderPetugas();
-  showToast('Berhasil! Namamu ditambahkan ke slot ini. 🙏');
+  showToast('Berhasil! Namamu ditambahkan ke slot ini.');
 }
 
 async function batalkanSlotSendiri(jadwalId, slotId){
@@ -2810,14 +2936,14 @@ function bukaAbsenModal(jadwalId, slotId){
   document.getElementById('modalTitle').textContent = 'Absen Kehadiran';
   document.getElementById('modalBody').innerHTML = `
     <div class="section-sub" style="margin-bottom:10px;">${escapeHtml(j.namaMisa)} — ${namaHariDari(s)}, ${tglStr} jam ${s.jam}</div>
-    ${telat ? `<div class="section-sub" style="color:var(--maroon); margin-bottom:4px;">⚠️ Sudah lewat jam mulai tugas. Kalau kamu pilih "Saya Hadir", wajib isi alasan keterlambatan dulu.</div>` : ''}
+    ${telat ? `<div class="section-sub" style="color:var(--maroon); margin-bottom:4px;"><svg class="ico ico-warn"><use href="#i-alert"/></svg> Sudah lewat jam mulai tugas. Kalau kamu pilih "Saya Hadir", wajib isi alasan keterlambatan dulu.</div>` : ''}
     <div id="absenAlasanWrap" style="display:${telat ? 'block' : 'none'}; margin:10px 0;">
       <label style="display:block; font-size:11.5px; font-weight:600; color:var(--muted); margin-bottom:6px;">Alasan Terlambat <span style="color:var(--maroon);">*wajib</span></label>
       <textarea id="absenAlasan" class="modal-field" maxlength="200" placeholder="Contoh: macet di jalan, ada urusan mendadak, dst."></textarea>
     </div>
     <div style="display:flex; gap:10px; margin-top:6px;">
-      <button class="btn-primary" style="flex:1;" onclick="mulaiScanAbsen('${jadwalId}','${slotId}')">📷 Scan QR &amp; Hadir</button>
-      <button class="btn-secondary" style="flex:1; color:var(--maroon); border-color:var(--maroon-bg);" onclick="submitAbsen('${jadwalId}','${slotId}','tidak_hadir')">❌ Tidak Hadir</button>
+      <button class="btn-primary" style="flex:1;" onclick="mulaiScanAbsen('${jadwalId}','${slotId}')"><svg class="ico"><use href="#i-camera"/></svg> Scan QR &amp; Hadir</button>
+      <button class="btn-secondary" style="flex:1; color:var(--maroon); border-color:var(--maroon-bg);" onclick="submitAbsen('${jadwalId}','${slotId}','tidak_hadir')"><svg class="ico ico-bad"><use href="#i-x-circle"/></svg> Tidak Hadir</button>
     </div>
   `;
   document.getElementById('modalOverlay').classList.add('open');
@@ -2846,7 +2972,7 @@ async function submitAbsen(jadwalId, slotId, status){
   catatLog(`absen "${status==='hadir' ? (telat?'hadir (telat)':'hadir') : 'tidak hadir'}" untuk slot ${namaHariDari(s)} ${s.jam} jadwal "${j.namaMisa}"${alasan ? ` — alasan: "${alasan}"` : ''}`);
   closeModal();
   refreshHomeViews();
-  showToast(status === 'hadir' ? (telat ? 'Absen tercatat (terlambat).' : 'Absen hadir tercatat. Terima kasih! 🙏') : 'Absen tidak hadir tercatat.');
+  showToast(status === 'hadir' ? (telat ? 'Absen tercatat (terlambat).' : 'Absen hadir tercatat. Terima kasih!') : 'Absen tidak hadir tercatat.');
 }
 
 /* ---------------- OBROLAN PER JADWAL ----------------
@@ -2880,9 +3006,9 @@ function bukaObrolanJadwal(jadwalId){
   currentChatJadwalId = jadwalId;
   chatReplyTo = null;
   chatEditingId = null;
-  document.getElementById('modalTitle').textContent = `💬 Obrolan — ${j.namaMisa}`;
+  document.getElementById('modalTitle').textContent = `Obrolan — ${j.namaMisa}`;
   const inputHtml = jadwalLewat
-    ? `<div class="section-sub" style="margin-top:10px; padding:10px; background:var(--paper-card); border-radius:10px; text-align:center;">🔒 Obrolan ditutup karena jadwal ini sudah lewat. Arsip percakapan di atas tetap bisa dibaca kapan saja.</div>`
+    ? `<div class="section-sub" style="margin-top:10px; padding:10px; background:var(--paper-card); border-radius:10px; text-align:center;"><svg class="ico"><use href="#i-lock"/></svg> Obrolan ditutup karena jadwal ini sudah lewat. Arsip percakapan di atas tetap bisa dibaca kapan saja.</div>`
     : `<div id="chatReplyPreviewArea"></div>
     <div class="chat-input-row">
       <input type="text" id="chatInputText" class="modal-field" maxlength="500" placeholder="Tulis pesan..." onkeydown="if(event.key==='Enter'){ event.preventDefault(); kirimPesanChat('${jadwalId}'); }">
@@ -2890,7 +3016,7 @@ function bukaObrolanJadwal(jadwalId){
     </div>`;
   document.getElementById('modalBody').innerHTML = `
     <div class="section-sub" style="margin:0 0 4px;">Obrolan terbuka untuk semua anggota KOMSOS — cocok buat kasih keterangan (mis. alasan berhalangan), info tukar tugas, atau koordinasi lain soal jadwal ini. Arsipnya tersimpan permanen.</div>
-    <div class="section-sub" style="margin:0 0 12px;">👥 Petugas bertugas: ${peserta.length ? escapeHtml(peserta.join(', ')) : '-'}</div>
+    <div class="section-sub" style="margin:0 0 12px;"><svg class="ico"><use href="#i-users"/></svg> Petugas bertugas: ${peserta.length ? escapeHtml(peserta.join(', ')) : '-'}</div>
     <div id="chatMessagesArea" class="chat-messages"></div>
     ${inputHtml}
   `;
@@ -2982,7 +3108,7 @@ function renderChatReplyPreview(){
   const area = document.getElementById('chatReplyPreviewArea');
   if(!area) return;
   area.innerHTML = chatReplyTo
-    ? `<div class="chat-reply-preview"><span class="txt">↩️ Balas <b>${escapeHtml(chatReplyTo.nama)}</b>: ${escapeHtml(chatReplyTo.teks)}</span><a onclick="batalBalasChat()">✕</a></div>`
+    ? `<div class="chat-reply-preview"><span class="txt">↩️ Balas <b>${escapeHtml(chatReplyTo.nama)}</b>: ${escapeHtml(chatReplyTo.teks)}</span><a onclick="batalBalasChat()"><svg class="ico"><use href="#i-x"/></svg></a></div>`
     : '';
 }
 
@@ -3105,7 +3231,7 @@ function renderRekap(){
   area.innerHTML = sorted.map(p=>{
     const cnt = hitungTugasBulan(p.id, bulan, tahun);
     const cls = cnt>=3 ? 'full' : (cnt===0 ? 'zero' : '');
-    const label = cnt>=3 ? `⚠️ ${cnt}x` : `${cnt}x`;
+    const label = cnt>=3 ? `<svg class="ico ico-warn"><use href="#i-alert"/></svg> ${cnt}x` : `${cnt}x`;
     return `<div class="petugas-row" style="cursor:default;">
       <span class="nm">${escapeHtml(p.nama)}</span>
       <span class="count-pill ${cls}">${label}</span>
@@ -3189,7 +3315,7 @@ function renderEditSlotEditor(){
     const p = petugasList.find(x=>x.id===id);
     if(p && p.nonaktif) return ' (nonaktif)';
     if(p && p.opsional) return ' (opsional)';
-    return hitungTugasBulan(id,bulan,tahun)>=3 ? ' ⚠️ >3x bulan ini' : '';
+    return hitungTugasBulan(id,bulan,tahun)>=3 ? ' (>3x bulan ini)' : '';
   };
   area.innerHTML = editSlotsTemp.map((s, idx)=>{
     const tglStr = new Date(s.tanggal).toLocaleDateString('id-ID',{weekday:'long', day:'2-digit', month:'short'});
@@ -3198,6 +3324,7 @@ function renderEditSlotEditor(){
     return `<div class="slot-editor" style="margin-bottom:10px;">
       <div class="slot-head"><span>${tglStr} — ${s.jam}</span><span class="remove-slot" onclick="removeEditSlot(${idx})">Hapus</span></div>
       <div class="slot-input-row"><input type="date" value="${tglLokalStr(s.tanggal)}" onchange="setEditSlotTanggal(${idx},this.value)"><input type="time" value="${s.jam}" onchange="setEditSlotJam(${idx},this.value)"></div>
+      ${renderJamCepatHtml(idx, 'setEditSlotJam')}
       <select onchange="setEditSlotPetugas(${idx},0,this.value)">
         <option value="">— Kosongkan —</option>
         ${petugasList.filter(p=>!p.dihapus).map(p=>`<option value="${p.id}" ${p.id===sel1?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
@@ -3365,14 +3492,14 @@ function renderRekapAbsensi(){
     const total = r.hadir + r.telat + r.tidakHadir + r.belum;
     if(total === 0) return '';
     const chips = [
-      r.hadir ? `✅ ${r.hadir} tepat waktu` : '',
-      r.telat ? `⚠️ ${r.telat} telat` : '',
-      r.tidakHadir ? `❌ ${r.tidakHadir} tidak hadir` : '',
-      r.belum ? `⏳ ${r.belum} belum absen` : '',
+      r.hadir ? `<svg class="ico ico-ok"><use href="#i-check-circle"/></svg> ${r.hadir} tepat waktu` : '',
+      r.telat ? `<svg class="ico ico-warn"><use href="#i-alert"/></svg> ${r.telat} telat` : '',
+      r.tidakHadir ? `<svg class="ico ico-bad"><use href="#i-x-circle"/></svg> ${r.tidakHadir} tidak hadir` : '',
+      r.belum ? `<svg class="ico ico-wait"><use href="#i-clock"/></svg> ${r.belum} belum absen` : '',
     ].filter(Boolean).join(' · ');
     const semuaAlasan = [
-      ...r.alasanTelat.map(a=>`⚠️ "${escapeHtml(a)}"`),
-      ...r.alasanTidakHadir.map(a=>`❌ "${escapeHtml(a)}"`),
+      ...r.alasanTelat.map(a=>`<svg class="ico ico-warn"><use href="#i-alert"/></svg> "${escapeHtml(a)}"`),
+      ...r.alasanTidakHadir.map(a=>`<svg class="ico ico-bad"><use href="#i-x-circle"/></svg> "${escapeHtml(a)}"`),
     ];
     const alasanBlock = semuaAlasan.length
       ? `<div class="section-sub" style="margin:4px 0 0; font-size:12px; line-height:1.5;">${semuaAlasan.join('<br>')}</div>`
@@ -3425,7 +3552,7 @@ function renderPetugas(){
   area.innerHTML = sorted.map(p=>{
     const cnt = hitungTugasBulanIni(p.id);
     const profil = getProfil(p.id);
-    const ultah = ulangTahunHariIni(p.id) ? ' 🎂' : '';
+    const ultah = ulangTahunHariIni(p.id) ? ' <svg class="ico"><use href="#i-cake"/></svg>' : '';
     const namaBlok = `<div style="display:flex; align-items:center; gap:12px; min-width:0; flex:1; margin-right:10px;">
         ${avatarHtml(profil, p.nama, 38)}
         <div style="min-width:0; flex:1;">
@@ -3446,7 +3573,7 @@ function renderPetugas(){
       </div>`;
     }
     const cls = cnt>=3 ? 'full' : (cnt===0 ? 'zero' : '');
-    const label = cnt>=3 ? `⚠️ ${cnt}x bulan ini` : `${cnt}x bulan ini`;
+    const label = cnt>=3 ? `<svg class="ico ico-warn"><use href="#i-alert"/></svg> ${cnt}x bulan ini` : `${cnt}x bulan ini`;
     return `<div class="petugas-row" onclick="openPetugasDetail('${p.id}')">
       ${namaBlok}
       <span class="count-pill ${cls}">${label}</span>
@@ -3463,10 +3590,10 @@ function openPetugasDetail(id){
   const body = document.getElementById('modalBody');
 
   const ultahBadge = ulangTahunHariIni(id)
-    ? `<div class="ultah-badge">🎂 Ulang tahun hari ini!</div>`
-    : (profil.tglLahir ? `<div style="font-size:12.5px; color:var(--muted);">🎈 Lahir ${formatTglLahir(profil.tglLahir)}</div>` : '');
+    ? `<div class="ultah-badge"><svg class="ico"><use href="#i-cake"/></svg> Ulang tahun hari ini!</div>`
+    : (profil.tglLahir ? `<div style="font-size:12.5px; color:var(--muted);"><svg class="ico"><use href="#i-gift"/></svg> Lahir ${formatTglLahir(profil.tglLahir)}</div>` : '');
   const alasanNonaktifBadge = p.nonaktif
-    ? `<div style="font-size:12.5px; color:var(--maroon); margin-top:4px;">🚫 Nonaktif sementara — ${escapeHtml(p.alasanNonaktif || 'tidak ada alasan tercatat')}</div>`
+    ? `<div style="font-size:12.5px; color:var(--maroon); margin-top:4px;"><svg class="ico"><use href="#i-ban"/></svg> Nonaktif sementara — ${escapeHtml(p.alasanNonaktif || 'tidak ada alasan tercatat')}</div>`
     : '';
 
   const fotoInputId = `fotoInput_${id}`;
@@ -3493,7 +3620,7 @@ function openPetugasDetail(id){
         <div class="profil-foto-row">
           ${avatarHtml(profil, p.nama, 56)}
           <input type="file" id="${fotoInputId}" accept="image/*" style="display:none;" onchange="handleFotoUpload(this, '${id}')">
-          <button class="btn-ganti-foto" onclick="document.getElementById('${fotoInputId}').click()">📷 Ganti Foto</button>
+          <button class="btn-ganti-foto" onclick="document.getElementById('${fotoInputId}').click()"><svg class="ico"><use href="#i-camera"/></svg> Ganti Foto</button>
         </div>
       </div>
 
@@ -3516,7 +3643,7 @@ function openPetugasDetail(id){
 
       <div class="profil-edit-block">
         <div class="section-sub" style="margin:0 0 10px;">Jika tidak bisa bertugas sementara waktu, nonaktifkan namamu sendiri. Bisa diaktifkan lagi kapan saja.</div>
-        <button class="btn-secondary" style="width:100%;" onclick="toggleNonaktifPetugas('${id}')">${p.nonaktif ? '✅ Aktifkan Lagi Namaku' : '🚫 Nonaktifkan Namaku Sementara'}</button>
+        <button class="btn-secondary" style="width:100%;" onclick="toggleNonaktifPetugas('${id}')">${p.nonaktif ? '<svg class="ico ico-ok"><use href="#i-check-circle"/></svg> Aktifkan Lagi Namaku' : '<svg class="ico"><use href="#i-ban"/></svg> Nonaktifkan Namaku Sementara'}</button>
       </div>`;
   }
 
@@ -3526,15 +3653,15 @@ function openPetugasDetail(id){
       <div class="profil-edit-block">
         <label style="margin-bottom:10px;">Kontrol PJ</label>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn-secondary" onclick="toggleNonaktifPetugas('${id}')">${p.nonaktif ? '✅ Aktifkan Kembali' : '🚫 Tandai Nonaktif'}</button>
-          <button class="btn-secondary" style="color:var(--maroon); border-color:var(--maroon-bg);" onclick="hapusPetugas('${id}')">🗑️ Hapus Petugas</button>
+          <button class="btn-secondary" onclick="toggleNonaktifPetugas('${id}')">${p.nonaktif ? '<svg class="ico ico-ok"><use href="#i-check-circle"/></svg> Aktifkan Kembali' : '<svg class="ico"><use href="#i-ban"/></svg> Tandai Nonaktif'}</button>
+          <button class="btn-secondary" style="color:var(--maroon); border-color:var(--maroon-bg);" onclick="hapusPetugas('${id}')"><svg class="ico"><use href="#i-trash"/></svg> Hapus Petugas</button>
         </div>
         <div class="section-sub" style="margin:8px 0 0;">Nonaktif = tidak dipilih fitur "Isi Otomatis" &amp; tidak kena target jadwal, tapi namanya tetap ada &amp; masih bisa dipilih manual sewaktu-waktu. Ganti nama sekarang cuma bisa dilakukan sendiri oleh pemilik akun lewat profilnya.</div>
       </div>
       <div class="profil-edit-block">
         <label style="margin-bottom:6px;">Riwayat "Nyangkut" di Petugas Lain?</label>
         <div class="section-sub" style="margin:0 0 10px;">Kalau petugas ini pernah dihapus & dibuat ulang di masa lalu (sebelum ada perbaikan penyambungan otomatis), riwayat tugas lamanya bisa "nyangkut" di data petugas dengan ID lain. Gabungkan ke sini kalau itu terjadi.</div>
-        <button class="btn-secondary" style="width:100%;" onclick="bukaGabungRiwayat('${id}')">🔗 Gabungkan Riwayat dari Petugas Lain</button>
+        <button class="btn-secondary" style="width:100%;" onclick="bukaGabungRiwayat('${id}')"><svg class="ico"><use href="#i-link"/></svg> Gabungkan Riwayat dari Petugas Lain</button>
       </div>`;
   }
 
@@ -3653,7 +3780,7 @@ function bukaGabungRiwayat(targetId){
     .map(x=>({...x, jumlahRiwayat: riwayatPetugas(x.id).length}))
     .sort((a,b)=>b.jumlahRiwayat - a.jumlahRiwayat);
 
-  document.getElementById('modalTitle').textContent = `🔗 Gabungkan ke "${target.nama}"`;
+  document.getElementById('modalTitle').textContent = `Gabungkan ke "${target.nama}"`;
   const daftarHtml = kandidat.length===0
     ? '<div class="empty-note">Tidak ada petugas lain di daftar.</div>'
     : kandidat.map(k=>`
@@ -3744,9 +3871,9 @@ function cariReferensiRusak(){
 function bukaPerbaikanReferensi(){
   const grup = cariReferensiRusak();
   const idNyasar = Object.keys(grup).sort((a,b)=>grup[b].length-grup[a].length);
-  document.getElementById('modalTitle').textContent = '🛠️ Perbaiki Referensi Petugas Rusak';
+  document.getElementById('modalTitle').textContent = 'Perbaiki Referensi Petugas Rusak';
   if(idNyasar.length===0){
-    document.getElementById('modalBody').innerHTML = `<div class="empty-note">Nggak ketemu referensi yang rusak. Semua ID petugas di jadwal masih nyambung ke daftar petugas aktif. 👍</div>`;
+    document.getElementById('modalBody').innerHTML = `<div class="empty-note">Nggak ketemu referensi yang rusak. Semua ID petugas di jadwal masih nyambung ke daftar petugas aktif.</div>`;
     document.getElementById('modalOverlay').classList.add('open');
     return;
   }
@@ -3769,7 +3896,7 @@ function bukaPerbaikanReferensi(){
         </select>
         <button class="btn-secondary" onclick="terapkanPerbaikanReferensi('${pid}', document.getElementById('${selectId}').value)">Terapkan</button>
       </div>
-      <a onclick="kosongkanReferensiRusak('${pid}')" style="font-size:12px; color:var(--muted); text-decoration:underline; cursor:pointer;">🗑️ Ini bukan siapa-siapa (slot emang kosong dari awal) — kosongkan aja</a>
+      <a onclick="kosongkanReferensiRusak('${pid}')" style="font-size:12px; color:var(--muted); text-decoration:underline; cursor:pointer;"><svg class="ico"><use href="#i-trash"/></svg> Ini bukan siapa-siapa (slot emang kosong dari awal) — kosongkan aja</a>
     </div>`;
   }).join('');
   document.getElementById('modalBody').innerHTML = `
@@ -3909,6 +4036,12 @@ function terapkanSaranLiturgi(){
   document.getElementById('namaMisa').value = saranLiturgiSekarang;
 }
 
+// Tombol pintasan jam, biar nggak harus muter-muter di picker jam bawaan HP tiap kali
+// input jam misa yang sama berulang-ulang. namaFungsi = 'setEditSlotJam' atau 'setSlotJam'.
+function renderJamCepatHtml(idx, namaFungsi){
+  const preset = ['06:00','07:00','09:00','12:00','15:00','17:00','18:00','19:00'];
+  return `<div class="jam-cepat-row">${preset.map(j=>`<button type="button" class="jam-cepat-btn" onclick="${namaFungsi}(${idx},'${j}')">${j}</button>`).join('')}</div>`;
+}
 function tglLokalStr(iso){
   const d = new Date(iso);
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -3943,7 +4076,7 @@ function renderSlotEditor(){
     const p = petugasList.find(x=>x.id===id);
     if(p && p.nonaktif) return ' (nonaktif)';
     if(p && p.opsional) return ' (opsional)';
-    return hitungTugasBulan(id,bulan,tahun)>=3 ? ' ⚠️ sudah lebih dari 3x bulan ini' : '';
+    return hitungTugasBulan(id,bulan,tahun)>=3 ? ' (sudah lebih dari 3x bulan ini)' : '';
   };
 
   area.innerHTML = currentSlots.map((s, idx)=>{
@@ -3952,7 +4085,7 @@ function renderSlotEditor(){
     const sel2 = s.petugas[1] || '';
     return `<div class="slot-editor">
       <div class="slot-head"><span>${tglStr} — ${s.jam}</span><span class="remove-slot" onclick="removeSlot(${idx})">Hapus</span></div>
-      ${s.hari==='Lainnya' ? `<div class="slot-input-row"><input type="date" value="${tglLokalStr(s.tanggal)}" onchange="setSlotTanggal(${idx},this.value)"><input type="time" value="${s.jam}" onchange="setSlotJam(${idx},this.value)"></div>` : ''}
+      ${s.hari==='Lainnya' ? `<div class="slot-input-row"><input type="date" value="${tglLokalStr(s.tanggal)}" onchange="setSlotTanggal(${idx},this.value)"><input type="time" value="${s.jam}" onchange="setSlotJam(${idx},this.value)"></div>${renderJamCepatHtml(idx, 'setSlotJam')}` : ''}
       <select onchange="setSlotPetugas(${idx},0,this.value)">
         <option value="">— Pilih petugas 1 —</option>
         ${petugasList.filter(p=>!p.dihapus).map(p=>`<option value="${p.id}" ${p.id===sel1?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
@@ -3967,7 +4100,7 @@ function renderSlotEditor(){
   const wrap = document.getElementById('autoFillWrap');
   if(wrap){
     wrap.innerHTML = currentSlots.length>0
-      ? `<button class="btn-secondary" style="width:100%; margin-bottom:10px;" onclick="addManualSlot()">＋ Tambah slot lain</button><button class="btn-secondary" style="width:100%; margin-bottom:16px;" onclick="autoFillSlots()">⚡ Isi Otomatis Slot Kosong</button>`
+      ? `<button class="btn-secondary" style="width:100%; margin-bottom:10px;" onclick="addManualSlot()">＋ Tambah slot lain</button><button class="btn-secondary" style="width:100%; margin-bottom:16px;" onclick="autoFillSlots()"><svg class="ico"><use href="#i-zap"/></svg> Isi Otomatis Slot Kosong</button>`
       : '';
   }
 }
@@ -4081,7 +4214,7 @@ document.addEventListener('click', (e)=>{
 document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') tutupFotoBesar(); });
 </script>
 <div id="fotoLightbox" onclick="tutupFotoBesar()">
-  <button class="lb-tutup" onclick="tutupFotoBesar()" aria-label="Tutup">✕</button>
+  <button class="lb-tutup" onclick="tutupFotoBesar()" aria-label="Tutup"><svg class="ico"><use href="#i-x"/></svg></button>
   <img id="lbImg" alt="Foto profil">
   <div class="lb-nama" id="lbNama"></div>
 </div>
