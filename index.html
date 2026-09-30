@@ -301,6 +301,8 @@ body.modal-open{overflow:hidden;}
 .peng-n{font-size:14px;font-weight:700;margin-top:3px;background:#fff;color:var(--maroon);border-radius:8px;padding:1px 6px;}
 .peng-card{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;}
 .peng-card img{width:100%;border-radius:10px;margin:8px 0;display:block;}
+.peng-link{color:#7dd3fc;font-weight:700;text-decoration:underline;word-break:break-all;}
+:root[data-theme="light"] .peng-link{color:#2563eb;}
 .ed-wrap{position:fixed;inset:0;z-index:3000;background:#0b0f1a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;color:#fff;touch-action:none;}
 .ed-stage{position:relative;overflow:hidden;background:#000;touch-action:none;}
 .ed-stage img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;user-select:none;-webkit-user-drag:none;}
@@ -1371,6 +1373,23 @@ function escapeHtml(str){
   return String(str ?? '').replace(/[&<>"']/g, ch=>({
     '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
   }[ch]));
+}
+// Ubah link (http/https/www) di dalam teks jadi tautan yang bisa diketuk.
+// Teks di luar link tetap di-escape supaya aman dari HTML injection.
+function linkifyTeks(str){
+  const t = String(str ?? '');
+  const re = /(https?:\/\/[^\s<>"']+|www\.[^\s<>"']+)/gi;
+  let out = '', last = 0, m;
+  while((m = re.exec(t))){
+    let url = m[0], trail = '';
+    const tr = url.match(/[.,;:!?)\]]+$/);
+    if(tr){ trail = tr[0]; url = url.slice(0, url.length - trail.length); }
+    out += escapeHtml(t.slice(last, m.index));
+    const href = /^www\./i.test(url) ? 'https://' + url : url;
+    out += `<a class="peng-link" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>` + escapeHtml(trail);
+    last = m.index + m[0].length;
+  }
+  return out + escapeHtml(t.slice(last));
 }
 let petugasList = [];
 let jadwalList = [];
@@ -2517,7 +2536,7 @@ function isiPengumuman(){
   const isi = pengList.length ? pengList.map(p=>`<div class="peng-card">
       <div style="font-size:16px;color:var(--muted);">${new Date(p.dibuat).toLocaleString('id-ID',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}${p.oleh?` · ${escapeHtml(p.oleh)}`:''}</div>
       ${p.foto?`<img src="${p.foto}" alt="Pengumuman" onclick="bukaFotoBesar(this.src,'Pengumuman')">`:''}
-      ${p.teks?`<div style="white-space:pre-wrap;font-size:18px;">${escapeHtml(p.teks)}</div>`:''}
+      ${p.teks?`<div style="white-space:pre-wrap;font-size:18px;">${linkifyTeks(p.teks)}</div>`:''}
       ${currentRole==='editor'?`<button class="btn-secondary" style="margin-top:10px;color:var(--maroon);border-color:var(--maroon-bg);" onclick="hapusPengumuman('${p.id}')"><svg class="ico"><use href="#i-trash"/></svg> Hapus</button>`:''}
     </div>`).join('') : '<div class="empty-note">Belum ada pengumuman.</div>';
   document.getElementById('modalBody').innerHTML = `<div id="pengOpen">${currentRole==='editor'?'<button class="btn-primary" style="width:100%;margin-bottom:14px;" onclick="formPengumuman()">＋ Buat Pengumuman</button>':''}${isi}</div>`;
@@ -2531,7 +2550,7 @@ function bukaPengumuman(){
 }
 function formPengumuman(){
   document.getElementById('modalBody').innerHTML = `
-    <textarea id="pengTeks" class="modal-field" maxlength="1000" rows="5" placeholder="Tulis catatan pengumuman (boleh dikosongkan kalau hanya foto)"></textarea>
+    <textarea id="pengTeks" class="modal-field" maxlength="1500" rows="5" placeholder="Tulis catatan pengumuman. Link (mis. Google Drive) boleh ditempel, nanti otomatis bisa diketuk. Boleh dikosongkan kalau hanya foto."></textarea>
     <input type="file" id="pengFoto" accept="image/*" class="modal-field" style="margin-top:8px;" onchange="const f=this.files[0];document.getElementById('pengPrev').src=f?URL.createObjectURL(f):'';">
     <img id="pengPrev" style="width:100%;border-radius:10px;margin-top:8px;">
     <div style="display:flex;gap:10px;margin-top:12px;"><button class="btn-secondary" style="flex:1;" onclick="bukaPengumuman()">Batal</button><button class="btn-primary" style="flex:1;" id="pengKirim" onclick="kirimPengumuman()">Kirim</button></div>`;
