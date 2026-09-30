@@ -558,6 +558,54 @@ img.avatar-zoom{cursor:zoom-in;}
   position:absolute; top:calc(14px + env(safe-area-inset-top, 0px)); right:16px; width:40px; height:40px;
   border-radius:50%; border:none; background:rgba(255,255,255,0.16); color:#fff; font-size:20px; cursor:pointer;
 }
+
+/* ===== 1.6.0 PERAPIAN & FITUR BARU ===== */
+header.appbar{padding:14px 16px; gap:10px;}
+header.appbar .mark{font-size:20px; flex-shrink:0;}
+.header-actions{gap:8px; min-width:0;}
+#hdrHidden, #testNotifBox, #roleBadge{display:none !important;}
+main{padding:22px 18px 120px;}
+#infoLiturgiHariIni, #notifBanner, #pengingatArea, #tugasSayaArea, #ringkasanPJArea{margin-bottom:14px;}
+.panel-back{margin-bottom:18px;}
+.form-block{margin-bottom:18px;}
+.filter-row{gap:10px; margin-bottom:16px;}
+.btn-primary, .btn-secondary{min-height:44px;}
+button:active{transform:scale(.97);}
+.jadwal-card{margin-bottom:18px; animation:fadeUp .35s ease both;}
+.jadwal-card .judul{line-height:1.3; margin-bottom:10px;}
+.musim-badge{margin-bottom:12px;}
+.legend-abs{display:flex; flex-wrap:wrap; gap:4px 12px; font-size:12px; color:var(--muted); margin:2px 0 12px;}
+.slot-line{padding:13px 0; gap:12px;}
+.slot-line .waktu{flex:0 0 98px; min-width:0; display:flex; flex-direction:column; gap:2px;}
+.slot-line .waktu .w-hari{font-size:12px; color:var(--muted);}
+.slot-line .waktu .w-jam{font-size:18px; font-weight:800; color:#fff; font-family:'Sora',sans-serif;}
+.slot-line .nama{gap:4px;}
+.slot-aksi{margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;}
+@keyframes fadeUp{from{opacity:0; transform:translateY(8px);}to{opacity:1; transform:none;}}
+.menu-user{padding:2px 4px 14px;}
+.menu-user small{display:block; color:var(--muted); margin-top:2px;}
+.menu-item{display:flex; align-items:center; gap:14px; width:100%; padding:14px 12px; border:none; background:rgba(255,255,255,.06); color:#fff; border-radius:14px; font:600 15px 'Plus Jakarta Sans',sans-serif; margin-bottom:8px; text-align:left; cursor:pointer;}
+.menu-item.danger{color:#ff8a8a;}
+.menu-item .mi-ic{font-size:20px; width:26px; text-align:center;}
+.tugas-card{border:1px solid rgba(79,142,247,.4); background:linear-gradient(135deg,rgba(79,142,247,.18),rgba(139,92,246,.14)); border-radius:18px; padding:16px;}
+.tugas-card .tk{font-size:11.5px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; font-weight:700;}
+.tugas-card .tj{font-family:'Sora',sans-serif; font-weight:800; font-size:21px; margin:6px 0 2px;}
+.tugas-card .ts{color:var(--muted); font-size:13.5px; margin-bottom:12px; line-height:1.4;}
+.rg-card{border:1px solid var(--line); background:rgba(255,255,255,.04); border-radius:18px; padding:14px; cursor:pointer;}
+.rg-card .rk{font-size:12.5px; color:var(--muted); margin-bottom:10px;}
+.rg-row{display:flex; gap:8px;}
+.rg-chip{flex:1; text-align:center; padding:10px 4px; border-radius:14px; background:rgba(255,255,255,.06); font-size:11.5px; color:var(--muted);}
+.rg-chip b{display:block; font-size:21px; color:#fff; font-family:'Sora',sans-serif;}
+.rg-note{margin-top:10px; font-size:12.5px; color:var(--gold-soft);}
+.mode-switch{display:flex; gap:6px; margin-bottom:16px; background:rgba(255,255,255,.05); padding:4px; border-radius:14px;}
+.mode-switch button{flex:1; padding:10px 6px; border:none; border-radius:10px; background:transparent; color:var(--muted); font:700 13.5px 'Plus Jakarta Sans',sans-serif; cursor:pointer;}
+.mode-switch button.on{background:var(--grad); color:#fff;}
+.ok-pop{position:fixed; inset:0; z-index:5000; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.5); animation:okfade 1.5s ease forwards; pointer-events:none;}
+.ok-pop svg{width:120px; height:120px;}
+.ok-pop .c{stroke-dasharray:166; stroke-dashoffset:166; animation:okd .5s .1s ease forwards;}
+.ok-pop .t{stroke-dasharray:48; stroke-dashoffset:48; animation:okd .35s .5s ease forwards;}
+@keyframes okd{to{stroke-dashoffset:0;}}
+@keyframes okfade{0%{opacity:0;}12%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
 </style>
 </head>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -627,7 +675,16 @@ img.avatar-zoom{cursor:zoom-in;}
     <div class="mark"><span class="kom">KOM</span><span class="sos">SOS</span></div>
     <div class="header-actions">
       <button id="pengBtn" class="peng-btn" onclick="bukaPengumuman()" aria-label="Pengumuman"><span>Pengumuman</span><span class="peng-n" id="pengNote" style="display:none;">Ada Pengumuman</span></button>
-      <button class="icon-action-btn" onclick="bukaPembaruan()" title="Pembaruan Aplikasi" aria-label="Pembaruan Aplikasi">
+      <button id="logAktivitasLink" class="icon-action-btn" onclick="bukaLogAktivitas()" style="display:none;" title="Log Aktivitas" aria-label="Log Aktivitas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3h8a2 2 0 0 1 2 2v14l-6-3-6 3V5a2 2 0 0 1 2-2Z"></path>
+          <line x1="9" y1="8" x2="15" y2="8"></line>
+          <line x1="9" y1="11.5" x2="15" y2="11.5"></line>
+        </svg>
+        <span class="icon-dot" id="logDot" style="display:none;"></span>
+      </button>
+      <button class="icon-action-btn" id="menuBtn" onclick="bukaMenuAkun()" title="Menu" aria-label="Menu"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg><span class="icon-dot" id="menuDot" style="display:none;"></span></button>
+      <div id="hdrHidden"><button class="icon-action-btn" onclick="bukaPembaruan()" title="Pembaruan Aplikasi" aria-label="Pembaruan Aplikasi">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 11l18-5v12L3 13v-2z"></path>
           <path d="M11.6 16.8a3 3 0 0 1-5.8-1.6"></path>
@@ -641,14 +698,7 @@ img.avatar-zoom{cursor:zoom-in;}
           <line x1="12" y1="17.2" x2="12" y2="17.2"></line>
         </svg>
       </button>
-      <button id="logAktivitasLink" class="icon-action-btn" onclick="bukaLogAktivitas()" style="display:none;" title="Log Aktivitas" aria-label="Log Aktivitas">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 3h8a2 2 0 0 1 2 2v14l-6-3-6 3V5a2 2 0 0 1 2-2Z"></path>
-          <line x1="9" y1="8" x2="15" y2="8"></line>
-          <line x1="9" y1="11.5" x2="15" y2="11.5"></line>
-        </svg>
-        <span class="icon-dot" id="logDot" style="display:none;"></span>
-      </button>
+      
       <div class="role-badge" id="roleBadge" onclick="if(currentPetugasId) openPetugasDetail(currentPetugasId)" style="cursor:pointer;">Mode Lihat</div>
       <button class="icon-action-btn danger" onclick="logout()" title="Keluar" aria-label="Keluar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -657,6 +707,7 @@ img.avatar-zoom{cursor:zoom-in;}
           <line x1="20" y1="12" x2="9" y2="12"></line>
         </svg>
       </button>
+    </div>
     </div>
   </header>
 
@@ -673,6 +724,8 @@ img.avatar-zoom{cursor:zoom-in;}
         <span style="font-size:14px; color:var(--text);">🧪 Mode PJ: kirim notifikasi uji coba ke semua HP yang sudah aktifkan (cocok buat demo/presentasi).</span>
         <button class="btn-secondary" id="btnUjiNotif" style="white-space:nowrap;" onclick="kirimNotifikasiUjiCoba()">Kirim Sekarang</button>
       </div>
+      <div id="tugasSayaArea"></div>
+      <div id="ringkasanPJArea"></div>
       <div id="pengingatArea"></div>
 
       <div id="homeMenuWrap">
@@ -749,11 +802,18 @@ img.avatar-zoom{cursor:zoom-in;}
         <span onclick="if(confirm('Kosongkan form ini?')) resetForm()" style="color:var(--muted); text-decoration:underline; cursor:pointer; white-space:nowrap; font-size:13px;">Kosongkan form</span>
       </div>
 
+      <div class="mode-switch"><button id="modePola" class="on" onclick="setModeJadwal('pola')">Pola Akhir Pekan</button><button id="modeBebas" onclick="setModeJadwal('bebas')">Perayaan / Jam Bebas</button></div>
       <div class="form-block">
         <label>Nama Hari Raya / Misa</label>
         <input type="text" id="namaMisa" placeholder="cth: Hari Minggu Biasa ke-XXIII">
       </div>
-      <div class="form-block">
+      <div class="form-block" id="blokBebas" style="display:none;">
+        <label>Tanggal perayaan (hari pertama)</label>
+        <input type="date" id="tglBebas" onchange="pilihTanggalBebas()">
+        <div class="section-sub" style="margin-top:6px; margin-bottom:10px;">Nama perayaan dan warna liturgi tersaran otomatis. Atur tanggal dan jam tiap slot di bawah; satu jadwal boleh berisi beberapa hari (mis. Kamis Putih, Jumat Agung, Sabtu Suci).</div>
+        <button class="btn-secondary" style="width:100%;" onclick="addManualSlot()">＋ Tambah slot (tanggal & jam bebas)</button>
+      </div>
+      <div class="form-block" id="blokPola">
         <label>Tanggal Misa Sabtu (18:00)</label>
         <input type="date" id="tglSabtu" onchange="generateSlots()">
         <div class="section-sub" style="margin-top:6px; margin-bottom:0;">Slot Minggu otomatis mengikuti tanggal setelah Sabtu ini. Tambah/hapus slot kalau perayaan jatuh di hari kerja.</div>
@@ -973,8 +1033,17 @@ function getWarnaMusim(d){
    Setiap kali app di-upgrade, naikkan APP_VERSION & tambah entri baru di atas
    CHANGELOG. Status "sudah dilihat" disimpan per-HP/browser lewat localStorage
    (bukan Firestore), jadi nggak perlu ubah Firestore Rules buat fitur ini. */
-const APP_VERSION = '1.5.4';
+const APP_VERSION = '1.6.0';
 const CHANGELOG = [
+  {versi:'1.6.0', tanggal:'30 Sep 2026', catatan:[
+    'Tampilan dirapikan: header lebih ringkas (Pembaruan, Bantuan, Keluar ada di menu titik tiga), jarak antar-bagian dilonggarkan, dan baris jadwal menampilkan jam besar dengan nama yang lebih lega.',
+    'Kartu "Tugasmu berikutnya" di Beranda, lengkap dengan tombol Absen Sekarang saat jendela absen terbuka.',
+    'PJ: ringkasan absen (hadir/telat/tidak/belum) dan daftar yang belum punya akun di Beranda.',
+    'Jadwal Baru kini bisa memakai mode "Perayaan / Jam Bebas": tanggal dan jam tiap slot bebas, nama dan warna liturgi tetap tersaran otomatis (termasuk Pekan Suci).',
+    'Edit Jadwal: PJ bisa mengubah tanggal dan jam slot, serta menambah atau menghapus slot.',
+    'Animasi centang dan getar saat absen berhasil.'
+  ]},
+  {versi:'1.5.5', tanggal:'29 Sep 2026', catatan:['Tautan "Lihat di peta" di Detail Absen sekarang berwarna terang dan mudah dibaca.']},
   {versi:'1.5.4', tanggal:'29 Sep 2026', catatan:['Lokasi absen QR memakai jaringan dan GPS sekaligus supaya cepat terkunci, dan menunggu maksimal 15 detik.']},
   {versi:'1.5.3', tanggal:'29 Sep 2026', catatan:['Absen QR menunggu lokasi terkunci (maks 25 detik) sebelum mengirim, supaya koordinat tidak kosong.']},
   {versi:'1.5.2', tanggal:'29 Sep 2026', catatan:['Absen QR: lokasi dipantau selama kamera terbuka dan statusnya tampil di layar scan, jadi lokasi tidak mudah gagal tercatat.']},
@@ -2311,7 +2380,8 @@ async function mulaiScanAbsen(jid, sid){
           const lokasi = posisi;
           const r = await panggilAbsen({action:'scan', kode:teks.slice(12), jadwalId:jid, slotId:sid, alasan, lokasi});
           tutup(); lapisanTutup(); closeModal();
-          catatLog(`absen "hadir${r.telat?' (telat)':''}" via QR untuk slot ${s.hari} ${s.jam} jadwal "${j.namaMisa}"`);
+          catatLog(`absen "hadir${r.telat?' (telat)':''}" via QR untuk slot ${namaHariDari(s)} ${s.jam} jadwal "${j.namaMisa}"`);
+          efekBerhasil();
           showToast(r.telat ? 'Absen tercatat (terlambat).' : 'Absen hadir tercatat. Terima kasih! 🙏');
         }catch(e){
           info.textContent = e.message + ' — arahkan lagi ke QR.'; aktif = true;
@@ -2325,7 +2395,7 @@ async function mulaiScanAbsen(jid, sid){
 function lihatAbsen(jid, sid, pid){
   const j = jadwalList.find(x=>x.id===jid); const s = j && j.slots.find(x=>x.id===sid);
   const rec = s && s.absensi && s.absensi[pid]; if(!rec) return;
-  const lok = rec.lat!=null ? `${rec.jarak!=null?`±${rec.jarak} m dari gereja · `:''}<a href="https://www.google.com/maps?q=${rec.lat},${rec.lng}" target="_blank" rel="noopener">Lihat di peta</a> (akurasi ±${rec.akurasi||'?'} m)` : 'Lokasi tidak tersedia';
+  const lok = rec.lat!=null ? `${rec.jarak!=null?`±${rec.jarak} m dari gereja · `:''}<a href="https://www.google.com/maps?q=${rec.lat},${rec.lng}" target="_blank" rel="noopener" style="color:#7dd3fc;font-weight:700;text-decoration:underline;">Lihat di peta</a> (akurasi ±${rec.akurasi||'?'} m)` : 'Lokasi tidak tersedia';
   document.getElementById('modalTitle').textContent = 'Detail Absen';
   document.getElementById('modalBody').innerHTML = `<div style="line-height:1.7;font-size:15px;">
     <b>${escapeHtml(namaPetugas(pid))}</b><br>
@@ -2371,6 +2441,123 @@ async function mulaiKiosk(){
     }
     document.getElementById('kioskBar').style.width = (100 - (now % 30000)/300) + '%';
   }, 500);
+}
+
+
+/* ================= 1.6.0: MENU, TUGAS SAYA, RINGKASAN PJ, JADWAL BEBAS ================= */
+function namaHariDari(s){ return new Date(s.tanggal).toLocaleDateString('id-ID',{weekday:'long'}); }
+(function(){
+  const u = document.getElementById('updateDot'), m = document.getElementById('menuDot');
+  if(u && m){ const f = ()=>{ m.style.display = (u.style.display==='none') ? 'none' : 'block'; }; new MutationObserver(f).observe(u,{attributes:true, attributeFilter:['style']}); f(); }
+})();
+function bukaMenuAkun(){
+  const p = petugasList.find(x=>x.id===currentPetugasId);
+  const nama = (p && p.nama) || (currentUserData && (currentUserData.nama || currentUserData.email)) || 'Akun';
+  const rb = document.getElementById('roleBadge');
+  const item = (ic, t, fn, cls='')=>`<button class="menu-item ${cls}" onclick="closeModal(); setTimeout(()=>{ ${fn} }, 240);"><span class="mi-ic">${ic}</span><span>${t}</span></button>`;
+  document.getElementById('modalTitle').textContent = 'Menu';
+  document.getElementById('modalBody').innerHTML = `<div class="menu-user"><b>${escapeHtml(nama)}</b><small>${rb ? escapeHtml(rb.textContent) : ''}</small></div>`
+    + (currentPetugasId ? item('👤','Profil saya','bukaProfilSendiri()') : '')
+    + item('🆕','Pembaruan Aplikasi','bukaPembaruan()')
+    + item('❓','Bantuan','bukaBantuan()')
+    + (currentRole==='editor' ? item('🧪','Kirim notifikasi uji coba','kirimNotifikasiUjiCoba()') : '')
+    + item('🚪','Keluar','logout()','danger');
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function efekBerhasil(){
+  try{ navigator.vibrate && navigator.vibrate([40,50,40]); }catch(e){}
+  const d = document.createElement('div'); d.className = 'ok-pop';
+  d.innerHTML = '<svg viewBox="0 0 60 60" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle class="c" cx="30" cy="30" r="26" stroke="#34D399"></circle><path class="t" d="M18 31l8 8 16-17" stroke="#34D399"></path></svg>';
+  document.body.appendChild(d); setTimeout(()=>d.remove(), 1500);
+}
+
+function slotSaya(){
+  const out = []; if(!currentPetugasId) return out;
+  jadwalList.forEach(j=>(j.slots||[]).forEach(s=>{ if((s.petugas||[]).includes(currentPetugasId)) out.push({j, s, t:slotDateTime(s).getTime()}); }));
+  return out.sort((a,b)=>a.t-b.t);
+}
+function renderTugasSaya(){
+  const el = document.getElementById('tugasSayaArea'); if(!el) return;
+  const now = Date.now();
+  const nxt = slotSaya().find(x=>{ const ak = new Date(x.s.tanggal); ak.setHours(23,59,59,999); return ak.getTime() >= now; });
+  if(!nxt){ el.innerHTML = ''; return; }
+  const {j, s, t} = nxt, rec = s.absensi ? s.absensi[currentPetugasId] : null, diff = t - now;
+  const kapan = diff <= 0 ? 'Jam tugasmu sudah tiba' : diff < 3600e3 ? `${Math.max(1, Math.round(diff/60000))} menit lagi` : diff < 86400e3 ? `${Math.round(diff/3600e3)} jam lagi` : `${Math.ceil(diff/86400e3)} hari lagi`;
+  let aksi = '';
+  if(rec) aksi = `<div style="font-weight:700;">${rec.status==='hadir' ? (rec.telat ? '⚠️ Absen tercatat (telat)' : '✅ Kamu sudah absen') : '❌ Tercatat tidak hadir'}</div>`;
+  else if(jendelaAbsenTerbuka(s)) aksi = `<button class="btn-primary" style="width:100%;" onclick="bukaAbsenModal('${j.id}','${s.id}')">✋ Absen Sekarang</button>`;
+  el.innerHTML = `<div class="tugas-card"><div class="tk">Tugasmu berikutnya</div>
+    <div class="tj">${namaHariDari(s)}, ${new Date(s.tanggal).toLocaleDateString('id-ID',{day:'2-digit',month:'short'})} · ${s.jam}</div>
+    <div class="ts">${escapeHtml(j.namaMisa)} — ${kapan}</div>${aksi}</div>`;
+}
+function dataRingkasanPJ(){
+  const semua = []; jadwalList.forEach(j=>(j.slots||[]).forEach(s=>semua.push(s)));
+  const kunci = s=>{ const d = new Date(s.tanggal); d.setHours(0,0,0,0); return d.getTime(); };
+  const h = new Date(); h.setHours(0,0,0,0); let target = h.getTime();
+  if(!semua.some(s=>kunci(s)===target)){ const nx = semua.map(kunci).filter(k=>k>target); if(!nx.length) return null; target = Math.min(...nx); }
+  const g = {hadir:[], telat:[], tidak:[], belum:[]};
+  semua.filter(s=>kunci(s)===target).forEach(s=>(s.petugas||[]).forEach(pid=>{
+    const r = s.absensi && s.absensi[pid], it = {nama:namaPetugas(pid), jam:s.jam};
+    if(!r) g.belum.push(it); else if(r.status==='hadir') (r.telat ? g.telat : g.hadir).push(it); else g.tidak.push(it);
+  }));
+  const tanpaAkun = petugasAdaAkun ? petugasList.filter(p=>!p.dihapus && !p.nonaktif && !petugasAdaAkun.has(p.id)) : [];
+  return {target, g, tanpaAkun};
+}
+function renderRingkasanPJ(){
+  const el = document.getElementById('ringkasanPJArea'); if(!el) return;
+  if(currentRole!=='editor'){ el.innerHTML = ''; return; }
+  const d = dataRingkasanPJ(); if(!d){ el.innerHTML = ''; return; }
+  const hari = new Date(d.target).toLocaleDateString('id-ID',{weekday:'long', day:'2-digit', month:'short'});
+  const adalah = new Date().setHours(0,0,0,0) === d.target ? 'Hari ini' : 'Jadwal terdekat';
+  el.innerHTML = `<div class="rg-card" onclick="bukaRingkasanPJ()"><div class="rk">${adalah} · ${hari} — ketuk untuk detail</div>
+    <div class="rg-row"><div class="rg-chip"><b>${d.g.hadir.length}</b>hadir</div><div class="rg-chip"><b>${d.g.telat.length}</b>telat</div><div class="rg-chip"><b>${d.g.tidak.length}</b>tidak</div><div class="rg-chip"><b>${d.g.belum.length}</b>belum</div></div>
+    ${d.tanpaAkun.length ? `<div class="rg-note">${d.tanpaAkun.length} petugas belum punya akun</div>` : ''}</div>`;
+}
+function bukaRingkasanPJ(){
+  const d = dataRingkasanPJ(); if(!d) return;
+  const blok = (ic, t, arr)=> arr.length ? `<div style="margin-bottom:14px;"><b>${ic} ${t} (${arr.length})</b><div style="color:var(--muted); font-size:14px; line-height:1.7;">${arr.map(x=>`${escapeHtml(x.nama)} · ${x.jam}`).join('<br>')}</div></div>` : '';
+  document.getElementById('modalTitle').textContent = 'Ringkasan Absen';
+  document.getElementById('modalBody').innerHTML = blok('✅','Hadir',d.g.hadir) + blok('⚠️','Telat',d.g.telat) + blok('❌','Tidak hadir',d.g.tidak) + blok('⏳','Belum absen',d.g.belum)
+    + (d.tanpaAkun.length ? `<div><b>🚫 Belum punya akun (${d.tanpaAkun.length})</b><div style="color:var(--muted); font-size:14px; line-height:1.7;">${d.tanpaAkun.map(p=>escapeHtml(p.nama)).join(', ')}</div></div>` : '');
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function renderBerandaExtra(){ renderTugasSaya(); renderRingkasanPJ(); }
+const _rhv = refreshHomeViews;
+refreshHomeViews = function(){ _rhv.apply(this, arguments); try{ renderBerandaExtra(); }catch(e){ console.error(e); } };
+setInterval(()=>{ try{ renderBerandaExtra(); }catch(e){} }, 60000);
+
+/* ---- Jadwal Baru: mode bebas ---- */
+let modeJadwal = 'pola';
+function setModeJadwal(m){
+  if(m===modeJadwal) return; modeJadwal = m; currentSlots = [];
+  ['slotEditorArea','autoFillWrap','saranLiturgiArea'].forEach(id=>{ const e = document.getElementById(id); if(e) e.innerHTML = ''; });
+  saranLiturgiSekarang = null;
+  document.getElementById('blokPola').style.display = m==='pola' ? '' : 'none';
+  document.getElementById('blokBebas').style.display = m==='bebas' ? '' : 'none';
+  document.getElementById('modePola').classList.toggle('on', m==='pola');
+  document.getElementById('modeBebas').classList.toggle('on', m==='bebas');
+}
+function pilihTanggalBebas(){
+  if(!document.getElementById('tglBebas').value) return;
+  if(currentSlots.length===0) addManualSlot(); else renderSlotEditor();
+  updateSaranLiturgi();
+}
+
+/* ---- Edit jadwal tersimpan: ubah tanggal/jam, tambah/hapus slot ---- */
+function setEditSlotTanggal(idx, val){ if(!val) return; editSlotsTemp[idx].tanggal = new Date(val+'T00:00:00').toISOString(); renderEditSlotEditor(); }
+function setEditSlotJam(idx, val){ if(val) editSlotsTemp[idx].jam = val; renderEditSlotEditor(); }
+function removeEditSlot(idx){
+  const s = editSlotsTemp[idx];
+  const ada = s.absensi && Object.keys(s.absensi).length;
+  if(!confirm(ada ? 'Slot ini sudah punya catatan absen. Hapus juga catatannya?' : 'Hapus slot ini?')) return;
+  editSlotsTemp.splice(idx,1); renderEditSlotEditor();
+}
+function addEditSlot(){
+  const akhir = editSlotsTemp[editSlotsTemp.length-1];
+  const base = akhir ? new Date(akhir.tanggal) : new Date();
+  editSlotsTemp.push({id:'s'+Date.now(), hari:'Lainnya', jam: akhir ? akhir.jam : '18:00', tanggal: base.toISOString(), petugas:[null,null]});
+  renderEditSlotEditor();
 }
 
 /* ---------------- TAB PROFIL (bottom nav, gaya Instagram) ----------------
@@ -2530,7 +2717,7 @@ function buildJadwalCardsHtml(list){
       }
 
       const nm = namaTerisi.length ? namaTerisi.join('') : '<span style="color:var(--muted);">(kosong)</span>';
-      return `<div class="slot-line"><span class="waktu">${tgl.toLocaleDateString('id-ID',{weekday:'long'})}, ${tglStr} — ${s.jam}</span><span class="nama">${nm}${aksi}</span></div>`;
+      return `<div class="slot-line"><span class="waktu"><span class="w-hari">${tgl.toLocaleDateString('id-ID',{weekday:'long'})}, ${tglStr}</span><span class="w-jam">${s.jam}</span></span><span class="nama">${nm}${aksi}</span></div>`;
     }).join('');
     const jadwalLewat = jadwalSudahLewat(j);
     const tombolObrolan = jadwalLewat
@@ -2539,7 +2726,7 @@ function buildJadwalCardsHtml(list){
     return `<div class="jadwal-card">
       <div class="judul">PETUGAS OPERATOR ${escapeHtml(j.namaMisa.toUpperCase())}</div>
       ${musimBadge}
-      <div style="font-size:11px; color:var(--muted); margin-bottom:8px;">Absen: ✅ hadir · ⚠️ telat · ❌ tidak hadir · ⏳ belum absen</div>
+      <div class="legend-abs"><span>✅ hadir</span><span>⚠️ telat</span><span>❌ tidak hadir</span><span>⏳ belum absen</span></div>
       ${slots}
       <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
         ${tombolObrolan}
@@ -2559,10 +2746,10 @@ async function isiSlotSendiri(jadwalId, slotId){
   if(!s) return;
   if(s.petugas.includes(currentPetugasId)){ showToast('Kamu sudah ada di slot ini.'); return; }
   if(s.petugas.length >= 2){ showToast('Slot ini sudah penuh, coba refresh.'); refreshHomeViews(); return; }
-  if(!confirm(`Isi slot ${s.hari}, ${s.jam} (${j.namaMisa}) dengan namamu?`)) return;
+  if(!confirm(`Isi slot ${namaHariDari(s)}, ${s.jam} (${j.namaMisa}) dengan namamu?`)) return;
   s.petugas.push(currentPetugasId);
   await saveList('jadwal-list', jadwalList);
-  catatLog(`mengisi sendiri slot ${s.hari} ${s.jam} di jadwal "${j.namaMisa}"`);
+  catatLog(`mengisi sendiri slot ${namaHariDari(s)} ${s.jam} di jadwal "${j.namaMisa}"`);
   refreshHomeViews();
   renderPetugas();
   showToast('Berhasil! Namamu ditambahkan ke slot ini. 🙏');
@@ -2576,7 +2763,7 @@ async function batalkanSlotSendiri(jadwalId, slotId){
   if(!confirm('Batalkan keikutsertaanmu di slot ini?')) return;
   s.petugas = s.petugas.filter(id=>id!==currentPetugasId);
   await saveList('jadwal-list', jadwalList);
-  catatLog(`membatalkan diri dari slot ${s.hari} ${s.jam} di jadwal "${j.namaMisa}"`);
+  catatLog(`membatalkan diri dari slot ${namaHariDari(s)} ${s.jam} di jadwal "${j.namaMisa}"`);
   refreshHomeViews();
   renderPetugas();
   showToast('Kamu dibatalkan dari slot ini.');
@@ -2595,7 +2782,7 @@ function bukaAbsenModal(jadwalId, slotId){
 
   document.getElementById('modalTitle').textContent = 'Absen Kehadiran';
   document.getElementById('modalBody').innerHTML = `
-    <div class="section-sub" style="margin-bottom:10px;">${escapeHtml(j.namaMisa)} — ${s.hari}, ${tglStr} jam ${s.jam}</div>
+    <div class="section-sub" style="margin-bottom:10px;">${escapeHtml(j.namaMisa)} — ${namaHariDari(s)}, ${tglStr} jam ${s.jam}</div>
     ${telat ? `<div class="section-sub" style="color:var(--maroon); margin-bottom:4px;">⚠️ Sudah lewat jam mulai tugas. Kalau kamu pilih "Saya Hadir", wajib isi alasan keterlambatan dulu.</div>` : ''}
     <div id="absenAlasanWrap" style="display:${telat ? 'block' : 'none'}; margin:10px 0;">
       <label style="display:block; font-size:11.5px; font-weight:600; color:var(--muted); margin-bottom:6px;">Alasan Terlambat <span style="color:var(--maroon);">*wajib</span></label>
@@ -2629,7 +2816,7 @@ async function submitAbsen(jadwalId, slotId, status){
     alasan,
   };
   await saveList('jadwal-list', jadwalList);
-  catatLog(`absen "${status==='hadir' ? (telat?'hadir (telat)':'hadir') : 'tidak hadir'}" untuk slot ${s.hari} ${s.jam} jadwal "${j.namaMisa}"${alasan ? ` — alasan: "${alasan}"` : ''}`);
+  catatLog(`absen "${status==='hadir' ? (telat?'hadir (telat)':'hadir') : 'tidak hadir'}" untuk slot ${namaHariDari(s)} ${s.jam} jadwal "${j.namaMisa}"${alasan ? ` — alasan: "${alasan}"` : ''}`);
   closeModal();
   refreshHomeViews();
   showToast(status === 'hadir' ? (telat ? 'Absen tercatat (terlambat).' : 'Absen hadir tercatat. Terima kasih! 🙏') : 'Absen tidak hadir tercatat.');
@@ -2968,8 +3155,8 @@ function renderEditSaranLiturgi(j){
 
 function renderEditSlotEditor(){
   const area = document.getElementById('editSlotEditorArea');
-  if(!area || editSlotsTemp.length===0) return;
-  const acuan = new Date(editSlotsTemp[0].tanggal);
+  if(!area) return;
+  const acuan = editSlotsTemp[0] ? new Date(editSlotsTemp[0].tanggal) : new Date();
   const bulan = acuan.getMonth(), tahun = acuan.getFullYear();
   const label = (id)=>{
     const p = petugasList.find(x=>x.id===id);
@@ -2982,7 +3169,8 @@ function renderEditSlotEditor(){
     const sel1 = s.petugas[0] || '';
     const sel2 = s.petugas[1] || '';
     return `<div class="slot-editor" style="margin-bottom:10px;">
-      <div class="slot-head"><span>${tglStr} — ${s.jam}</span></div>
+      <div class="slot-head"><span>${tglStr} — ${s.jam}</span><span class="remove-slot" onclick="removeEditSlot(${idx})">Hapus</span></div>
+      <div class="slot-input-row"><input type="date" value="${tglLokalStr(s.tanggal)}" onchange="setEditSlotTanggal(${idx},this.value)"><input type="time" value="${s.jam}" onchange="setEditSlotJam(${idx},this.value)"></div>
       <select onchange="setEditSlotPetugas(${idx},0,this.value)">
         <option value="">— Kosongkan —</option>
         ${petugasList.filter(p=>!p.dihapus).map(p=>`<option value="${p.id}" ${p.id===sel1?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
@@ -2992,7 +3180,7 @@ function renderEditSlotEditor(){
         ${petugasList.filter(p=>!p.dihapus).map(p=>`<option value="${p.id}" ${p.id===sel2?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
       </select>
     </div>`;
-  }).join('');
+  }).join('') + `<button class="btn-secondary" style="width:100%; margin-bottom:12px;" onclick="addEditSlot()">＋ Tambah slot</button>`;
 }
 function setEditSlotPetugas(idx, slotIdx, val){
   editSlotsTemp[idx].petugas[slotIdx] = val || null;
@@ -3519,7 +3707,7 @@ function cariReferensiRusak(){
       s.petugas.forEach(pid=>{
         if(idAktif.has(pid)) return;
         if(!grup[pid]) grup[pid] = [];
-        grup[pid].push({jadwalId:j.id, namaMisa:j.namaMisa, hari:s.hari, tanggal:s.tanggal, jam:s.jam});
+        grup[pid].push({jadwalId:j.id, namaMisa:j.namaMisa, hari:namaHariDari(s), tanggal:s.tanggal, jam:s.jam});
       });
     });
   });
@@ -3649,6 +3837,7 @@ function closeModal(){
 function resetForm(){
   document.getElementById('namaMisa').value = '';
   document.getElementById('tglSabtu').value = '';
+  const tb = document.getElementById('tglBebas'); if(tb) tb.value = '';
   currentSlots = [];
   document.getElementById('slotEditorArea').innerHTML = '';
   document.getElementById('saranLiturgiArea').innerHTML = '';
@@ -3671,10 +3860,11 @@ function generateSlots(){
 let saranLiturgiSekarang = null;
 function updateSaranLiturgi(){
   const area = document.getElementById('saranLiturgiArea');
-  const sabtuVal = document.getElementById('tglSabtu').value;
+  const bebas = modeJadwal==='bebas';
+  const sabtuVal = document.getElementById(bebas ? 'tglBebas' : 'tglSabtu').value;
   if(!area || !sabtuVal){ if(area) area.innerHTML=''; saranLiturgiSekarang=null; return; }
   const sabtu = new Date(sabtuVal + 'T00:00:00');
-  const minggu = tambahHari(sabtu, 1);
+  const minggu = bebas ? sabtu : tambahHari(sabtu, 1);
   const info = getInfoLiturgi(minggu);
   if(!info){ area.innerHTML=''; saranLiturgiSekarang=null; return; }
   saranLiturgiSekarang = info.nama;
@@ -3703,14 +3893,15 @@ function setSlotJam(idx, val){
   renderSlotEditor();
 }
 function addManualSlot(){
-  const sabtuVal = document.getElementById('tglSabtu').value;
-  const base = sabtuVal ? new Date(sabtuVal+'T00:00:00') : new Date();
-  currentSlots.push({id:'s'+Date.now(), hari:'Lainnya', jam:'18:00', tanggal: base.toISOString(), petugas:[null,null]});
+  const v = document.getElementById(modeJadwal==='bebas' ? 'tglBebas' : 'tglSabtu').value;
+  const akhir = currentSlots.length ? currentSlots[currentSlots.length-1] : null;
+  const base = akhir ? new Date(akhir.tanggal) : (v ? new Date(v+'T00:00:00') : new Date());
+  currentSlots.push({id:'s'+Date.now(), hari:'Lainnya', jam: akhir ? akhir.jam : '18:00', tanggal: base.toISOString(), petugas:[null,null]});
   renderSlotEditor();
 }
 
 function getFormBulanTahun(){
-  const v = document.getElementById('tglSabtu').value;
+  const v = document.getElementById(modeJadwal==='bebas' ? 'tglBebas' : 'tglSabtu').value;
   const d = v ? new Date(v) : new Date();
   return {bulan:d.getMonth(), tahun:d.getFullYear()};
 }
@@ -3746,7 +3937,7 @@ function renderSlotEditor(){
   const wrap = document.getElementById('autoFillWrap');
   if(wrap){
     wrap.innerHTML = currentSlots.length>0
-      ? `<button class="btn-secondary" style="width:100%; margin-bottom:16px;" onclick="autoFillSlots()">⚡ Isi Otomatis Slot Kosong</button>`
+      ? `<button class="btn-secondary" style="width:100%; margin-bottom:10px;" onclick="addManualSlot()">＋ Tambah slot lain</button><button class="btn-secondary" style="width:100%; margin-bottom:16px;" onclick="autoFillSlots()">⚡ Isi Otomatis Slot Kosong</button>`
       : '';
   }
 }
@@ -3815,7 +4006,7 @@ function autoFillSlots(){
 
 async function simpanJadwal(){
   const namaMisa = document.getElementById('namaMisa').value.trim();
-  const sabtuVal = document.getElementById('tglSabtu').value;
+  const sabtuVal = document.getElementById(modeJadwal==='bebas' ? 'tglBebas' : 'tglSabtu').value;
   if(!namaMisa){ showToast('Isi dulu nama hari raya/misanya'); return; }
   if(!sabtuVal || currentSlots.length===0){ showToast('Pilih tanggal & pastikan slot terisi'); return; }
 
@@ -3823,7 +4014,7 @@ async function simpanJadwal(){
     id: 'j' + Date.now(),
     namaMisa,
     tglSabtu: sabtuVal,
-    slots: currentSlots.map(s=>({...s, petugas: s.petugas.filter(Boolean)}))
+    slots: currentSlots.map(s=>({...s, petugas: s.petugas.filter(Boolean)})).sort((a,b)=>slotDateTime(a)-slotDateTime(b))
   };
   jadwalList.push(entry);
   await saveList('jadwal-list', jadwalList);
