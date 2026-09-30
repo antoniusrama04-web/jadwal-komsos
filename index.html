@@ -28,7 +28,7 @@
   --paper: #0A0F1E;
   --paper-card: rgba(255,255,255,0.055);
   --text: #F1F4FB;
-  --muted: #8B96AC;
+  --muted: #B4BDCF;
   --line: rgba(255,255,255,0.10);
   --maroon: #FF6B6B;
   --maroon-bg: rgba(255,107,107,0.15);
@@ -53,7 +53,7 @@
   --paper: #F7F8FC;
   --paper-card: rgba(20,25,45,0.045);
   --text: #171B2B;
-  --muted: #5B6478;
+  --muted: #434B5E;
   --line: rgba(15,20,40,0.12);
   --maroon: #DC2626;
   --maroon-bg: rgba(220,38,38,0.10);
@@ -83,7 +83,9 @@ body{
   color:var(--text);
   min-height:100vh;
   overflow-x:hidden;
-  font-size:15.5px;
+  font-size:18px;
+  line-height:1.5;
+  -webkit-text-size-adjust:100%; text-size-adjust:100%;
 }
 h1,h2,h3,.display{font-family:'Sora', sans-serif;}
 
@@ -118,7 +120,7 @@ h1,h2,h3,.display{font-family:'Sora', sans-serif;}
 .splash-mark .sos{color:var(--sos-blue);}
 .splash-sub{
   position:relative; z-index:1;
-  margin-top:16px; color:var(--muted); font-size:13.5px; letter-spacing:0.08em;
+  margin-top:16px; color:var(--muted); font-size:17px; letter-spacing:0.08em;
   font-weight:600; text-align:center; line-height:1.7;
   opacity:0; animation:subIn 1s ease 0.55s forwards;
 }
@@ -154,36 +156,36 @@ h1,h2,h3,.display{font-family:'Sora', sans-serif;}
 .gate-card::before{
   content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--grad);
 }
-.gate-card .mini-mark{font-family:'Sora'; font-weight:800; font-size:25px; margin-bottom:6px;}
+.gate-card .mini-mark{font-family:'Sora'; font-weight:800; font-size:30px; margin-bottom:6px;}
 .mini-mark .kom{color:#fff;} .mini-mark .sos{color:var(--sos-blue);}
-.gate-card p{color:var(--muted); font-size:15px; margin:8px 0 24px; line-height:1.6;}
+.gate-card p{color:var(--muted); font-size:18px; margin:8px 0 24px; line-height:1.6;}
 .gate-card input{
   width:100%; padding:13px 15px; border:1px solid transparent; border-radius:12px;
-  font-size:16px; font-family:'Plus Jakarta Sans'; margin-bottom:14px; letter-spacing:0.01em;
+  font-size:19px; font-family:'Plus Jakarta Sans'; margin-bottom:14px; letter-spacing:0.01em;
   background:var(--field-bg); color:#1A2033;
 }
 .gate-card input:focus{outline:2px solid var(--blue); outline-offset:1px;}
 .gate-card button{
   width:100%; padding:13px; border:none; border-radius:12px; background:var(--grad);
-  color:#fff; font-weight:700; font-size:15px; cursor:pointer; font-family:'Plus Jakarta Sans';
+  color:#fff; font-weight:700; font-size:18px; cursor:pointer; font-family:'Plus Jakarta Sans';
   transition:filter 0.15s, transform 0.15s; letter-spacing:0.01em;
 }
 .gate-card button:hover{filter:brightness(1.1);}
 .gate-card button:active{transform:scale(0.98);}
 .gate-card button:disabled{opacity:0.5; cursor:default;}
-.gate-error{color:var(--maroon); font-size:13px; margin-top:12px; min-height:18px; text-align:left;}
+.gate-error{color:var(--maroon); font-size:16px; margin-top:12px; min-height:18px; text-align:left;}
 .gate-card select{
   width:100%; padding:13px 15px; border:1px solid transparent; border-radius:12px;
-  font-size:16px; font-family:'Plus Jakarta Sans'; margin-bottom:14px; background:var(--field-bg); color:#1A2033;
+  font-size:19px; font-family:'Plus Jakarta Sans'; margin-bottom:14px; background:var(--field-bg); color:#1A2033;
 }
-.gate-card p.small-note{font-size:13px; margin:14px 0 0; text-align:left; line-height:1.5;}
+.gate-card p.small-note{font-size:16px; margin:14px 0 0; text-align:left; line-height:1.5;}
 .pw-eye{
   position:absolute; right:14px; top:50%; transform:translateY(-50%);
-  cursor:pointer; color:#6B7690; font-size:17px; user-select:none;
+  cursor:pointer; color:#6B7690; font-size:20px; user-select:none;
 }
-.auth-switch{margin-top:18px; font-size:13px; color:var(--muted); text-align:center;}
+.auth-switch{margin-top:18px; font-size:16px; color:var(--muted); text-align:center;}
 .auth-switch a, .gate-card .link{color:var(--blue-light); cursor:pointer; text-decoration:underline; font-weight:600;}
-.auth-forgot{text-align:right; margin:-4px 0 14px; font-size:12.5px;}
+.auth-forgot{text-align:right; margin:-4px 0 14px; font-size:16px;}
 .auth-forgot span{color:var(--gold-soft); cursor:pointer; text-decoration:underline;}
 
 /* ---------- APP SHELL ---------- */
@@ -195,10 +197,10 @@ header.appbar{
   position:sticky; top:0; z-index:10;
   border-bottom:1px solid var(--line);
 }
-header.appbar .mark{font-family:'Sora'; font-weight:800; font-size:21px;}
+header.appbar .mark{font-family:'Sora'; font-weight:800; font-size:25px;}
 header.appbar .kom{color:#fff;} header.appbar .sos{color:var(--sos-blue);}
 .role-badge{
-  font-size:12.5px; padding:5px 12px; border-radius:20px; font-weight:600;
+  font-size:16px; padding:5px 12px; border-radius:20px; font-weight:600;
   background:var(--tint-3); color:#C7D2E2; letter-spacing:0.02em;
   border:1px solid var(--line);
 }
@@ -225,10 +227,10 @@ header.appbar .kom{color:#fff;} header.appbar .sos{color:var(--sos-blue);}
 
 main{flex:1; padding:28px 22px 110px; max-width:680px; width:100%; margin:0 auto;}
 .section-title{
-  font-family:'Sora', sans-serif; font-size:26px; font-weight:700; letter-spacing:-0.01em;
+  font-family:'Sora', sans-serif; font-size:30px; font-weight:700; letter-spacing:-0.01em;
   margin-bottom:8px; color:var(--text);
 }
-.section-sub{color:var(--muted); font-size:15px; margin-bottom:22px; line-height:1.55;}
+.section-sub{color:var(--muted); font-size:18px; margin-bottom:22px; line-height:1.55;}
 
 .pengingat-card{
   background:linear-gradient(135deg, rgba(255,107,107,0.14), rgba(255,107,107,0.04));
@@ -239,14 +241,14 @@ main{flex:1; padding:28px 22px 110px; max-width:680px; width:100%; margin:0 auto
   background:linear-gradient(135deg, rgba(79,142,247,0.16), rgba(139,92,246,0.06));
   border-color:rgba(79,142,247,0.35);
 }
-.pengingat-card .judul{font-family:'Sora', sans-serif; font-weight:700; font-size:16px; margin-bottom:6px; color:var(--text);}
-.pengingat-card .isi{font-size:14.5px; line-height:1.6; color:var(--text);}
-.pengingat-card .sub-list{margin-top:10px; padding-top:10px; border-top:1px solid var(--tint-line); font-size:13px; color:var(--muted); line-height:1.7;}
+.pengingat-card .judul{font-family:'Sora', sans-serif; font-weight:700; font-size:19px; margin-bottom:6px; color:var(--text);}
+.pengingat-card .isi{font-size:17px; line-height:1.6; color:var(--text);}
+.pengingat-card .sub-list{margin-top:10px; padding-top:10px; border-top:1px solid var(--tint-line); font-size:16px; color:var(--muted); line-height:1.7;}
 
 .filter-row{display:flex; gap:10px; margin-bottom:22px;}
 .filter-row select{
   flex:1; padding:12px 14px; border:1px solid transparent; border-radius:12px;
-  background:var(--field-bg); font-family:'Plus Jakarta Sans'; font-size:15.5px; color:#1A2033;
+  background:var(--field-bg); font-family:'Plus Jakarta Sans'; font-size:18px; color:#1A2033;
 }
 
 .jadwal-card{
@@ -257,34 +259,34 @@ main{flex:1; padding:28px 22px 110px; max-width:680px; width:100%; margin:0 auto
 .jadwal-card::before{
   content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--grad);
 }
-.jadwal-card .judul{font-family:'Sora', sans-serif; font-weight:700; font-size:16.5px; margin-bottom:2px; color:var(--text); letter-spacing:0.01em; word-break:break-word;}
-.jadwal-card .judul.judul-md{font-size:14px;}
-.jadwal-card .judul.judul-sm{font-size:12.5px;}
+.jadwal-card .judul{font-family:'Sora', sans-serif; font-weight:700; font-size:19px; margin-bottom:2px; color:var(--text); letter-spacing:0.01em; word-break:break-word;}
+.jadwal-card .judul.judul-md{font-size:17px;}
+.jadwal-card .judul.judul-sm{font-size:16px;}
 .musim-badge{
-  display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700;
+  display:inline-flex; align-items:center; gap:6px; font-size:16px; font-weight:700;
   padding:3px 10px 3px 8px; border-radius:20px; background:var(--tint-2);
   color:var(--muted); margin-bottom:12px; letter-spacing:0.02em;
 }
 .musim-badge .dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
 .info-hariraya{
-  font-size:12.5px; color:var(--muted); margin:-6px 0 12px; line-height:1.5;
+  font-size:16px; color:var(--muted); margin:-6px 0 12px; line-height:1.5;
 }
 .info-hariraya b{color:var(--text); font-weight:600;}
 .saran-liturgi{
   display:flex; align-items:center; gap:10px; padding:12px 14px; margin:-4px 0 16px;
   border-radius:14px; background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.3);
-  font-size:13.5px; color:var(--text);
+  font-size:17px; color:var(--text);
 }
 .saran-liturgi .dot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
 .saran-liturgi b{font-family:'Sora',sans-serif;}
 .saran-liturgi .pakai-btn{
   margin-left:auto; white-space:nowrap; padding:6px 12px; border-radius:10px; border:none;
-  background:var(--grad); color:#fff; font-weight:700; font-size:12.5px; cursor:pointer;
+  background:var(--grad); color:#fff; font-weight:700; font-size:16px; cursor:pointer;
   font-family:'Plus Jakarta Sans';
 }
 .slot-line{
   display:flex; justify-content:space-between; align-items:baseline;
-  padding:9px 0; border-top:1px solid var(--line); font-size:15px;
+  padding:9px 0; border-top:1px solid var(--line); font-size:18px;
 }
 .slot-line:first-of-type{border-top:none;}
 .slot-line .waktu{color:var(--muted); min-width:132px;}
@@ -293,10 +295,10 @@ main{flex:1; padding:28px 22px 110px; max-width:680px; width:100%; margin:0 auto
 .nm-row{display:flex; justify-content:flex-end; align-items:flex-start; gap:6px; max-width:100%;}
 .nm-t{min-width:0; overflow-wrap:anywhere; text-align:right;}
 .nm-b{flex-shrink:0; width:22px; text-align:center;}
-.belum-akun{display:inline-block; margin-top:3px; font-size:11px; font-weight:700; padding:2px 9px; border-radius:20px; background:var(--maroon-bg); color:var(--maroon);}
+.belum-akun{display:inline-block; margin-top:3px; font-size:16px; font-weight:700; padding:2px 9px; border-radius:20px; background:var(--maroon-bg); color:var(--maroon);}
 body.modal-open{overflow:hidden;}
-.peng-btn{display:flex;flex-direction:column;align-items:center;border:none;background:var(--grad);color:#fff;border-radius:14px;padding:5px 10px;font:700 12px 'Plus Jakarta Sans',sans-serif;line-height:1.1;cursor:pointer;}
-.peng-n{font-size:9px;font-weight:700;margin-top:3px;background:#fff;color:var(--maroon);border-radius:8px;padding:1px 6px;}
+.peng-btn{display:flex;flex-direction:column;align-items:center;border:none;background:var(--grad);color:#fff;border-radius:14px;padding:5px 10px;font:700 16px 'Plus Jakarta Sans',sans-serif;line-height:1.1;cursor:pointer;}
+.peng-n{font-size:14px;font-weight:700;margin-top:3px;background:#fff;color:var(--maroon);border-radius:8px;padding:1px 6px;}
 .peng-card{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;}
 .peng-card img{width:100%;border-radius:10px;margin:8px 0;display:block;}
 .ed-wrap{position:fixed;inset:0;z-index:3000;background:#0b0f1a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;color:#fff;touch-action:none;}
@@ -311,11 +313,11 @@ background:linear-gradient(var(--tint-3),var(--tint-3)) 33.33% 0/1px 100% no-rep
 #kiosk img{width:min(78vw,68vh);image-rendering:pixelated;}
 .modal-overlay{overscroll-behavior:contain;}
 .modal-sheet{overscroll-behavior:contain;}
-.empty-note{color:var(--muted); font-size:15px; text-align:center; padding:36px 10px;}
+.empty-note{color:var(--muted); font-size:18px; text-align:center; padding:36px 10px;}
 
 .saran-trigger{
   width:100%; margin-top:28px; padding:15px; border:1px solid var(--line); border-radius:14px;
-  background:var(--paper-card); backdrop-filter:blur(14px); color:var(--text); font-weight:600; font-size:15px; cursor:pointer; font-family:'Plus Jakarta Sans';
+  background:var(--paper-card); backdrop-filter:blur(14px); color:var(--text); font-weight:600; font-size:18px; cursor:pointer; font-family:'Plus Jakarta Sans';
   transition:border-color 0.15s;
 }
 .saran-trigger:hover{border-color:var(--blue);}
@@ -330,23 +332,23 @@ background:linear-gradient(var(--tint-3),var(--tint-3)) 33.33% 0/1px 100% no-rep
 }
 .home-menu-btn:hover{border-color:var(--blue); transform:translateY(-1px);}
 .home-menu-btn .hm-icon{
-  font-size:22px; width:44px; height:44px; flex-shrink:0; border-radius:12px;
+  font-size:25px; width:44px; height:44px; flex-shrink:0; border-radius:12px;
   display:flex; align-items:center; justify-content:center; background:var(--grad);
 }
-.home-menu-btn .hm-label{font-family:'Sora', sans-serif; font-weight:700; font-size:16.5px; color:var(--text);}
+.home-menu-btn .hm-label{font-family:'Sora', sans-serif; font-weight:700; font-size:19px; color:var(--text);}
 .home-panel{display:none;}
 .home-panel.active{display:block;}
 .panel-back{
   display:inline-flex; align-items:center; gap:9px; cursor:pointer; margin-bottom:18px;
   padding:8px 16px 8px 10px; border-radius:999px;
   background:var(--tint-2); border:1px solid var(--line);
-  color:var(--text); font-size:13.5px; font-weight:700; font-family:'Plus Jakarta Sans';
+  color:var(--text); font-size:17px; font-weight:700; font-family:'Plus Jakarta Sans';
   transition:border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 .panel-back .pb-arrow{
   display:flex; align-items:center; justify-content:center;
   width:24px; height:24px; border-radius:50%; flex-shrink:0;
-  background:var(--grad); color:#fff; font-size:13px; font-weight:800;
+  background:var(--grad); color:#fff; font-size:16px; font-weight:800;
   transition:transform 0.25s cubic-bezier(.34,1.56,.64,1);
 }
 .panel-back:hover{border-color:var(--blue); background:rgba(79,142,247,0.1); transform:translateX(-2px);}
@@ -354,32 +356,32 @@ background:linear-gradient(var(--tint-3),var(--tint-3)) 33.33% 0/1px 100% no-rep
 .panel-back:active{transform:translateX(-2px) scale(0.97);}
 .modal-field{
   width:100%; padding:12px 14px; border:1px solid transparent; border-radius:12px;
-  font-family:'Plus Jakarta Sans'; font-size:15px; margin-bottom:10px; resize:vertical;
+  font-family:'Plus Jakarta Sans'; font-size:18px; margin-bottom:10px; resize:vertical;
   background:var(--field-bg); color:#1A2033;
 }
 textarea.modal-field{min-height:90px;}
 .btn-primary{
   padding:12px 20px; border:none; border-radius:12px; background:var(--grad);
-  color:#fff; font-weight:700; font-size:15px; cursor:pointer; font-family:'Plus Jakarta Sans';
+  color:#fff; font-weight:700; font-size:18px; cursor:pointer; font-family:'Plus Jakarta Sans';
   transition:filter 0.15s, transform 0.15s;
 }
 .btn-primary:hover{filter:brightness(1.1);}
 .btn-primary:active{transform:scale(0.98);}
 .btn-secondary{
   padding:12px 20px; border:1px solid var(--line); border-radius:12px; background:var(--tint-2);
-  color:var(--text); font-weight:600; font-size:15px; cursor:pointer; font-family:'Plus Jakarta Sans';
+  color:var(--text); font-weight:600; font-size:18px; cursor:pointer; font-family:'Plus Jakarta Sans';
   transition:border-color 0.15s;
 }
 .btn-secondary:hover{border-color:var(--blue);}
 .saran-list{margin-top:14px; border-top:1px solid var(--line); padding-top:12px;}
-.saran-item{font-size:14px; padding:8px 0; color:var(--text); line-height:1.5;}
+.saran-item{font-size:17px; padding:8px 0; color:var(--text); line-height:1.5;}
 .saran-item b{color:var(--text); font-family:'Sora', sans-serif;}
 .saran-item span{color:var(--muted);}
 
 /* Petugas list */
 .petugas-add{display:flex; gap:10px; margin-bottom:20px;}
 .petugas-add input{
-  flex:1; padding:12px 14px; border:1px solid transparent; border-radius:12px; font-family:'Plus Jakarta Sans'; font-size:15.5px;
+  flex:1; padding:12px 14px; border:1px solid transparent; border-radius:12px; font-family:'Plus Jakarta Sans'; font-size:18px;
   background:var(--field-bg); color:#1A2033;
 }
 .petugas-row{
@@ -388,9 +390,9 @@ textarea.modal-field{min-height:90px;}
   transition:background 0.15s;
 }
 .petugas-row:hover{background:var(--tint-1);}
-.petugas-row .nm{font-family:'Sora', sans-serif; font-weight:700; font-size:15.5px; color:var(--text);}
+.petugas-row .nm{font-family:'Sora', sans-serif; font-weight:700; font-size:18px; color:var(--text);}
 .count-pill{
-  font-size:12.5px; font-weight:700; padding:4px 11px; border-radius:20px;
+  font-size:16px; font-weight:700; padding:4px 11px; border-radius:20px;
   background:var(--tint-3); color:var(--muted); flex-shrink:0;
 }
 .count-pill.full{background:var(--maroon-bg); color:var(--maroon);}
@@ -413,28 +415,28 @@ textarea.modal-field{min-height:90px;}
 }
 .profil-avatar-lg.placeholder{
   display:flex; align-items:center; justify-content:center;
-  background:var(--grad); color:#fff; font-family:'Sora',sans-serif; font-weight:800; font-size:28px;
+  background:var(--grad); color:#fff; font-family:'Sora',sans-serif; font-weight:800; font-size:30px;
 }
-.profil-head .nama-besar{font-family:'Sora', sans-serif; font-weight:700; font-size:19px; color:var(--text); margin-bottom:4px;}
+.profil-head .nama-besar{font-family:'Sora', sans-serif; font-weight:700; font-size:22px; color:var(--text); margin-bottom:4px;}
 .profil-head .ultah-badge{
-  display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:20px;
+  display:inline-block; font-size:16px; font-weight:700; padding:3px 10px; border-radius:20px;
   background:linear-gradient(135deg, rgba(255,180,80,0.25), rgba(255,107,107,0.18)); color:#FFD08A;
   margin-top:2px;
 }
-.profil-bio{font-size:14px; color:var(--muted); line-height:1.55; margin-bottom:18px;}
+.profil-bio{font-size:17px; color:var(--muted); line-height:1.55; margin-bottom:18px;}
 .profil-edit-block{
   background:var(--paper-card); backdrop-filter:blur(10px); border:1px solid var(--line);
   border-radius:14px; padding:14px; margin-bottom:14px;
 }
-.profil-edit-block label{display:block; font-size:11.5px; font-weight:600; color:var(--muted); margin-bottom:6px;}
+.profil-edit-block label{display:block; font-size:16px; font-weight:600; color:var(--muted); margin-bottom:6px;}
 .profil-foto-row{display:flex; align-items:center; gap:14px; margin-bottom:4px;}
 .btn-ganti-foto{
   padding:9px 14px; border-radius:10px; border:1px solid var(--line);
   background:var(--tint-2); color:var(--text); font-family:'Plus Jakarta Sans'; font-weight:600;
-  font-size:13px; cursor:pointer; transition:border-color 0.15s;
+  font-size:16px; cursor:pointer; transition:border-color 0.15s;
 }
 .btn-ganti-foto:hover{border-color:var(--blue);}
-.jatah-nama{font-size:12px; color:var(--muted); margin-top:8px;}
+.jatah-nama{font-size:16px; color:var(--muted); margin-top:8px;}
 .jatah-nama.habis{color:var(--maroon);}
 
 /* ---------- OBROLAN JADWAL ---------- */
@@ -452,23 +454,23 @@ textarea.modal-field{min-height:90px;}
   background:rgba(79,142,247,0.18); border-color:rgba(79,142,247,0.35);
   border-radius:14px 14px 4px 14px;
 }
-.chat-nama{font-size:11.5px; font-weight:700; color:var(--blue-light); margin-bottom:2px;}
+.chat-nama{font-size:16px; font-weight:700; color:var(--blue-light); margin-bottom:2px;}
 .chat-bubble-row.sendiri .chat-nama{display:none;}
-.chat-teks{font-size:14px; color:var(--text); line-height:1.42; word-break:break-word; white-space:pre-wrap;}
-.chat-waktu{font-size:10px; color:var(--muted); margin-top:4px; text-align:right;}
+.chat-teks{font-size:17px; color:var(--text); line-height:1.42; word-break:break-word; white-space:pre-wrap;}
+.chat-waktu{font-size:14px; color:var(--muted); margin-top:4px; text-align:right;}
 .chat-input-row{display:flex; gap:8px; align-items:center; position:sticky; bottom:0;}
 .chat-input-row input{flex:1; margin-bottom:0;}
 .chat-quote{
   border-left:2.5px solid var(--blue-light); padding:3px 8px; margin-bottom:5px;
-  font-size:11.5px; color:var(--muted); background:var(--tint-1); border-radius:4px;
+  font-size:16px; color:var(--muted); background:var(--tint-1); border-radius:4px;
 }
-.chat-actions{margin-top:3px; font-size:10.5px;}
+.chat-actions{margin-top:3px; font-size:14px;}
 .chat-actions a{color:var(--muted); cursor:pointer; text-decoration:underline;}
 .chat-actions a:hover{color:var(--blue-light);}
 .chat-reply-preview{
   display:flex; align-items:center; gap:8px; background:var(--paper-card);
   border:1px solid var(--line); border-left:2.5px solid var(--blue-light);
-  border-radius:8px; padding:6px 10px; margin-bottom:8px; font-size:12px; color:var(--muted);
+  border-radius:8px; padding:6px 10px; margin-bottom:8px; font-size:16px; color:var(--muted);
 }
 .chat-reply-preview span.txt{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 .chat-reply-preview a{color:var(--maroon); cursor:pointer; font-weight:700; flex-shrink:0;}
@@ -481,19 +483,19 @@ textarea.modal-field{min-height:90px;}
   content:''; display:block; width:40px; height:4px; border-radius:4px; background:var(--line);
   margin:0 auto 20px;
 }
-.modal-sheet h3{font-family:'Sora', sans-serif; font-weight:700; font-size:21px; margin-bottom:16px; color:var(--text);}
-.close-x{float:right; cursor:pointer; color:var(--muted); font-size:20px;}
+.modal-sheet h3{font-family:'Sora', sans-serif; font-weight:700; font-size:25px; margin-bottom:16px; color:var(--text);}
+.close-x{float:right; cursor:pointer; color:var(--muted); font-size:25px;}
 .hist-line{
   display:flex; justify-content:space-between; padding:11px 0; border-top:1px solid var(--line);
-  font-size:15px;
+  font-size:18px;
 }
 .hist-line:first-of-type{border-top:none;}
 
 /* Form (Tambah Jadwal) */
 .form-block{margin-bottom:20px;}
-.form-block label{display:block; font-size:13.5px; font-weight:700; color:var(--muted); margin-bottom:8px; letter-spacing:0.01em;}
+.form-block label{display:block; font-size:17px; font-weight:700; color:var(--muted); margin-bottom:8px; letter-spacing:0.01em;}
 .form-block input[type=text], .form-block input[type=date]{
-  width:100%; padding:13px 14px; border:1px solid transparent; border-radius:12px; font-family:'Plus Jakarta Sans'; font-size:16px;
+  width:100%; padding:13px 14px; border:1px solid transparent; border-radius:12px; font-family:'Plus Jakarta Sans'; font-size:19px;
   background:var(--field-bg); color:#1A2033;
 }
 .slot-editor{
@@ -501,17 +503,17 @@ textarea.modal-field{min-height:90px;}
   padding:16px 18px; margin-bottom:12px;
 }
 .slot-editor .slot-head{
-  display:flex; justify-content:space-between; font-size:14.5px; font-weight:700; color:var(--text);
+  display:flex; justify-content:space-between; font-size:17px; font-weight:700; color:var(--text);
   margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line);
 }
 .slot-editor select{
   width:100%; padding:10px 11px; border:1px solid transparent; border-radius:10px; margin-bottom:9px;
-  font-family:'Plus Jakarta Sans'; font-size:15px; background:var(--field-bg); color:#1A2033;
+  font-family:'Plus Jakarta Sans'; font-size:18px; background:var(--field-bg); color:#1A2033;
 }
-.slot-editor .remove-slot{color:var(--maroon); font-size:13px; cursor:pointer; font-weight:600;}
+.slot-editor .remove-slot{color:var(--maroon); font-size:16px; cursor:pointer; font-weight:600;}
 .add-slot-btn{
   width:100%; padding:12px; border:1px dashed var(--line); border-radius:12px; background:none;
-  color:var(--muted); font-size:14.5px; cursor:pointer; margin-bottom:20px; font-family:'Plus Jakarta Sans';
+  color:var(--muted); font-size:17px; cursor:pointer; margin-bottom:20px; font-family:'Plus Jakarta Sans';
 }
 
 /* Bottom nav */
@@ -523,9 +525,9 @@ nav.bottomnav{
 }
 nav.bottomnav button{
   flex:1; background:none; border:none; padding:8px 4px; font-family:'Plus Jakarta Sans'; border-radius:14px;
-  font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; transition:background 0.15s, color 0.15s;
+  font-size:16px; font-weight:600; color:var(--muted); cursor:pointer; transition:background 0.15s, color 0.15s;
 }
-nav.bottomnav button .ic{display:block; font-size:20px; margin-bottom:3px;}
+nav.bottomnav button .ic{display:block; font-size:25px; margin-bottom:3px;}
 nav.bottomnav button.active{color:var(--text); background:var(--tint-3);}
 nav.bottomnav button.active .ic{filter:none;}
 nav.bottomnav button .ic-avatar-wrap{display:flex; justify-content:center; margin-bottom:3px;}
@@ -542,7 +544,7 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
 .toast{
   position:fixed; bottom:96px; left:50%; transform:translateX(-50%) translateY(20px);
   background:#181F33; color:#fff; padding:11px 20px; border-radius:14px;
-  font-size:14.5px; opacity:0; transition:all 0.25s; z-index:60; pointer-events:none;
+  font-size:17px; opacity:0; transition:all 0.25s; z-index:60; pointer-events:none;
   border:1px solid var(--line); box-shadow:0 12px 30px rgba(0,0,0,0.4);
 }
 .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
@@ -558,7 +560,7 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
   background:rgba(5,7,14,0.75); backdrop-filter:blur(4px);
   align-items:center; justify-content:center; flex-direction:column; gap:14px;
 }
-#loadingOverlay span{color:#fff; font-size:13px; font-weight:600;}
+#loadingOverlay span{color:#fff; font-size:16px; font-weight:600;}
 
 @keyframes shimmer{ 0%{background-position:-200px 0;} 100%{background-position:200px 0;} }
 .skeleton-card{
@@ -574,7 +576,7 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
 .btn-mini{
   padding:7px 14px; border-radius:999px; border:1px solid var(--line);
   background:var(--tint-2); color:var(--text); font-family:'Plus Jakarta Sans';
-  font-size:12.5px; font-weight:700; cursor:pointer; white-space:nowrap;
+  font-size:16px; font-weight:700; cursor:pointer; white-space:nowrap;
   transition:transform 0.12s, filter 0.15s, border-color 0.15s;
 }
 .btn-mini:hover{border-color:var(--blue);}
@@ -583,12 +585,12 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
 .btn-mini.absen:hover{filter:brightness(1.1);}
 .btn-mini.batal{color:var(--maroon); border-color:var(--maroon-bg); background:var(--maroon-bg);}
 .slot-input-row{display:flex; gap:8px; margin:8px 0 4px;}
-.slot-input-row input{flex:1; min-width:0; padding:9px 10px; border-radius:10px; border:1px solid var(--line); background:var(--field-bg); color:#1A2033; font-family:'Plus Jakarta Sans'; font-size:14px;}
+.slot-input-row input{flex:1; min-width:0; padding:9px 10px; border-radius:10px; border:1px solid var(--line); background:var(--field-bg); color:#1A2033; font-family:'Plus Jakarta Sans'; font-size:17px;}
 .jam-cepat-row{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 10px;}
-.jam-cepat-btn{padding:6px 12px; border-radius:999px; border:1px solid var(--line); background:var(--tint-2); color:var(--text); font-family:'Plus Jakarta Sans'; font-size:12.5px; font-weight:600; cursor:pointer; white-space:nowrap;}
+.jam-cepat-btn{padding:6px 12px; border-radius:999px; border:1px solid var(--line); background:var(--tint-2); color:var(--text); font-family:'Plus Jakarta Sans'; font-size:16px; font-weight:600; cursor:pointer; white-space:nowrap;}
 .jam-cepat-btn:hover{border-color:var(--blue);}
 .jam-cepat-btn:active{transform:scale(0.94);}
-.jadwal-sub{font-family:'Sora',sans-serif; font-weight:700; font-size:14px; color:var(--muted); margin:18px 0 10px;}
+.jadwal-sub{font-family:'Sora',sans-serif; font-weight:700; font-size:17px; color:var(--muted); margin:18px 0 10px;}
 
 /* --- Foto profil layar penuh (lightbox) --- */
 img.avatar-zoom{cursor:zoom-in;}
@@ -598,15 +600,15 @@ img.avatar-zoom{cursor:zoom-in;}
 }
 #fotoLightbox.open{display:flex;}
 #fotoLightbox img{max-width:100%; max-height:78vh; object-fit:contain; border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,0.6);}
-#fotoLightbox .lb-nama{margin-top:14px; color:#fff; font-family:'Sora',sans-serif; font-weight:700; font-size:17px;}
+#fotoLightbox .lb-nama{margin-top:14px; color:#fff; font-family:'Sora',sans-serif; font-weight:700; font-size:20px;}
 #fotoLightbox .lb-tutup{
   position:absolute; top:calc(14px + env(safe-area-inset-top, 0px)); right:16px; width:40px; height:40px;
-  border-radius:50%; border:none; background:var(--tint-3); color:#fff; font-size:20px; cursor:pointer;
+  border-radius:50%; border:none; background:var(--tint-3); color:#fff; font-size:25px; cursor:pointer;
 }
 
 /* ===== 1.6.0 PERAPIAN & FITUR BARU ===== */
 header.appbar{padding:14px 16px; gap:10px;}
-header.appbar .mark{font-size:20px; flex-shrink:0;}
+header.appbar .mark{font-size:25px; flex-shrink:0;}
 .header-actions{gap:8px; min-width:0;}
 #hdrHidden, #testNotifBox, #roleBadge{display:none !important;}
 main{padding:22px 18px 120px;}
@@ -619,31 +621,31 @@ button:active{transform:scale(.97);}
 .jadwal-card{margin-bottom:18px; animation:fadeUp .35s ease both;}
 .jadwal-card .judul{line-height:1.3; margin-bottom:10px;}
 .musim-badge{margin-bottom:12px;}
-.legend-abs{display:flex; flex-wrap:wrap; gap:4px 12px; font-size:12px; color:var(--muted); margin:2px 0 12px;}
+.legend-abs{display:flex; flex-wrap:wrap; gap:4px 12px; font-size:16px; color:var(--muted); margin:2px 0 12px;}
 .slot-line{padding:13px 0; gap:12px;}
 .slot-line .waktu{flex:0 0 98px; min-width:0; display:flex; flex-direction:column; gap:2px;}
-.slot-line .waktu .w-hari{font-size:12px; color:var(--muted);}
-.slot-line .waktu .w-jam{font-size:18px; font-weight:800; color:var(--text); font-family:'Sora',sans-serif;}
+.slot-line .waktu .w-hari{font-size:16px; color:var(--muted);}
+.slot-line .waktu .w-jam{font-size:22px; font-weight:800; color:var(--text); font-family:'Sora',sans-serif;}
 .slot-line .nama{gap:4px;}
 .slot-aksi{margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;}
 @keyframes fadeUp{from{opacity:0; transform:translateY(8px);}to{opacity:1; transform:none;}}
 .menu-user{padding:2px 4px 14px;}
 .menu-user small{display:block; color:var(--muted); margin-top:2px;}
-.menu-item{display:flex; align-items:center; gap:14px; width:100%; padding:14px 12px; border:none; background:var(--tint-2); color:var(--text); border-radius:14px; font:600 15px 'Plus Jakarta Sans',sans-serif; margin-bottom:8px; text-align:left; cursor:pointer;}
+.menu-item{display:flex; align-items:center; gap:14px; width:100%; padding:14px 12px; border:none; background:var(--tint-2); color:var(--text); border-radius:14px; font:600 18px 'Plus Jakarta Sans',sans-serif; margin-bottom:8px; text-align:left; cursor:pointer;}
 .menu-item.danger{color:#ff8a8a;}
-.menu-item .mi-ic{font-size:20px; width:26px; text-align:center;}
+.menu-item .mi-ic{font-size:25px; width:26px; text-align:center;}
 .tugas-card{border:1px solid rgba(79,142,247,.4); background:linear-gradient(135deg,rgba(79,142,247,.18),rgba(139,92,246,.14)); border-radius:18px; padding:16px;}
-.tugas-card .tk{font-size:11.5px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; font-weight:700;}
-.tugas-card .tj{font-family:'Sora',sans-serif; font-weight:800; font-size:21px; margin:6px 0 2px;}
-.tugas-card .ts{color:var(--muted); font-size:13.5px; margin-bottom:12px; line-height:1.4;}
+.tugas-card .tk{font-size:16px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; font-weight:700;}
+.tugas-card .tj{font-family:'Sora',sans-serif; font-weight:800; font-size:25px; margin:6px 0 2px;}
+.tugas-card .ts{color:var(--muted); font-size:17px; margin-bottom:12px; line-height:1.4;}
 .rg-card{border:1px solid var(--line); background:var(--tint-1); border-radius:18px; padding:14px; cursor:pointer;}
-.rg-card .rk{font-size:12.5px; color:var(--muted); margin-bottom:10px;}
+.rg-card .rk{font-size:16px; color:var(--muted); margin-bottom:10px;}
 .rg-row{display:flex; gap:8px;}
-.rg-chip{flex:1; text-align:center; padding:10px 4px; border-radius:14px; background:var(--tint-2); font-size:11.5px; color:var(--muted);}
-.rg-chip b{display:block; font-size:21px; color:var(--text); font-family:'Sora',sans-serif;}
-.rg-note{margin-top:10px; font-size:12.5px; color:var(--gold-soft);}
+.rg-chip{flex:1; text-align:center; padding:10px 4px; border-radius:14px; background:var(--tint-2); font-size:16px; color:var(--muted);}
+.rg-chip b{display:block; font-size:25px; color:var(--text); font-family:'Sora',sans-serif;}
+.rg-note{margin-top:10px; font-size:16px; color:var(--gold-soft);}
 .mode-switch{display:flex; gap:6px; margin-bottom:16px; background:var(--tint-2); padding:4px; border-radius:14px;}
-.mode-switch button{flex:1; padding:10px 6px; border:none; border-radius:10px; background:transparent; color:var(--muted); font:700 13.5px 'Plus Jakarta Sans',sans-serif; cursor:pointer;}
+.mode-switch button{flex:1; padding:10px 6px; border:none; border-radius:10px; background:transparent; color:var(--muted); font:700 17px 'Plus Jakarta Sans',sans-serif; cursor:pointer;}
 .mode-switch button.on{background:var(--grad); color:#fff;}
 .ok-pop{position:fixed; inset:0; z-index:5000; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.5); animation:okfade 1.5s ease forwards; pointer-events:none;}
 .ok-pop svg{width:120px; height:120px;}
@@ -668,6 +670,35 @@ button:active{transform:scale(.97);}
 .btn-mini .ico, .btn-secondary .ico, .btn-primary .ico{margin-right:4px;}
 .slot-line .nm-b .ico{width:15px; height:15px; vertical-align:-0.15em;}
 .legend-abs .ico{width:14px; height:14px; margin-right:2px;}
+
+/* ===== TEKS BESAR (ramah low vision) — 30 Sep 2026 =====
+   Acuan: pedoman large print (APH/ACB): isi 18pt, subjudul 20pt, judul 22pt.
+   Di layar HP dipakai: isi 18px, teks sekunder minimal 16px, judul 22-30px.
+   ATURAN: JANGAN bikin teks baru di bawah 16px. Ikon & tombol ketuk min. 44px. */
+header.appbar .mark{font-size:22px;}
+.icon-action-btn{width:44px; height:44px;}
+.icon-action-btn svg{width:22px; height:22px;}
+.icon-dot{width:11px; height:11px;}
+.mi-ic .ico{width:24px; height:24px;}
+.menu-item .mi-ic{width:30px;}
+.pw-eye .ico{width:22px; height:22px;}
+.close-x .ico{width:26px; height:26px;}
+.close-x{padding:4px;}
+.slot-line .nm-b .ico{width:18px; height:18px;}
+.legend-abs .ico{width:18px; height:18px;}
+.hm-icon .ico{width:28px; height:28px;}
+.slot-line .waktu{flex:0 0 108px;}
+main{padding-bottom:140px;}
+nav.bottomnav button{font-size:15px; line-height:1.15; padding:8px 2px;}
+nav.bottomnav button .ic .ico{width:26px; height:26px;}
+nav.bottomnav button .ic-avatar-wrap img,
+nav.bottomnav button .ic-avatar-wrap > div{width:28px !important; height:28px !important;}
+.peng-n{font-size:13px;}
+.musim-badge{line-height:1.35;}
+.rg-chip{padding:12px 4px;}
+.rg-note, .rg-card .rk{line-height:1.45;}
+.btn-primary, .btn-secondary, .btn-mini, .jam-cepat-btn{min-height:44px;}
+.chat-teks, .saran-item, .profil-bio{line-height:1.55;}
 </style>
 </head>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -727,7 +758,7 @@ button:active{transform:scale(.97);}
       <div class="auth-switch"><a onclick="showAuthView('login')">← Kembali ke halaman Masuk</a></div>
     </div>
 
-    <div id="storageWarning" style="display:none; margin-top:16px; padding:12px 14px; background:var(--maroon-bg); color:var(--maroon); border-radius:2px; font-size:13px; text-align:left; line-height:1.5;">
+    <div id="storageWarning" style="display:none; margin-top:16px; padding:12px 14px; background:var(--maroon-bg); color:var(--maroon); border-radius:2px; font-size:16px; text-align:left; line-height:1.5;">
       <svg class="ico ico-warn"><use href="#i-alert"/></svg> Gagal terhubung ke database. Pastikan HP kamu terkoneksi internet, lalu coba muat ulang halaman ini.
     </div>
   </div>
@@ -780,11 +811,11 @@ button:active{transform:scale(.97);}
       <div id="ulangTahunArea" style="margin-bottom:14px;"></div>
       <div id="infoLiturgiHariIni"></div>
       <div id="notifBanner" style="display:none; background:rgba(139,92,246,0.12); border:1px solid rgba(139,92,246,0.35); border-radius:16px; padding:14px 16px; margin-bottom:14px; align-items:center; justify-content:space-between; gap:10px; backdrop-filter:blur(10px);">
-        <span style="font-size:14px; color:var(--text);"><svg class="ico"><use href="#i-bell"/></svg> Aktifkan notifikasi biar diingatkan otomatis pas mau bertugas.</span>
+        <span style="font-size:17px; color:var(--text);"><svg class="ico"><use href="#i-bell"/></svg> Aktifkan notifikasi biar diingatkan otomatis pas mau bertugas.</span>
         <button class="btn-secondary" style="white-space:nowrap;" onclick="aktifkanNotifikasi()">Aktifkan</button>
       </div>
       <div id="testNotifBox" style="display:none; background:rgba(79,142,247,0.1); border:1px solid rgba(79,142,247,0.35); border-radius:16px; padding:14px 16px; margin-bottom:14px; align-items:center; justify-content:space-between; gap:10px; backdrop-filter:blur(10px);">
-        <span style="font-size:14px; color:var(--text);"><svg class="ico"><use href="#i-flask"/></svg> Mode PJ: kirim notifikasi uji coba ke semua HP yang sudah aktifkan (cocok buat demo/presentasi).</span>
+        <span style="font-size:17px; color:var(--text);"><svg class="ico"><use href="#i-flask"/></svg> Mode PJ: kirim notifikasi uji coba ke semua HP yang sudah aktifkan (cocok buat demo/presentasi).</span>
         <button class="btn-secondary" id="btnUjiNotif" style="white-space:nowrap;" onclick="kirimNotifikasiUjiCoba()">Kirim Sekarang</button>
       </div>
       <div id="tugasSayaArea"></div>
@@ -816,13 +847,13 @@ button:active{transform:scale(.97);}
 
       <div id="homePanel-jadwalIni" class="home-panel">
         <div class="panel-back" onclick="showHomePanel('menu')"><span class="pb-arrow">&#8592;</span>Kembali ke Beranda</div>
-        <div class="section-title" style="font-size:22px; padding-bottom:10px; margin-bottom:14px;">Jadwal Bulan Ini</div>
+        <div class="section-title" style="font-size:25px; padding-bottom:10px; margin-bottom:14px;">Jadwal Bulan Ini</div>
         <div id="jadwalIniListArea"></div>
       </div>
 
       <div id="homePanel-rekap" class="home-panel">
         <div class="panel-back" onclick="showHomePanel('menu')"><span class="pb-arrow">&#8592;</span>Kembali ke Beranda</div>
-        <div class="section-title" style="font-size:22px; padding-bottom:10px; margin-bottom:14px;">Rekap Jadwal</div>
+        <div class="section-title" style="font-size:25px; padding-bottom:10px; margin-bottom:14px;">Rekap Jadwal</div>
         <div class="section-sub">Pilih bulan & tahun untuk lihat total tugas tiap petugas.</div>
         <div class="filter-row">
           <select id="filterBulan"></select>
@@ -833,7 +864,7 @@ button:active{transform:scale(.97);}
 
       <div id="homePanel-absensi" class="home-panel">
         <div class="panel-back" onclick="showHomePanel('menu')"><span class="pb-arrow">&#8592;</span>Kembali ke Beranda</div>
-        <div class="section-title" style="font-size:22px; padding-bottom:10px; margin-bottom:14px;">Rekap Absensi</div>
+        <div class="section-title" style="font-size:25px; padding-bottom:10px; margin-bottom:14px;">Rekap Absensi</div>
         <div class="section-sub">Kehadiran petugas operator per bulan — otomatis tercatat dari tombol "Absen Sekarang" di tiap jadwal.</div>
         <div class="filter-row">
           <select id="filterBulanAbsensi"></select>
@@ -853,7 +884,7 @@ button:active{transform:scale(.97);}
         <input type="text" id="newPetugasName" maxlength="30" placeholder="Nama petugas baru">
         <button class="btn-primary" onclick="tambahPetugas()">Tambah</button>
       </div>
-      <button class="btn-secondary" id="btnPerbaikanReferensi" style="width:100%; margin-bottom:14px; display:none; font-size:12.5px; opacity:0.8;" onclick="bukaPerbaikanReferensi()"><svg class="ico"><use href="#i-wrench"/></svg> Perbaiki Referensi Petugas Rusak</button>
+      <button class="btn-secondary" id="btnPerbaikanReferensi" style="width:100%; margin-bottom:14px; display:none; font-size:16px; opacity:0.8;" onclick="bukaPerbaikanReferensi()"><svg class="ico"><use href="#i-wrench"/></svg> Perbaiki Referensi Petugas Rusak</button>
       <div id="petugasListArea"></div>
     </div>
 
@@ -862,7 +893,7 @@ button:active{transform:scale(.97);}
       <div class="section-title">Tambah Jadwal Baru</div>
       <div class="section-sub" style="display:flex; justify-content:space-between; align-items:baseline; gap:10px;">
         <span>Isi nama perayaan/misa, lalu susun petugas di tiap slot.</span>
-        <span onclick="if(confirm('Kosongkan form ini?')) resetForm()" style="color:var(--muted); text-decoration:underline; cursor:pointer; white-space:nowrap; font-size:13px;">Kosongkan form</span>
+        <span onclick="if(confirm('Kosongkan form ini?')) resetForm()" style="color:var(--muted); text-decoration:underline; cursor:pointer; white-space:nowrap; font-size:16px;">Kosongkan form</span>
       </div>
 
       <div class="mode-switch"><button id="modePola" class="on" onclick="setModeJadwal('pola')">Pola Akhir Pekan</button><button id="modeBebas" onclick="setModeJadwal('bebas')">Perayaan / Jam Bebas</button></div>
@@ -886,7 +917,7 @@ button:active{transform:scale(.97);}
       <div id="slotEditorArea"></div>
       <div id="autoFillWrap"></div>
 
-      <button class="btn-primary" style="width:100%; padding:15px; font-size:15.5px;" onclick="simpanJadwal()">Simpan Jadwal</button>
+      <button class="btn-primary" style="width:100%; padding:15px; font-size:18px;" onclick="simpanJadwal()">Simpan Jadwal</button>
     </div>
   </main>
 
@@ -1152,12 +1183,40 @@ function getWarnaMusim(d){
                       </svg>. Emoji di teks polos (toast, judul modal, <option>, setGps)
                       sengaja DIBUANG saja karena SVG tidak bisa dipakai di sana.
                       Tambah ikon baru = tambah <symbol id="i-xxx"> di sprite.
+   STATUS-SELESAI  : Teks besar ramah low vision (30 Sep 2026, TANPA naik versi & tanpa
+                      entri changelog -- sengaja, bukan perubahan penting). Semua font-size
+                      dinaikkan: isi 18px, teks sekunder/label min. 16px, judul 22-30px,
+                      catatan kecil (jam obrolan) 14px. Acuan: pedoman large print APH/ACB
+                      (isi 18pt, subjudul 20pt, judul 22pt). Warna --muted dibuat lebih
+                      terang/gelap biar kontrasnya ~8-9:1, ikon & tombol ketuk min. 44px.
+                      Blok penyesuaiannya ada di paling bawah <style> ("TEKS BESAR").
+                      ATURAN: teks baru JANGAN di bawah 16px.
+
    ===================================================================================== */
 
 /* ---------------- PEMBARUAN APLIKASI (changelog in-app) ----------------
-   Setiap kali app di-upgrade, naikkan APP_VERSION & tambah entri baru di atas
-   CHANGELOG. Status "sudah dilihat" disimpan per-HP/browser lewat localStorage
-   (bukan Firestore), jadi nggak perlu ubah Firestore Rules buat fitur ini. */
+   ATURAN DARI PEMILIK APP (wajib dibaca sesi Claude mana pun sebelum menulis di sini):
+
+   1) JANGAN tulis entri versi untuk setiap perubahan. Isi HANYA yang PENTING dan
+      berarti buat pemakai (fitur baru, perbaikan bug yang terasa). Perubahan kecil,
+      kosmetik, atau teknis -> tidak usah naik versi & tidak usah ditulis di sini;
+      cukup catat di blok STATUS-SELESAI di atas. Tujuannya biar daftar ini nggak
+      numpuk. Kalau ragu penting atau tidak, TANYA pemilik dulu.
+
+   2) Pembaruan untuk PJ (role 'editor') dan viewer/anggota itu BEDA. Viewer TIDAK
+      BOLEH tahu apa yang baru dari fitur PJ. Cara menandai tiap butir catatan:
+        'teks biasa'                    -> tampil untuk SEMUA (PJ & viewer)
+        {u:'pj', t:'teks'}             -> HANYA PJ
+        {v:'teks viewer', t:'teks PJ'}  -> fitur yang menyentuh keduanya: viewer baca
+                                           versi v (tanpa bocorin fitur PJ), PJ baca t
+      Kalau fitur PJ saja (viewer tidak kena apa-apa), jangan tulis versi viewer.
+
+   3) Kalau versi baru TIDAK punya butir untuk viewer, viewer tidak dimunculkan popup
+      dan titik merahnya (otomatis, lihat cekPembaruanVersi). Tinggal naikkan APP_VERSION
+      + tambah entri baru di paling atas CHANGELOG.
+
+   Status "sudah dilihat" disimpan per-HP/browser lewat localStorage (bukan Firestore),
+   jadi nggak perlu ubah Firestore Rules buat fitur ini. */
 const APP_VERSION = '1.10.0';
 const CHANGELOG = [
   {versi:'1.10.0', tanggal:'30 Sep 2026', catatan:[
@@ -1170,54 +1229,59 @@ const CHANGELOG = [
   ]},
   {versi:'1.8.0', tanggal:'30 Sep 2026', catatan:[
     'Perbaikan urutan prioritas Kalender Liturgi: Hari Minggu Adven/Prapaskah/Paskah sekarang benar menang atas Hari Raya bertanggal tetap (mis. Maria Dikandung Tanpa Noda 8 Des) kalau kebetulan jatuh di tanggal yang sama -- kasus ini muncul lagi di 2030, 2041, dan 2047.',
-    'Tombol jam cepat (06:00, 07:00, 09:00, dst) ditambahkan di form jam slot, jadi nggak perlu muter-muter di jam picker bawaan HP tiap kali.'
+    {u:'pj', t:'Tombol jam cepat (06:00, 07:00, 09:00, dst) ditambahkan di form jam slot, jadi nggak perlu muter-muter di jam picker bawaan HP tiap kali.'}
   ]},
   {versi:'1.7.1', tanggal:'30 Sep 2026', catatan:[
-    'Perbaikan bug: beberapa nama peringatan di Kalender Liturgi 2026 & 2027 terpotong di tengah kata (mis. \"...pujangga Ger\" jadi lengkap \"...pujangga Gereja\") -- penyebabnya kesalahan pemrosesan data, sudah diperbaiki total.',
-    'Perbaikan bug: Saran Nama Misa di Jadwal Baru (mode Pola Akhir Pekan) dulu selalu mengambil liturgi H+1 walau tanggal yang dipilih bukan hari Sabtu, jadi salah saran. Sekarang cuma +1 hari kalau tanggalnya beneran Sabtu.',
+    'Perbaikan bug: beberapa nama peringatan di Kalender Liturgi 2026 & 2027 terpotong di tengah kata (mis. "...pujangga Ger" jadi lengkap "...pujangga Gereja") -- penyebabnya kesalahan pemrosesan data, sudah diperbaiki total.',
+    {u:'pj', t:'Perbaikan bug: Saran Nama Misa di Jadwal Baru (mode Pola Akhir Pekan) dulu selalu mengambil liturgi H+1 walau tanggal yang dipilih bukan hari Sabtu, jadi salah saran. Sekarang cuma +1 hari kalau tanggalnya beneran Sabtu.'},
     'Judul kartu jadwal sekarang mengecil otomatis kalau nama hari raya/misanya panjang, biar tetap rapi.'
   ]},
   {versi:'1.7.0', tanggal:'30 Sep 2026', catatan:[
-    'Kalender Liturgi 2027 ditambahkan (365 hari lengkap dari GCatholic.org, termasuk semua Peringatan Wajib & Fakultatif) — saran nama & warna liturgi otomatis sekarang akurat penuh untuk 2026 maupun 2027, bukan cuma Hari Raya/Minggu saja.'
+    {u:'pj', t:'Kalender Liturgi 2027 ditambahkan (365 hari lengkap dari GCatholic.org, termasuk semua Peringatan Wajib & Fakultatif) — saran nama & warna liturgi otomatis sekarang akurat penuh untuk 2026 maupun 2027, bukan cuma Hari Raya/Minggu saja.'}
   ]},
   {versi:'1.6.0', tanggal:'30 Sep 2026', catatan:[
     'Tampilan dirapikan: header lebih ringkas (Pembaruan, Bantuan, Keluar ada di menu titik tiga), jarak antar-bagian dilonggarkan, dan baris jadwal menampilkan jam besar dengan nama yang lebih lega.',
     'Kartu "Tugasmu berikutnya" di Beranda, lengkap dengan tombol Absen Sekarang saat jendela absen terbuka.',
-    'PJ: ringkasan absen (hadir/telat/tidak/belum) dan daftar yang belum punya akun di Beranda.',
-    'Jadwal Baru kini bisa memakai mode "Perayaan / Jam Bebas": tanggal dan jam tiap slot bebas, nama dan warna liturgi tetap tersaran otomatis (termasuk Pekan Suci).',
-    'Edit Jadwal: PJ bisa mengubah tanggal dan jam slot, serta menambah atau menghapus slot.',
+    {u:'pj', t:'PJ: ringkasan absen (hadir/telat/tidak/belum) dan daftar yang belum punya akun di Beranda.'},
+    {u:'pj', t:'Jadwal Baru kini bisa memakai mode "Perayaan / Jam Bebas": tanggal dan jam tiap slot bebas, nama dan warna liturgi tetap tersaran otomatis (termasuk Pekan Suci).'},
+    {u:'pj', t:'Edit Jadwal: PJ bisa mengubah tanggal dan jam slot, serta menambah atau menghapus slot.'},
     'Animasi centang dan getar saat absen berhasil.'
   ]},
-  {versi:'1.5.5', tanggal:'29 Sep 2026', catatan:['Tautan "Lihat di peta" di Detail Absen sekarang berwarna terang dan mudah dibaca.']},
+  {versi:'1.5.5', tanggal:'29 Sep 2026', catatan:[
+    {u:'pj', t:'Tautan "Lihat di peta" di Detail Absen sekarang berwarna terang dan mudah dibaca.'}
+  ]},
   {versi:'1.5.4', tanggal:'29 Sep 2026', catatan:['Lokasi absen QR memakai jaringan dan GPS sekaligus supaya cepat terkunci, dan menunggu maksimal 15 detik.']},
   {versi:'1.5.3', tanggal:'29 Sep 2026', catatan:['Absen QR menunggu lokasi terkunci (maks 25 detik) sebelum mengirim, supaya koordinat tidak kosong.']},
   {versi:'1.5.2', tanggal:'29 Sep 2026', catatan:['Absen QR: lokasi dipantau selama kamera terbuka dan statusnya tampil di layar scan, jadi lokasi tidak mudah gagal tercatat.']},
   {versi:'1.5.1', tanggal:'29 Sep 2026', catatan:['Perbaikan pemindai QR absen: memakai pemindai bawaan Chrome dan cadangan pustaka, jadi tidak gagal memuat lagi.']},
   {versi:'1.5.0', tanggal:'29 Sep 2026', catatan:[
     'Foto profil bisa diatur posisinya: geser dan cubit di dalam bingkai bulat dengan garis bantu 3x3.',
-    'Fitur Pengumuman: PJ bisa kirim foto dan catatan; muncul sebagai popup saat buka aplikasi dan penanda "Ada Pengumuman" di atas.',
-    'Absen sekarang lewat scan QR di meja operator, lokasi ikut tercatat dan bisa dicek PJ.'
+    {v:'Fitur Pengumuman: pengumuman dari PJ muncul sebagai popup saat buka aplikasi, dengan penanda "Ada Pengumuman" di atas.',
+     t:'Fitur Pengumuman: PJ bisa kirim foto dan catatan; muncul sebagai popup saat buka aplikasi dan penanda "Ada Pengumuman" di atas.'},
+    {v:'Absen sekarang lewat scan QR di meja operator, lokasi ikut tercatat.',
+     t:'Absen sekarang lewat scan QR di meja operator, lokasi ikut tercatat dan bisa dicek PJ.'}
   ]},
   {versi:'1.4.0', tanggal:'29 Sep 2026', catatan:[
     'Tombol Back di HP sekarang menutup sheet/foto besar, lalu kembali ke Beranda, baru keluar aplikasi.',
     'Sheet (Profil, dll) bisa ditutup dengan geser ke bawah, dan halaman di belakangnya tidak ikut ter-scroll lagi.',
     'Kartu jadwal: nama panjang turun ke bawah, ikon absen tetap di sampingnya. Nama dibatasi maksimal 30 karakter.',
-    'PJ bisa melihat tanda "Belum punya akun" di daftar Petugas.'
+    {u:'pj', t:'PJ bisa melihat tanda "Belum punya akun" di daftar Petugas.'}
   ]},
   {versi:'1.3.0', tanggal:'28 Sep 2026', catatan:[
     'Foto profil bisa diketuk buat dilihat layar penuh, mirip Instagram. Foto baru diunggah lebih tajam (foto lama tetap seperti semula sampai diunggah ulang).',
-    'Log Aktivitas sekarang otomatis dihapus kalau umurnya lebih dari 30 hari.',
-    'Perbaikan \"Isi Otomatis\": nama yang sudah kamu taruh manual di jadwal itu nggak akan terpilih lagi di slot lain.',
-    'Perbaikan: jadwal bulan depan (mis. Misa Jumat Pertama) sekarang tampil di Beranda sebagai \"Jadwal Mendatang\". Slot manual juga bisa diatur tanggal & jamnya.',
-    'Tombol \"Absen Sekarang\", \"Isi slot ini\", dan \"Batal\" sekarang berbentuk tombol.'
+    {u:'pj', t:'Log Aktivitas sekarang otomatis dihapus kalau umurnya lebih dari 30 hari.'},
+    {u:'pj', t:'Perbaikan "Isi Otomatis": nama yang sudah kamu taruh manual di jadwal itu nggak akan terpilih lagi di slot lain.'},
+    {v:'Perbaikan: jadwal bulan depan (mis. Misa Jumat Pertama) sekarang tampil di Beranda sebagai "Jadwal Mendatang".',
+     t:'Perbaikan: jadwal bulan depan (mis. Misa Jumat Pertama) sekarang tampil di Beranda sebagai "Jadwal Mendatang". Slot manual juga bisa diatur tanggal & jamnya.'},
+    'Tombol "Absen Sekarang", "Isi slot ini", dan "Batal" sekarang berbentuk tombol.'
   ]},
   {versi:'1.2.0', tanggal:'12 Sep 2026', catatan:[
     'Perbaikan bug: popup Pembaruan Aplikasi dulu nggak pernah muncul sama sekali di update pertama — sekarang beres.',
-    'Fitur baru: PJ bisa "Gabungkan Riwayat Petugas" — buat nyambungin riwayat tugas lama ke akun petugas yang aktif sekarang (berguna kalau petugas pernah dihapus & ditambah ulang, dan riwayatnya kebetulan kepisah).',
+    {u:'pj', t:'Fitur baru: PJ bisa "Gabungkan Riwayat Petugas" — buat nyambungin riwayat tugas lama ke akun petugas yang aktif sekarang (berguna kalau petugas pernah dihapus & ditambah ulang, dan riwayatnya kebetulan kepisah).'},
     'Perbaikan: tombol Balas/Edit/Hapus di Obrolan sekarang kasih pemberitahuan yang jelas kalau aksinya gagal, bukan diam saja.'
   ]},
   {versi:'1.1.0', tanggal:'10 Sep 2026', catatan:[
-    'Kalender Liturgi Otomatis: saat pilih tanggal di "Tambah Jadwal", nama hari Minggu/hari raya tersaran otomatis (masih bisa diedit bebas).',
+    {u:'pj', t:'Kalender Liturgi Otomatis: saat pilih tanggal di "Tambah Jadwal", nama hari Minggu/hari raya tersaran otomatis (masih bisa diedit bebas).'},
     'Badge warna musim liturgi (Hijau/Ungu/Putih/Merah) sekarang tampil di tiap kartu jadwal.',
     'Fitur Pembaruan Aplikasi — yang lagi kamu baca sekarang — biar semua tahu ada versi & pembaruan apa.'
   ]},
@@ -1225,6 +1289,18 @@ const CHANGELOG = [
     'Versi awal KOMSOS: jadwal petugas operator, isi slot sendiri, obrolan per jadwal, notifikasi pengingat, profil, dan rekap bulanan.'
   ]},
 ];
+// Ambil butir catatan sesuai peran. Viewer TIDAK PERNAH dapat butir khusus PJ.
+function catatanUntukPeran(c){
+  const pj = (currentRole === 'editor');
+  const hasil = [];
+  (c.catatan || []).forEach(x=>{
+    if(typeof x === 'string'){ hasil.push(x); return; }
+    if(x.u === 'pj'){ if(pj) hasil.push(x.t); return; }
+    if(x.v !== undefined){ const t = pj ? x.t : x.v; if(t) hasil.push(t); return; }
+    if(pj && x.t) hasil.push(x.t);
+  });
+  return hasil;
+}
 function cekPembaruanVersi(){
   try{
     const terakhir = localStorage.getItem('komsosLastSeenVersion');
@@ -1239,9 +1315,16 @@ function cekPembaruanVersi(){
     // — cuma aktivitas "diperbarui ke versi..." nggak dicatat ke Log Aktivitas
     // kalau ini murni HP/akun baru (biar nggak nyampah log buat user baru).
     if(terakhir !== APP_VERSION){
+      // Versi ini kosong untuk peran ini (mis. isinya fitur PJ saja, dibaca viewer)
+      // -> jangan ganggu dengan popup/titik merah; cukup catat sudah "dilihat".
+      const entri = CHANGELOG.find(c=>c.versi===APP_VERSION);
+      if(!entri || !catatanUntukPeran(entri).length){
+        localStorage.setItem('komsosLastSeenVersion', APP_VERSION);
+        return;
+      }
       const dot = document.getElementById('updateDot');
       if(dot) dot.style.display = 'block';
-      if(terakhir !== null){
+      if(terakhir !== null && currentRole === 'editor'){
         const pesanVersi = `Aplikasi diperbarui ke versi ${APP_VERSION}`;
         if(!logAktivitas.some(l=>l.aksi===pesanVersi)){
           catatLog(pesanVersi, 'Sistem');
@@ -1253,18 +1336,23 @@ function cekPembaruanVersi(){
 }
 function bukaPembaruan(){
   document.getElementById('modalTitle').textContent = `Pembaruan Aplikasi`;
-  document.getElementById('modalBody').innerHTML = CHANGELOG.map((c,idx)=>`
-    <div style="margin-bottom:${idx===CHANGELOG.length-1?'0':'18px'}; padding-bottom:${idx===CHANGELOG.length-1?'0':'16px'}; border-bottom:${idx===CHANGELOG.length-1?'none':'1px solid var(--line)'};">
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-        <span style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; color:#fff;">Versi ${escapeHtml(c.versi)}</span>
-        ${idx===0 ? '<span style="font-size:11px; font-weight:700; padding:2px 9px; border-radius:20px; background:rgba(52,211,153,0.18); color:var(--green);">TERBARU</span>' : ''}
-        <span style="font-size:12px; color:var(--muted); margin-left:auto; white-space:nowrap;">${escapeHtml(c.tanggal)}</span>
+  const daftar = CHANGELOG
+    .map(c=>({c, isi: catatanUntukPeran(c)}))
+    .filter(x=>x.isi.length);
+  document.getElementById('modalBody').innerHTML = daftar.map((x,idx)=>{
+    const c = x.c, akhir = idx===daftar.length-1;
+    return `
+    <div style="margin-bottom:${akhir?'0':'22px'}; padding-bottom:${akhir?'0':'18px'}; border-bottom:${akhir?'none':'1px solid var(--line)'};">
+      <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+        <span style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:var(--text);">Versi ${escapeHtml(c.versi)}</span>
+        ${idx===0 ? '<span style="font-size:14px; font-weight:700; padding:3px 11px; border-radius:20px; background:rgba(52,211,153,0.18); color:var(--green);">TERBARU</span>' : ''}
+        <span style="font-size:16px; color:var(--muted); margin-left:auto; white-space:nowrap;">${escapeHtml(c.tanggal)}</span>
       </div>
-      <ul style="margin:0; padding-left:18px; color:var(--text); font-size:13.5px; line-height:1.7;">
-        ${c.catatan.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}
+      <ul style="margin:0; padding-left:22px; color:var(--text); font-size:18px; line-height:1.65;">
+        ${x.isi.map(t=>`<li style="margin-bottom:6px;">${escapeHtml(t)}</li>`).join('')}
       </ul>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('') || '<div class="empty-note">Belum ada pembaruan.</div>';
   document.getElementById('modalOverlay').classList.add('open');
   try{ localStorage.setItem('komsosLastSeenVersion', APP_VERSION); }catch(e){}
   const dot = document.getElementById('updateDot');
@@ -1736,7 +1824,7 @@ function bukaFormWajibLahir(){
   document.getElementById('modalTitle').textContent = 'Lengkapi Tanggal Lahir';
   document.getElementById('modalBody').innerHTML = `
     <div class="section-sub" style="margin-bottom:14px;">Sebelum lanjut, isi dulu tanggal lahirmu ya — biar teman-teman KOMSOS bisa ikut merayakan hari ulang tahunmu bareng-bareng! Data ini wajib diisi untuk semua anggota.</div>
-    <label style="display:block; font-size:11.5px; font-weight:600; color:var(--muted); margin-bottom:6px;">Tanggal Lahir</label>
+    <label style="display:block; font-size:16px; font-weight:600; color:var(--muted); margin-bottom:6px;">Tanggal Lahir</label>
     <input type="date" id="wajibTglLahir" class="modal-field" max="${new Date().toISOString().slice(0,10)}">
     <div class="gate-error" id="wajibTglLahirError"></div>
     <button class="btn-primary" style="width:100%; margin-top:6px;" onclick="simpanTglLahirWajib()">Simpan &amp; Lanjutkan</button>
@@ -2106,7 +2194,7 @@ async function logout(){
 function bukaBantuan(){
   document.getElementById('modalTitle').textContent = 'Tentang & Bantuan';
   document.getElementById('modalBody').innerHTML = `
-    <div style="font-size:13.5px; line-height:1.65; color:var(--text);">
+    <div style="font-size:17px; line-height:1.65; color:var(--text);">
       <p style="margin-bottom:14px;"><b>KOMSOS</b> adalah aplikasi jadwal petugas operator misa Paroki Keluarga Kudus Pontianak.</p>
 
       <p style="margin:0 0 6px; font-weight:700;"><svg class="ico"><use href="#i-calendar"/></svg> Isi slot sendiri</p>
@@ -2372,7 +2460,7 @@ function bukaEditorFoto(file, onSave){
     const wrap = document.createElement('div'); wrap.className='ed-wrap';
     wrap.innerHTML = `<div style="font-weight:700;">Atur posisi foto</div>
       <div class="ed-stage" style="width:${S}px;height:${S}px;"><div class="ed-dim"></div><div class="ed-grid"></div></div>
-      <div style="font-size:12px;opacity:.7;">Geser dan cubit untuk mengatur</div>
+      <div style="font-size:16px;opacity:.7;">Geser dan cubit untuk mengatur</div>
       <div style="display:flex;gap:10px;width:${S}px;"><button class="btn-secondary" id="edBatal" style="flex:1;">Batal</button><button class="btn-primary" id="edSimpan" style="flex:1;">Simpan</button></div>`;
     const stage = wrap.querySelector('.ed-stage');
     img.style.width = w+'px'; img.style.height = h+'px';
@@ -2427,9 +2515,9 @@ function mulaiPengumuman(){
 }
 function isiPengumuman(){
   const isi = pengList.length ? pengList.map(p=>`<div class="peng-card">
-      <div style="font-size:11.5px;color:var(--muted);">${new Date(p.dibuat).toLocaleString('id-ID',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}${p.oleh?` · ${escapeHtml(p.oleh)}`:''}</div>
+      <div style="font-size:16px;color:var(--muted);">${new Date(p.dibuat).toLocaleString('id-ID',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}${p.oleh?` · ${escapeHtml(p.oleh)}`:''}</div>
       ${p.foto?`<img src="${p.foto}" alt="Pengumuman" onclick="bukaFotoBesar(this.src,'Pengumuman')">`:''}
-      ${p.teks?`<div style="white-space:pre-wrap;font-size:15px;">${escapeHtml(p.teks)}</div>`:''}
+      ${p.teks?`<div style="white-space:pre-wrap;font-size:18px;">${escapeHtml(p.teks)}</div>`:''}
       ${currentRole==='editor'?`<button class="btn-secondary" style="margin-top:10px;color:var(--maroon);border-color:var(--maroon-bg);" onclick="hapusPengumuman('${p.id}')"><svg class="ico"><use href="#i-trash"/></svg> Hapus</button>`:''}
     </div>`).join('') : '<div class="empty-note">Belum ada pengumuman.</div>';
   document.getElementById('modalBody').innerHTML = `<div id="pengOpen">${currentRole==='editor'?'<button class="btn-primary" style="width:100%;margin-bottom:14px;" onclick="formPengumuman()">＋ Buat Pengumuman</button>':''}${isi}</div>`;
@@ -2497,7 +2585,7 @@ async function mulaiScanAbsen(jid, sid){
   const galatPos = e=>{ if(e.code===1){ gpsDitolak = true; setGps('Izin lokasi ditolak. Aktifkan di pengaturan situs Chrome.'); } else if(!posisi) setGps('Lokasi belum tersedia, pastikan Lokasi HP menyala...'); };
   if(navigator.geolocation) [false, true].forEach(h=>wids.push(navigator.geolocation.watchPosition(terimaPos, galatPos, {enableHighAccuracy:h, maximumAge:15000, timeout:30000})));
   const wrap = document.createElement('div'); wrap.className = 'scan-wrap';
-  wrap.innerHTML = `<div style="font-weight:700;">Arahkan kamera ke QR di meja operator</div><video playsinline muted></video><div id="scanInfo" style="font-size:13px;opacity:.8;">Mencari QR...</div><div id="scanGps" style="font-size:12px;opacity:.8;"><svg class="ico"><use href="#i-pin"/></svg> Mencari lokasi...</div><button class="btn-secondary" id="scanBatal">Batal</button>`;
+  wrap.innerHTML = `<div style="font-weight:700;">Arahkan kamera ke QR di meja operator</div><video playsinline muted></video><div id="scanInfo" style="font-size:16px;opacity:.8;">Mencari QR...</div><div id="scanGps" style="font-size:16px;opacity:.8;"><svg class="ico"><use href="#i-pin"/></svg> Mencari lokasi...</div><button class="btn-secondary" id="scanBatal">Batal</button>`;
   document.body.appendChild(wrap);
   const video = wrap.querySelector('video'); video.srcObject = stream; await video.play().catch(()=>{});
   let aktif = true;
@@ -2542,7 +2630,7 @@ function lihatAbsen(jid, sid, pid){
   const rec = s && s.absensi && s.absensi[pid]; if(!rec) return;
   const lok = rec.lat!=null ? `${rec.jarak!=null?`±${rec.jarak} m dari gereja · `:''}<a href="https://www.google.com/maps?q=${rec.lat},${rec.lng}" target="_blank" rel="noopener" style="color:#7dd3fc;font-weight:700;text-decoration:underline;">Lihat di peta</a> (akurasi ±${rec.akurasi||'?'} m)` : 'Lokasi tidak tersedia';
   document.getElementById('modalTitle').textContent = 'Detail Absen';
-  document.getElementById('modalBody').innerHTML = `<div style="line-height:1.7;font-size:15px;">
+  document.getElementById('modalBody').innerHTML = `<div style="line-height:1.7;font-size:18px;">
     <b>${escapeHtml(namaPetugas(pid))}</b><br>
     Status: ${rec.status==='hadir' ? (rec.telat?'<svg class="ico ico-warn"><use href="#i-alert"/></svg> Hadir (telat)':'<svg class="ico ico-ok"><use href="#i-check-circle"/></svg> Hadir tepat waktu') : '<svg class="ico ico-bad"><use href="#i-x-circle"/></svg> Tidak hadir'}<br>
     Waktu: ${new Date(rec.waktu).toLocaleString('id-ID')}<br>
@@ -2559,7 +2647,7 @@ async function mulaiKiosk(){
   const k = document.createElement('div'); k.id = 'kiosk';
   k.innerHTML = `<div id="kioskJudul" style="font-size:clamp(22px,4vw,38px);font-weight:800;">Silakan scan untuk absensi kehadiran</div>
     <img id="kioskQR" alt=""><div style="width:min(78vw,68vh);height:8px;background:#e5e7eb;border-radius:8px;overflow:hidden;"><div id="kioskBar" style="height:100%;background:var(--blue);width:100%;"></div></div>
-    <div style="color:#666;font-size:15px;">Buka aplikasi KOMSOS → Absen Sekarang → Scan QR &amp; Hadir</div><div id="kioskErr" style="color:#b91c1c;font-size:13px;"></div>`;
+    <div style="color:#666;font-size:18px;">Buka aplikasi KOMSOS → Absen Sekarang → Scan QR &amp; Hadir</div><div id="kioskErr" style="color:#b91c1c;font-size:16px;"></div>`;
   document.body.appendChild(k);
   try{ navigator.wakeLock && await navigator.wakeLock.request('screen'); }catch(e){}
   let n=0; for(const el of ['kioskJudul']){ document.getElementById(el).onclick = async ()=>{
@@ -2668,10 +2756,10 @@ function renderRingkasanPJ(){
 }
 function bukaRingkasanPJ(){
   const d = dataRingkasanPJ(); if(!d) return;
-  const blok = (ic, t, arr)=> arr.length ? `<div style="margin-bottom:14px;"><b>${ic} ${t} (${arr.length})</b><div style="color:var(--muted); font-size:14px; line-height:1.7;">${arr.map(x=>`${escapeHtml(x.nama)} · ${x.jam}`).join('<br>')}</div></div>` : '';
+  const blok = (ic, t, arr)=> arr.length ? `<div style="margin-bottom:14px;"><b>${ic} ${t} (${arr.length})</b><div style="color:var(--muted); font-size:17px; line-height:1.7;">${arr.map(x=>`${escapeHtml(x.nama)} · ${x.jam}`).join('<br>')}</div></div>` : '';
   document.getElementById('modalTitle').textContent = 'Ringkasan Absen';
   document.getElementById('modalBody').innerHTML = blok('<svg class="ico ico-ok"><use href="#i-check-circle"/></svg>','Hadir',d.g.hadir) + blok('<svg class="ico ico-warn"><use href="#i-alert"/></svg>','Telat',d.g.telat) + blok('<svg class="ico ico-bad"><use href="#i-x-circle"/></svg>','Tidak hadir',d.g.tidak) + blok('<svg class="ico ico-wait"><use href="#i-clock"/></svg>','Belum absen',d.g.belum)
-    + (d.tanpaAkun.length ? `<div><b><svg class="ico"><use href="#i-ban"/></svg> Belum punya akun (${d.tanpaAkun.length})</b><div style="color:var(--muted); font-size:14px; line-height:1.7;">${d.tanpaAkun.map(p=>escapeHtml(p.nama)).join(', ')}</div></div>` : '');
+    + (d.tanpaAkun.length ? `<div><b><svg class="ico"><use href="#i-ban"/></svg> Belum punya akun (${d.tanpaAkun.length})</b><div style="color:var(--muted); font-size:17px; line-height:1.7;">${d.tanpaAkun.map(p=>escapeHtml(p.nama)).join(', ')}</div></div>` : '');
   document.getElementById('modalOverlay').classList.add('open');
 }
 function renderBerandaExtra(){ renderTugasSaya(); renderRingkasanPJ(); }
@@ -2938,7 +3026,7 @@ function bukaAbsenModal(jadwalId, slotId){
     <div class="section-sub" style="margin-bottom:10px;">${escapeHtml(j.namaMisa)} — ${namaHariDari(s)}, ${tglStr} jam ${s.jam}</div>
     ${telat ? `<div class="section-sub" style="color:var(--maroon); margin-bottom:4px;"><svg class="ico ico-warn"><use href="#i-alert"/></svg> Sudah lewat jam mulai tugas. Kalau kamu pilih "Saya Hadir", wajib isi alasan keterlambatan dulu.</div>` : ''}
     <div id="absenAlasanWrap" style="display:${telat ? 'block' : 'none'}; margin:10px 0;">
-      <label style="display:block; font-size:11.5px; font-weight:600; color:var(--muted); margin-bottom:6px;">Alasan Terlambat <span style="color:var(--maroon);">*wajib</span></label>
+      <label style="display:block; font-size:16px; font-weight:600; color:var(--muted); margin-bottom:6px;">Alasan Terlambat <span style="color:var(--maroon);">*wajib</span></label>
       <textarea id="absenAlasan" class="modal-field" maxlength="200" placeholder="Contoh: macet di jalan, ada urusan mendadak, dst."></textarea>
     </div>
     <div style="display:flex; gap:10px; margin-top:6px;">
@@ -3277,8 +3365,8 @@ function editJadwal(jadwalId){
   document.getElementById('modalTitle').textContent = 'Edit Jadwal';
   document.getElementById('modalBody').innerHTML = `
     <div style="margin-bottom:14px;">
-      <label style="display:block; font-size:11.5px; font-weight:600; color:var(--muted); margin-bottom:6px;">Nama Hari Raya/Misa</label>
-      <input type="text" id="editNamaMisa" value="${escapeHtml(j.namaMisa)}" style="width:100%; padding:10px 12px; border:1px solid transparent; border-radius:8px; font-family:inherit; font-size:14px; background:var(--field-bg); color:#1A2033;">
+      <label style="display:block; font-size:16px; font-weight:600; color:var(--muted); margin-bottom:6px;">Nama Hari Raya/Misa</label>
+      <input type="text" id="editNamaMisa" value="${escapeHtml(j.namaMisa)}" style="width:100%; padding:10px 12px; border:1px solid transparent; border-radius:8px; font-family:inherit; font-size:17px; background:var(--field-bg); color:#1A2033;">
     </div>
     <div id="editSaranLiturgiArea"></div>
     <div id="editSlotEditorArea"></div>
@@ -3502,7 +3590,7 @@ function renderRekapAbsensi(){
       ...r.alasanTidakHadir.map(a=>`<svg class="ico ico-bad"><use href="#i-x-circle"/></svg> "${escapeHtml(a)}"`),
     ];
     const alasanBlock = semuaAlasan.length
-      ? `<div class="section-sub" style="margin:4px 0 0; font-size:12px; line-height:1.5;">${semuaAlasan.join('<br>')}</div>`
+      ? `<div class="section-sub" style="margin:4px 0 0; font-size:16px; line-height:1.5;">${semuaAlasan.join('<br>')}</div>`
       : '';
     const perlu = r.telat > 0 || r.belum > 0;
     return `<div class="petugas-row" style="cursor:default; flex-direction:column; align-items:flex-start; gap:2px;">
@@ -3591,9 +3679,9 @@ function openPetugasDetail(id){
 
   const ultahBadge = ulangTahunHariIni(id)
     ? `<div class="ultah-badge"><svg class="ico"><use href="#i-cake"/></svg> Ulang tahun hari ini!</div>`
-    : (profil.tglLahir ? `<div style="font-size:12.5px; color:var(--muted);"><svg class="ico"><use href="#i-gift"/></svg> Lahir ${formatTglLahir(profil.tglLahir)}</div>` : '');
+    : (profil.tglLahir ? `<div style="font-size:16px; color:var(--muted);"><svg class="ico"><use href="#i-gift"/></svg> Lahir ${formatTglLahir(profil.tglLahir)}</div>` : '');
   const alasanNonaktifBadge = p.nonaktif
-    ? `<div style="font-size:12.5px; color:var(--maroon); margin-top:4px;"><svg class="ico"><use href="#i-ban"/></svg> Nonaktif sementara — ${escapeHtml(p.alasanNonaktif || 'tidak ada alasan tercatat')}</div>`
+    ? `<div style="font-size:16px; color:var(--maroon); margin-top:4px;"><svg class="ico"><use href="#i-ban"/></svg> Nonaktif sementara — ${escapeHtml(p.alasanNonaktif || 'tidak ada alasan tercatat')}</div>`
     : '';
 
   const fotoInputId = `fotoInput_${id}`;
@@ -3635,7 +3723,7 @@ function openPetugasDetail(id){
       <div class="profil-edit-block">
         <label>Ganti Nama</label>
         <div style="display:flex; gap:8px;">
-          <input type="text" id="editNamaSendiri" maxlength="30" value="${escapeHtml(p.nama)}" style="flex:1; padding:9px 10px; border:1px solid transparent; border-radius:8px; font-family:inherit; font-size:13.5px; background:var(--field-bg); color:#1A2033;">
+          <input type="text" id="editNamaSendiri" maxlength="30" value="${escapeHtml(p.nama)}" style="flex:1; padding:9px 10px; border:1px solid transparent; border-radius:8px; font-family:inherit; font-size:17px; background:var(--field-bg); color:#1A2033;">
           <button class="btn-secondary" ${sisa<=0?'disabled':''} onclick="simpanNamaSendiri('${id}')">Simpan</button>
         </div>
         <div class="jatah-nama ${sisa<=0?'habis':''}">${sisa<=0 ? 'Jatah ganti nama bulan ini sudah habis. Direset lagi tiap tanggal 1.' : `Sisa jatah ganti nama bulan ini: ${sisa}x. Direset tiap tanggal 1.`}</div>
@@ -3896,7 +3984,7 @@ function bukaPerbaikanReferensi(){
         </select>
         <button class="btn-secondary" onclick="terapkanPerbaikanReferensi('${pid}', document.getElementById('${selectId}').value)">Terapkan</button>
       </div>
-      <a onclick="kosongkanReferensiRusak('${pid}')" style="font-size:12px; color:var(--muted); text-decoration:underline; cursor:pointer;"><svg class="ico"><use href="#i-trash"/></svg> Ini bukan siapa-siapa (slot emang kosong dari awal) — kosongkan aja</a>
+      <a onclick="kosongkanReferensiRusak('${pid}')" style="font-size:16px; color:var(--muted); text-decoration:underline; cursor:pointer;"><svg class="ico"><use href="#i-trash"/></svg> Ini bukan siapa-siapa (slot emang kosong dari awal) — kosongkan aja</a>
     </div>`;
   }).join('');
   document.getElementById('modalBody').innerHTML = `
