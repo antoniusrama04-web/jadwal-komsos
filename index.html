@@ -249,7 +249,29 @@ main{flex:1; padding:28px 22px 110px; max-width:680px; width:100%; margin:0 auto
 }
 .slot-line:first-of-type{border-top:none;}
 .slot-line .waktu{color:var(--muted); min-width:132px;}
-.slot-line .nama{font-weight:600; text-align:right;}
+.slot-line{align-items:flex-start; gap:10px;}
+.slot-line .nama{font-weight:600; text-align:right; display:flex; flex-direction:column; align-items:flex-end; min-width:0; flex:1;}
+.nm-row{display:flex; justify-content:flex-end; align-items:flex-start; gap:6px; max-width:100%;}
+.nm-t{min-width:0; overflow-wrap:anywhere; text-align:right;}
+.nm-b{flex-shrink:0; width:22px; text-align:center;}
+.belum-akun{display:inline-block; margin-top:3px; font-size:11px; font-weight:700; padding:2px 9px; border-radius:20px; background:var(--maroon-bg); color:var(--maroon);}
+body.modal-open{overflow:hidden;}
+.peng-btn{display:flex;flex-direction:column;align-items:center;border:none;background:var(--grad);color:#fff;border-radius:14px;padding:5px 10px;font:700 12px 'Plus Jakarta Sans',sans-serif;line-height:1.1;cursor:pointer;}
+.peng-n{font-size:9px;font-weight:700;margin-top:3px;background:#fff;color:var(--maroon);border-radius:8px;padding:1px 6px;}
+.peng-card{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;}
+.peng-card img{width:100%;border-radius:10px;margin:8px 0;display:block;}
+.ed-wrap{position:fixed;inset:0;z-index:3000;background:#0b0f1a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;color:#fff;touch-action:none;}
+.ed-stage{position:relative;overflow:hidden;background:#000;touch-action:none;}
+.ed-stage img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;user-select:none;-webkit-user-drag:none;}
+.ed-dim{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at center,transparent 0 calc(50% - 1px),rgba(0,0,0,.6) 50%);}
+.ed-grid{position:absolute;inset:0;pointer-events:none;border-radius:50%;overflow:hidden;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7);
+background:linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 33.33% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 66.66% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 0 33.33%/100% 1px no-repeat,linear-gradient(rgba(255,255,255,.3),rgba(255,255,255,.3)) 0 66.66%/100% 1px no-repeat;}
+.scan-wrap{position:fixed;inset:0;z-index:3500;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;padding:16px;}
+.scan-wrap video{width:min(92vw,420px);aspect-ratio:1;object-fit:cover;border-radius:18px;background:#111;}
+#kiosk{position:fixed;inset:0;z-index:4000;background:#fff;color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:20px;}
+#kiosk img{width:min(78vw,68vh);image-rendering:pixelated;}
+.modal-overlay{overscroll-behavior:contain;}
+.modal-sheet{overscroll-behavior:contain;}
 .empty-note{color:var(--muted); font-size:15px; text-align:center; padding:36px 10px;}
 
 .saran-trigger{
@@ -505,6 +527,85 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
   background:linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 37%, rgba(255,255,255,0.04) 63%);
   background-size:400px 100%; animation:shimmer 1.4s infinite linear;
 }
+
+/* --- Tombol kecil di slot kartu jadwal --- */
+.slot-aksi{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; margin-top:6px;}
+.btn-mini{
+  padding:7px 14px; border-radius:999px; border:1px solid var(--line);
+  background:rgba(255,255,255,0.06); color:var(--text); font-family:'Plus Jakarta Sans';
+  font-size:12.5px; font-weight:700; cursor:pointer; white-space:nowrap;
+  transition:transform 0.12s, filter 0.15s, border-color 0.15s;
+}
+.btn-mini:hover{border-color:var(--blue);}
+.btn-mini:active{transform:scale(0.96);}
+.btn-mini.absen{background:var(--grad); border:none; color:#fff; box-shadow:0 2px 10px rgba(59,99,217,0.35);}
+.btn-mini.absen:hover{filter:brightness(1.1);}
+.btn-mini.batal{color:var(--maroon); border-color:var(--maroon-bg); background:var(--maroon-bg);}
+.slot-input-row{display:flex; gap:8px; margin:8px 0 4px;}
+.slot-input-row input{flex:1; min-width:0; padding:9px 10px; border-radius:10px; border:1px solid var(--line); background:var(--field-bg); color:#1A2033; font-family:'Plus Jakarta Sans'; font-size:14px;}
+.jadwal-sub{font-family:'Sora',sans-serif; font-weight:700; font-size:14px; color:var(--muted); margin:18px 0 10px;}
+
+/* --- Foto profil layar penuh (lightbox) --- */
+img.avatar-zoom{cursor:zoom-in;}
+#fotoLightbox{
+  position:fixed; inset:0; z-index:10000; display:none; flex-direction:column;
+  align-items:center; justify-content:center; background:rgba(0,0,0,0.92); padding:20px;
+}
+#fotoLightbox.open{display:flex;}
+#fotoLightbox img{max-width:100%; max-height:78vh; object-fit:contain; border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,0.6);}
+#fotoLightbox .lb-nama{margin-top:14px; color:#fff; font-family:'Sora',sans-serif; font-weight:700; font-size:17px;}
+#fotoLightbox .lb-tutup{
+  position:absolute; top:calc(14px + env(safe-area-inset-top, 0px)); right:16px; width:40px; height:40px;
+  border-radius:50%; border:none; background:rgba(255,255,255,0.16); color:#fff; font-size:20px; cursor:pointer;
+}
+
+/* ===== 1.6.0 PERAPIAN & FITUR BARU ===== */
+header.appbar{padding:14px 16px; gap:10px;}
+header.appbar .mark{font-size:20px; flex-shrink:0;}
+.header-actions{gap:8px; min-width:0;}
+#hdrHidden, #testNotifBox, #roleBadge{display:none !important;}
+main{padding:22px 18px 120px;}
+#infoLiturgiHariIni, #notifBanner, #pengingatArea, #tugasSayaArea, #ringkasanPJArea{margin-bottom:14px;}
+.panel-back{margin-bottom:18px;}
+.form-block{margin-bottom:18px;}
+.filter-row{gap:10px; margin-bottom:16px;}
+.btn-primary, .btn-secondary{min-height:44px;}
+button:active{transform:scale(.97);}
+.jadwal-card{margin-bottom:18px; animation:fadeUp .35s ease both;}
+.jadwal-card .judul{line-height:1.3; margin-bottom:10px;}
+.musim-badge{margin-bottom:12px;}
+.legend-abs{display:flex; flex-wrap:wrap; gap:4px 12px; font-size:12px; color:var(--muted); margin:2px 0 12px;}
+.slot-line{padding:13px 0; gap:12px;}
+.slot-line .waktu{flex:0 0 98px; min-width:0; display:flex; flex-direction:column; gap:2px;}
+.slot-line .waktu .w-hari{font-size:12px; color:var(--muted);}
+.slot-line .waktu .w-jam{font-size:18px; font-weight:800; color:#fff; font-family:'Sora',sans-serif;}
+.slot-line .nama{gap:4px;}
+.slot-aksi{margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;}
+@keyframes fadeUp{from{opacity:0; transform:translateY(8px);}to{opacity:1; transform:none;}}
+.menu-user{padding:2px 4px 14px;}
+.menu-user small{display:block; color:var(--muted); margin-top:2px;}
+.menu-item{display:flex; align-items:center; gap:14px; width:100%; padding:14px 12px; border:none; background:rgba(255,255,255,.06); color:#fff; border-radius:14px; font:600 15px 'Plus Jakarta Sans',sans-serif; margin-bottom:8px; text-align:left; cursor:pointer;}
+.menu-item.danger{color:#ff8a8a;}
+.menu-item .mi-ic{font-size:20px; width:26px; text-align:center;}
+.tugas-card{border:1px solid rgba(79,142,247,.4); background:linear-gradient(135deg,rgba(79,142,247,.18),rgba(139,92,246,.14)); border-radius:18px; padding:16px;}
+.tugas-card .tk{font-size:11.5px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; font-weight:700;}
+.tugas-card .tj{font-family:'Sora',sans-serif; font-weight:800; font-size:21px; margin:6px 0 2px;}
+.tugas-card .ts{color:var(--muted); font-size:13.5px; margin-bottom:12px; line-height:1.4;}
+.rg-card{border:1px solid var(--line); background:rgba(255,255,255,.04); border-radius:18px; padding:14px; cursor:pointer;}
+.rg-card .rk{font-size:12.5px; color:var(--muted); margin-bottom:10px;}
+.rg-row{display:flex; gap:8px;}
+.rg-chip{flex:1; text-align:center; padding:10px 4px; border-radius:14px; background:rgba(255,255,255,.06); font-size:11.5px; color:var(--muted);}
+.rg-chip b{display:block; font-size:21px; color:#fff; font-family:'Sora',sans-serif;}
+.rg-note{margin-top:10px; font-size:12.5px; color:var(--gold-soft);}
+.mode-switch{display:flex; gap:6px; margin-bottom:16px; background:rgba(255,255,255,.05); padding:4px; border-radius:14px;}
+.mode-switch button{flex:1; padding:10px 6px; border:none; border-radius:10px; background:transparent; color:var(--muted); font:700 13.5px 'Plus Jakarta Sans',sans-serif; cursor:pointer;}
+.mode-switch button.on{background:var(--grad); color:#fff;}
+.ok-pop{position:fixed; inset:0; z-index:5000; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.5); animation:okfade 1.5s ease forwards; pointer-events:none;}
+.ok-pop svg{width:120px; height:120px;}
+.ok-pop .c{stroke-dasharray:166; stroke-dashoffset:166; animation:okd .5s .1s ease forwards;}
+.ok-pop .t{stroke-dasharray:48; stroke-dashoffset:48; animation:okd .35s .5s ease forwards;}
+@keyframes okd{to{stroke-dashoffset:0;}}
+@keyframes okfade{0%{opacity:0;}12%{opacity:1;}80%{opacity:1;}100%{opacity:0;}}
 </style>
 </head>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -573,7 +674,17 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
   <header class="appbar">
     <div class="mark"><span class="kom">KOM</span><span class="sos">SOS</span></div>
     <div class="header-actions">
-      <button class="icon-action-btn" onclick="bukaPembaruan()" title="Pembaruan Aplikasi" aria-label="Pembaruan Aplikasi">
+      <button id="pengBtn" class="peng-btn" onclick="bukaPengumuman()" aria-label="Pengumuman"><span>Pengumuman</span><span class="peng-n" id="pengNote" style="display:none;">Ada Pengumuman</span></button>
+      <button id="logAktivitasLink" class="icon-action-btn" onclick="bukaLogAktivitas()" style="display:none;" title="Log Aktivitas" aria-label="Log Aktivitas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3h8a2 2 0 0 1 2 2v14l-6-3-6 3V5a2 2 0 0 1 2-2Z"></path>
+          <line x1="9" y1="8" x2="15" y2="8"></line>
+          <line x1="9" y1="11.5" x2="15" y2="11.5"></line>
+        </svg>
+        <span class="icon-dot" id="logDot" style="display:none;"></span>
+      </button>
+      <button class="icon-action-btn" id="menuBtn" onclick="bukaMenuAkun()" title="Menu" aria-label="Menu"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg><span class="icon-dot" id="menuDot" style="display:none;"></span></button>
+      <div id="hdrHidden"><button class="icon-action-btn" onclick="bukaPembaruan()" title="Pembaruan Aplikasi" aria-label="Pembaruan Aplikasi">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 11l18-5v12L3 13v-2z"></path>
           <path d="M11.6 16.8a3 3 0 0 1-5.8-1.6"></path>
@@ -587,14 +698,7 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
           <line x1="12" y1="17.2" x2="12" y2="17.2"></line>
         </svg>
       </button>
-      <button id="logAktivitasLink" class="icon-action-btn" onclick="bukaLogAktivitas()" style="display:none;" title="Log Aktivitas" aria-label="Log Aktivitas">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 3h8a2 2 0 0 1 2 2v14l-6-3-6 3V5a2 2 0 0 1 2-2Z"></path>
-          <line x1="9" y1="8" x2="15" y2="8"></line>
-          <line x1="9" y1="11.5" x2="15" y2="11.5"></line>
-        </svg>
-        <span class="icon-dot" id="logDot" style="display:none;"></span>
-      </button>
+      
       <div class="role-badge" id="roleBadge" onclick="if(currentPetugasId) openPetugasDetail(currentPetugasId)" style="cursor:pointer;">Mode Lihat</div>
       <button class="icon-action-btn danger" onclick="logout()" title="Keluar" aria-label="Keluar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -603,6 +707,7 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
           <line x1="20" y1="12" x2="9" y2="12"></line>
         </svg>
       </button>
+    </div>
     </div>
   </header>
 
@@ -619,6 +724,8 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
         <span style="font-size:14px; color:var(--text);">🧪 Mode PJ: kirim notifikasi uji coba ke semua HP yang sudah aktifkan (cocok buat demo/presentasi).</span>
         <button class="btn-secondary" id="btnUjiNotif" style="white-space:nowrap;" onclick="kirimNotifikasiUjiCoba()">Kirim Sekarang</button>
       </div>
+      <div id="tugasSayaArea"></div>
+      <div id="ringkasanPJArea"></div>
       <div id="pengingatArea"></div>
 
       <div id="homeMenuWrap">
@@ -680,7 +787,7 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
       <button class="btn-secondary" style="width:100%; margin-bottom:14px;" onclick="shareRekapBulanan()">📤 Bagikan Rekap Bulan Ini ke WhatsApp</button>
 
       <div class="petugas-add" id="petugasAddRow" style="display:none;">
-        <input type="text" id="newPetugasName" placeholder="Nama petugas baru">
+        <input type="text" id="newPetugasName" maxlength="30" placeholder="Nama petugas baru">
         <button class="btn-primary" onclick="tambahPetugas()">Tambah</button>
       </div>
       <button class="btn-secondary" id="btnPerbaikanReferensi" style="width:100%; margin-bottom:14px; display:none; font-size:12.5px; opacity:0.8;" onclick="bukaPerbaikanReferensi()">🛠️ Perbaiki Referensi Petugas Rusak</button>
@@ -695,11 +802,18 @@ nav.bottomnav button.active .ic-avatar-wrap > div{outline-color:var(--blue);}
         <span onclick="if(confirm('Kosongkan form ini?')) resetForm()" style="color:var(--muted); text-decoration:underline; cursor:pointer; white-space:nowrap; font-size:13px;">Kosongkan form</span>
       </div>
 
+      <div class="mode-switch"><button id="modePola" class="on" onclick="setModeJadwal('pola')">Pola Akhir Pekan</button><button id="modeBebas" onclick="setModeJadwal('bebas')">Perayaan / Jam Bebas</button></div>
       <div class="form-block">
         <label>Nama Hari Raya / Misa</label>
         <input type="text" id="namaMisa" placeholder="cth: Hari Minggu Biasa ke-XXIII">
       </div>
-      <div class="form-block">
+      <div class="form-block" id="blokBebas" style="display:none;">
+        <label>Tanggal perayaan (hari pertama)</label>
+        <input type="date" id="tglBebas" onchange="pilihTanggalBebas()">
+        <div class="section-sub" style="margin-top:6px; margin-bottom:10px;">Nama perayaan dan warna liturgi tersaran otomatis. Atur tanggal dan jam tiap slot di bawah; satu jadwal boleh berisi beberapa hari (mis. Kamis Putih, Jumat Agung, Sabtu Suci).</div>
+        <button class="btn-secondary" style="width:100%;" onclick="addManualSlot()">＋ Tambah slot (tanggal & jam bebas)</button>
+      </div>
+      <div class="form-block" id="blokPola">
         <label>Tanggal Misa Sabtu (18:00)</label>
         <input type="date" id="tglSabtu" onchange="generateSlots()">
         <div class="section-sub" style="margin-top:6px; margin-bottom:0;">Slot Minggu otomatis mengikuti tanggal setelah Sabtu ini. Tambah/hapus slot kalau perayaan jatuh di hari kerja.</div>
@@ -838,17 +952,16 @@ const HARI_RAYA_TETAP = [
   {bulan:12, tgl:25, nama:'Hari Raya Kelahiran Tuhan (Natal)', warna:'putih'},
 ];
 const WARNA_LITURGI_HEX = {hijau:'#34D399', ungu:'#8B5CF6', putih:'#E5E7EB', merah:'#FF6B6B'};
-
-// Kalender liturgi RESMI & LENGKAP untuk tahun 2026 (sumber: GCatholic.org, edisi
-// Indonesia) — 365 hari penuh termasuk Peringatan Wajib & Fakultatif yang dulu
-// nggak ada sama sekali. Ini dipakai APA ADANYA kalau tahunnya 2026; tahun lain
-// tetap pakai rumus Meeus/Jones/Butcher di bawah (Paskah dkk dihitung, bukan
-// hafalan) karena kita cuma punya data resmi untuk 2026 ini. Kalau suatu saat
-// dapat file .ics tahun lain, tinggal generate ulang objek serupa ini.
-const KALENDER_LITURGI_2026 = {"0101":{"nama":"Santa Maria Bunda Allah","warna":"putih","musim":"Hari Raya"},"0102":{"nama":"S. Basilius Agung dan Gregorius dari Nazianze, uskup dan p","warna":"putih","musim":"Peringatan Wajib"},"0103":{"nama":"Nama Tersuci Yesus","warna":"putih","musim":"Peringatan Fakultatif"},"0104":{"nama":"Penampakan Tuhan","warna":"putih","musim":"Hari Raya"},"0105":{"nama":"Senin ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0106":{"nama":"Selasa ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0107":{"nama":"S. Raimundus dari Penyafort, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0108":{"nama":"Kamis ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0109":{"nama":"Jumat ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0110":{"nama":"Sabtu ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0111":{"nama":"Pembaptisan Tuhan","warna":"putih","musim":"Pesta"},"0112":{"nama":"Senin Pekan Biasa I","warna":"hijau","musim":"Harian"},"0113":{"nama":"S. Hilarius, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0114":{"nama":"Rabu Pekan Biasa I","warna":"hijau","musim":"Harian"},"0115":{"nama":"Kamis Pekan Biasa I","warna":"hijau","musim":"Harian"},"0116":{"nama":"Jumat Pekan Biasa I","warna":"hijau","musim":"Harian"},"0117":{"nama":"S. Antonius, abas","warna":"putih","musim":"Peringatan Wajib"},"0118":{"nama":"Hari Minggu Biasa II","warna":"hijau","musim":"Harian"},"0119":{"nama":"Senin Pekan Biasa II","warna":"hijau","musim":"Harian"},"0120":{"nama":"S. Fabianus, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0121":{"nama":"S. Agnes, perawan dan martir","warna":"merah","musim":"Peringatan Wajib"},"0122":{"nama":"S. Vinsensius, diakon dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0123":{"nama":"Jumat Pekan Biasa II","warna":"hijau","musim":"Harian"},"0124":{"nama":"S. Fransiskus dari Sales, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0125":{"nama":"Hari Minggu Biasa III","warna":"hijau","musim":"Harian"},"0126":{"nama":"S. Timotius dan Titus, uskup","warna":"putih","musim":"Peringatan Wajib"},"0127":{"nama":"S. Angela Merici, perawan","warna":"putih","musim":"Peringatan Fakultatif"},"0128":{"nama":"S. Tomas Aquino, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0129":{"nama":"Kamis Pekan Biasa III","warna":"hijau","musim":"Harian"},"0130":{"nama":"Jumat Pekan Biasa III","warna":"hijau","musim":"Harian"},"0131":{"nama":"S. Yohanes Bosko, imam","warna":"putih","musim":"Peringatan Wajib"},"0201":{"nama":"Hari Minggu Biasa IV","warna":"hijau","musim":"Harian"},"0202":{"nama":"Yesus Dipersembahkan di Kanisah","warna":"putih","musim":"Pesta"},"0203":{"nama":"S. Ansgarius, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"0204":{"nama":"Rabu Pekan Biasa IV","warna":"hijau","musim":"Harian"},"0205":{"nama":"S. Agata, perawan dan martir","warna":"merah","musim":"Peringatan Wajib"},"0206":{"nama":"S. Paulus Miki, imam, dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Wajib"},"0207":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0208":{"nama":"Hari Minggu Biasa V","warna":"hijau","musim":"Harian"},"0209":{"nama":"Senin Pekan Biasa V","warna":"hijau","musim":"Harian"},"0210":{"nama":"S. Skolastika, perawan","warna":"putih","musim":"Peringatan Wajib"},"0211":{"nama":"Santa Perawan Maria dari Lourdes","warna":"putih","musim":"Peringatan Fakultatif"},"0212":{"nama":"Kamis Pekan Biasa V","warna":"hijau","musim":"Harian"},"0213":{"nama":"Jumat Pekan Biasa V","warna":"hijau","musim":"Harian"},"0214":{"nama":"S. Sirilus, rahib, dan Metodius, uskup","warna":"putih","musim":"Peringatan Wajib"},"0215":{"nama":"Hari Minggu Biasa VI","warna":"hijau","musim":"Harian"},"0216":{"nama":"Senin Pekan Biasa VI","warna":"hijau","musim":"Harian"},"0217":{"nama":"Tujuh Santo Pendiri Ordo Hamba-hamba Santa Perwan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0218":{"nama":"Rabu Abu","warna":"ungu","musim":"Harian"},"0219":{"nama":"Hari Kamis ses Rabu Abu","warna":"ungu","musim":"Harian"},"0220":{"nama":"Hari Jumat ses Rabu Abu","warna":"ungu","musim":"Harian"},"0221":{"nama":"S. Petrus Damianus, uskup dan pujangga Gereja","warna":"ungu","musim":"Peringatan Fakultatif"},"0222":{"nama":"Hari Minggu Prapaskah I","warna":"ungu","musim":"Harian"},"0223":{"nama":"S. Polikarpus, uskup dan martir","warna":"ungu","musim":"Peringatan Fakultatif"},"0224":{"nama":"Selasa Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0225":{"nama":"Rabu Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0226":{"nama":"Kamis Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0227":{"nama":"S. Gregorius dari Narek, abas dan pujangga Gereja","warna":"ungu","musim":"Peringatan Fakultatif"},"0228":{"nama":"Sabtu Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0301":{"nama":"Hari Minggu Prapaskah II","warna":"ungu","musim":"Harian"},"0302":{"nama":"Senin Pekan Prapaskah II","warna":"ungu","musim":"Harian"},"0303":{"nama":"Selasa Pekan Prapaskah II","warna":"ungu","musim":"Harian"},"0304":{"nama":"S. Kasimirus","warna":"ungu","musim":"Peringatan Fakultatif"},"0305":{"nama":"Kamis Pekan Prapaskah II","warna":"ungu","musim":"Harian"},"0306":{"nama":"Jumat Pekan Prapaskah II","warna":"ungu","musim":"Harian"},"0307":{"nama":"S. Perpetua dan Felisitas, martir","warna":"ungu","musim":"Peringatan Fakultatif"},"0308":{"nama":"Hari Minggu Prapaskah III","warna":"ungu","musim":"Harian"},"0309":{"nama":"S. Fransiska Romana, biarawati","warna":"ungu","musim":"Peringatan Fakultatif"},"0310":{"nama":"Selasa Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0311":{"nama":"Rabu Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0312":{"nama":"Kamis Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0313":{"nama":"Jumat Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0314":{"nama":"Sabtu Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0315":{"nama":"Hari Minggu Prapaskah IV","warna":"ungu","musim":"Harian"},"0316":{"nama":"Senin Pekan Prapaskah IV","warna":"ungu","musim":"Harian"},"0317":{"nama":"S. Patrik, uskup","warna":"ungu","musim":"Peringatan Fakultatif"},"0318":{"nama":"S. Sirilus dari Yerusalem, uskup dan pujangga Gereja","warna":"ungu","musim":"Peringatan Fakultatif"},"0319":{"nama":"S. Yusuf, Suami Santa Maria","warna":"putih","musim":"Hari Raya"},"0320":{"nama":"Jumat Pekan Prapaskah IV","warna":"ungu","musim":"Harian"},"0321":{"nama":"Sabtu Pekan Prapaskah IV","warna":"ungu","musim":"Harian"},"0322":{"nama":"Hari Minggu Prapaskah V","warna":"ungu","musim":"Harian"},"0323":{"nama":"S. Turibius dari Mogrovejo, uskup","warna":"ungu","musim":"Peringatan Fakultatif"},"0324":{"nama":"Selasa Pekan Prapaskah V","warna":"ungu","musim":"Harian"},"0325":{"nama":"Kabar Sukacita","warna":"putih","musim":"Hari Raya"},"0326":{"nama":"Kamis Pekan Prapaskah V","warna":"ungu","musim":"Harian"},"0327":{"nama":"Jumat Pekan Prapaskah V","warna":"ungu","musim":"Harian"},"0328":{"nama":"Sabtu Pekan Prapaskah V","warna":"ungu","musim":"Harian"},"0329":{"nama":"Hari Minggu Palma Mengenangkan Sengsara Tuhan","warna":"merah","musim":"Harian"},"0330":{"nama":"Hari Senin dalam Pekan Suci","warna":"ungu","musim":"Harian"},"0331":{"nama":"Hari Selasa dalam Pekan Suci","warna":"ungu","musim":"Harian"},"0401":{"nama":"Hari Rabu dalam Pekan Suci","warna":"ungu","musim":"Harian"},"0402":{"nama":"Kamas Putih","warna":"putih","musim":"Harian"},"0403":{"nama":"Hari Jumat Agung","warna":"merah","musim":"Harian"},"0404":{"nama":"Hari Sabtu Suci","warna":"putih","musim":"Harian"},"0405":{"nama":"Paskah Kebangkitan Tuhan","warna":"putih","musim":"Harian"},"0406":{"nama":"Hari Senin dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0407":{"nama":"Hari Selasa dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0408":{"nama":"Hari Rabu dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0409":{"nama":"Hari Kamis dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0410":{"nama":"Hari Jumat dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0411":{"nama":"Hari Sabtu dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0412":{"nama":"Hari Minggu Paskah II","warna":"putih","musim":"Harian"},"0413":{"nama":"S. Martinus I, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0414":{"nama":"Selasa Pekan Paskah II","warna":"putih","musim":"Harian"},"0415":{"nama":"Rabu Pekan Paskah II","warna":"putih","musim":"Harian"},"0416":{"nama":"Kamis Pekan Paskah II","warna":"putih","musim":"Harian"},"0417":{"nama":"Jumat Pekan Paskah II","warna":"putih","musim":"Harian"},"0418":{"nama":"Sabtu Pekan Paskah II","warna":"putih","musim":"Harian"},"0419":{"nama":"Hari Minggu Paskah III","warna":"putih","musim":"Harian"},"0420":{"nama":"Senin Pekan Paskah III","warna":"putih","musim":"Harian"},"0421":{"nama":"S. Anselmus, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0422":{"nama":"Rabu Pekan Paskah III","warna":"putih","musim":"Harian"},"0423":{"nama":"S. Adalbertus, uskup dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0424":{"nama":"S. Fidelis dari Sigmaringen, imam dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0425":{"nama":"S. Markus, PenInj","warna":"merah","musim":"Pesta"},"0426":{"nama":"Hari Minggu Paskah IV","warna":"putih","musim":"Harian"},"0427":{"nama":"Senin Pekan Paskah IV","warna":"putih","musim":"Harian"},"0428":{"nama":"S. Louis-Mariæ Grignion de Montfort, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0429":{"nama":"S. Katarina dari Siena, perawan dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0430":{"nama":"S. Pius V, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"0501":{"nama":"S. Yusuf, Pekerja","warna":"putih","musim":"Peringatan Fakultatif"},"0502":{"nama":"S. Atanasius, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0503":{"nama":"Hari Minggu Paskah V","warna":"putih","musim":"Harian"},"0504":{"nama":"Senin Pekan Paskah V","warna":"putih","musim":"Harian"},"0505":{"nama":"Selasa Pekan Paskah V","warna":"putih","musim":"Harian"},"0506":{"nama":"Rabu Pekan Paskah V","warna":"putih","musim":"Harian"},"0507":{"nama":"Kamis Pekan Paskah V","warna":"putih","musim":"Harian"},"0508":{"nama":"Jumat Pekan Paskah V","warna":"putih","musim":"Harian"},"0509":{"nama":"Sabtu Pekan Paskah V","warna":"putih","musim":"Harian"},"0510":{"nama":"Hari Minggu Paskah VI","warna":"putih","musim":"Harian"},"0511":{"nama":"Senin Pekan Paskah VI","warna":"putih","musim":"Harian"},"0512":{"nama":"S. Nereus dan Akhilleus, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0513":{"nama":"Santa Perawan Maria dari Fatima","warna":"putih","musim":"Peringatan Fakultatif"},"0514":{"nama":"Kenaikan Tuhan","warna":"putih","musim":"Hari Raya"},"0515":{"nama":"Jumat Pekan Paskah VI","warna":"putih","musim":"Harian"},"0516":{"nama":"Sabtu Pekan Paskah VI","warna":"putih","musim":"Harian"},"0517":{"nama":"Hari Minggu Paskah VII","warna":"putih","musim":"Harian"},"0518":{"nama":"S. Yohanes I, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0519":{"nama":"Selasa Pekan Paskah VII","warna":"putih","musim":"Harian"},"0520":{"nama":"S. Bernardinus dari Siena, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0521":{"nama":"S. Kristoforus Magallanes, imam, dan kawan-kawan, ma","warna":"merah","musim":"Peringatan Fakultatif"},"0522":{"nama":"S. Rita dari Cascia, biarawati","warna":"putih","musim":"Peringatan Fakultatif"},"0523":{"nama":"Sabtu Pekan Paskah VII","warna":"putih","musim":"Harian"},"0524":{"nama":"Pentakosta","warna":"merah","musim":"Hari Raya"},"0525":{"nama":"Santa Perawan Maria, Bunda Gereja","warna":"putih","musim":"Peringatan Wajib"},"0526":{"nama":"S. Filipus Neri, imam","warna":"putih","musim":"Peringatan Wajib"},"0527":{"nama":"S. Agustinus dari Canterbury, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"0528":{"nama":"Kamis Pekan Biasa VIII","warna":"hijau","musim":"Harian"},"0529":{"nama":"S. Paulus VI, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"0530":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0531":{"nama":"Tritunggal Maha Kudus","warna":"putih","musim":"Hari Raya"},"0601":{"nama":"S. Yustinus, martir","warna":"merah","musim":"Peringatan Wajib"},"0602":{"nama":"S. Marselinus dan Petrus, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0603":{"nama":"S. Karolus Lwanga dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Wajib"},"0604":{"nama":"Kamis Pekan Biasa IX","warna":"hijau","musim":"Harian"},"0605":{"nama":"S. Bonifasius, uskup dan martir","warna":"merah","musim":"Peringatan Wajib"},"0606":{"nama":"S. Norbertus, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"0607":{"nama":"Tubuh dan Darah Kristus","warna":"putih","musim":"Hari Raya"},"0608":{"nama":"Senin Pekan Biasa X","warna":"hijau","musim":"Harian"},"0609":{"nama":"S. Efrem, diakon dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0610":{"nama":"Rabu Pekan Biasa X","warna":"hijau","musim":"Harian"},"0611":{"nama":"S. Barnabas, rasul","warna":"merah","musim":"Peringatan Wajib"},"0612":{"nama":"Hati Yesus Yang Mahakudus","warna":"putih","musim":"Hari Raya"},"0613":{"nama":"Hati Tak Bernoda Santa Perawan Maria","warna":"putih","musim":"Peringatan Wajib"},"0614":{"nama":"Hari Minggu Biasa XI","warna":"hijau","musim":"Harian"},"0615":{"nama":"Senin Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0616":{"nama":"Selasa Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0617":{"nama":"Rabu Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0618":{"nama":"Kamis Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0619":{"nama":"S. Romualdus, abas","warna":"putih","musim":"Peringatan Fakultatif"},"0620":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0621":{"nama":"Hari Minggu Biasa XII","warna":"hijau","musim":"Harian"},"0622":{"nama":"S. Paulinus dari Nola, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"0623":{"nama":"Selasa Pekan Biasa XII","warna":"hijau","musim":"Harian"},"0624":{"nama":"Kelahiran S. Yohanes Pembaptis","warna":"putih","musim":"Hari Raya"},"0625":{"nama":"Kamis Pekan Biasa XII","warna":"hijau","musim":"Harian"},"0626":{"nama":"Jumat Pekan Biasa XII","warna":"hijau","musim":"Harian"},"0627":{"nama":"S. Sirillus dari Aleksandria, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0628":{"nama":"Hari Minggu Biasa XIII","warna":"hijau","musim":"Harian"},"0629":{"nama":"S. Petrus dan Paulus, rasul","warna":"merah","musim":"Hari Raya"},"0630":{"nama":"Para Martir Pertama Gereja Roma yang Kudus","warna":"merah","musim":"Peringatan Fakultatif"},"0701":{"nama":"Rabu Pekan Biasa XIII","warna":"hijau","musim":"Harian"},"0702":{"nama":"Kamis Pekan Biasa XIII","warna":"hijau","musim":"Harian"},"0703":{"nama":"S. Tomas, rasul","warna":"merah","musim":"Pesta"},"0704":{"nama":"S. Elisabet dari Portugal","warna":"putih","musim":"Peringatan Fakultatif"},"0705":{"nama":"Hari Minggu Biasa XIV","warna":"hijau","musim":"Harian"},"0706":{"nama":"S. Maria Goretti, perawan dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0707":{"nama":"Selasa Pekan Biasa XIV","warna":"hijau","musim":"Harian"},"0708":{"nama":"Rabu Pekan Biasa XIV","warna":"hijau","musim":"Harian"},"0709":{"nama":"S. Agustinus Zhao Rong, imam, dan kawan-kawan, marti","warna":"merah","musim":"Peringatan Fakultatif"},"0710":{"nama":"Jumat Pekan Biasa XIV","warna":"hijau","musim":"Harian"},"0711":{"nama":"S. Benediktus, abas","warna":"putih","musim":"Peringatan Wajib"},"0712":{"nama":"Hari Minggu Biasa XV","warna":"hijau","musim":"Harian"},"0713":{"nama":"S. Henrikus","warna":"putih","musim":"Peringatan Fakultatif"},"0714":{"nama":"S. Kamillus de Lellis, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0715":{"nama":"S. Bonaventura, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0716":{"nama":"Bunda Maria dari Gunung Karmel","warna":"putih","musim":"Peringatan Fakultatif"},"0717":{"nama":"Jumat Pekan Biasa XV","warna":"hijau","musim":"Harian"},"0718":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0719":{"nama":"Hari Minggu Biasa XVI","warna":"hijau","musim":"Harian"},"0720":{"nama":"S. Apollinaris, uskup dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0721":{"nama":"S. Laurensius dari Brindisi, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0722":{"nama":"S. Maria Magdalena","warna":"putih","musim":"Pesta"},"0723":{"nama":"S. Birgitta, biarawati","warna":"putih","musim":"Peringatan Fakultatif"},"0724":{"nama":"S. Sharbel Makhlūf, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0725":{"nama":"S. Yakobus, rasul","warna":"merah","musim":"Pesta"},"0726":{"nama":"Hari Minggu Biasa XVII","warna":"hijau","musim":"Harian"},"0727":{"nama":"Senin Pekan Biasa XVII","warna":"hijau","musim":"Harian"},"0728":{"nama":"Selasa Pekan Biasa XVII","warna":"hijau","musim":"Harian"},"0729":{"nama":"S. Marta, Maria, dan Lazarus","warna":"putih","musim":"Peringatan Wajib"},"0730":{"nama":"S. Petrus Krisologus, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0731":{"nama":"S. Ignasius dari Loyola, imam","warna":"putih","musim":"Peringatan Wajib"},"0801":{"nama":"S. Alfonsus Maria de Liguori, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0802":{"nama":"Hari Minggu Biasa XVIII","warna":"hijau","musim":"Harian"},"0803":{"nama":"Senin Pekan Biasa XVIII","warna":"hijau","musim":"Harian"},"0804":{"nama":"S. Yohanes Maria Vianney, imam","warna":"putih","musim":"Peringatan Wajib"},"0805":{"nama":"Pemberkatan Gereja Basilika Santa Maria Maggiore","warna":"putih","musim":"Peringatan Fakultatif"},"0806":{"nama":"Yesus Menampakkan Kemuliaan-Nya","warna":"putih","musim":"Pesta"},"0807":{"nama":"S. Kayetanus, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0808":{"nama":"S. Dominikus, imam","warna":"putih","musim":"Peringatan Wajib"},"0809":{"nama":"Hari Minggu Biasa XIX","warna":"hijau","musim":"Harian"},"0810":{"nama":"S. Laurensius, diakon dan martir","warna":"merah","musim":"Pesta"},"0811":{"nama":"S. Klara, perawan","warna":"putih","musim":"Peringatan Wajib"},"0812":{"nama":"S. Yohana Fransiska de Chantal, biarawati","warna":"putih","musim":"Peringatan Fakultatif"},"0813":{"nama":"S. Pontianus, Paus, dan S. Hipolitus, imam, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0814":{"nama":"S. Maksimilianus Maria Kolbe, imam dan martir","warna":"merah","musim":"Peringatan Wajib"},"0815":{"nama":"S. Tarsisius, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0816":{"nama":"Santa Perawan Maria Diangkat ke Surga","warna":"putih","musim":"Hari Raya"},"0817":{"nama":"Kemerdekaan Republik Indonesia","warna":"putih","musim":"Harian"},"0818":{"nama":"Selasa Pekan Biasa XX","warna":"hijau","musim":"Harian"},"0819":{"nama":"S. Yohanes Eudes, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0820":{"nama":"S. Bernardus, abas dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0821":{"nama":"S. Pius X, Paus","warna":"putih","musim":"Peringatan Wajib"},"0822":{"nama":"Santa Perawan Maria, Ratu","warna":"putih","musim":"Peringatan Wajib"},"0823":{"nama":"Hari Minggu Biasa XXI","warna":"hijau","musim":"Harian"},"0824":{"nama":"S. Bartolomeus, rasul","warna":"merah","musim":"Pesta"},"0825":{"nama":"S. Louis IX, raja","warna":"putih","musim":"Peringatan Fakultatif"},"0826":{"nama":"Rabu Pekan Biasa XXI","warna":"hijau","musim":"Harian"},"0827":{"nama":"S. Monika","warna":"putih","musim":"Peringatan Wajib"},"0828":{"nama":"S. Agustinus, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0829":{"nama":"Kemartiran S. Yohanes Pembaptis","warna":"merah","musim":"Peringatan Wajib"},"0830":{"nama":"Hari Minggu Biasa XXII","warna":"hijau","musim":"Harian"},"0831":{"nama":"Senin Pekan Biasa XXII","warna":"hijau","musim":"Harian"},"0901":{"nama":"Selasa Pekan Biasa XXII","warna":"hijau","musim":"Harian"},"0902":{"nama":"Rabu Pekan Biasa XXII","warna":"hijau","musim":"Harian"},"0903":{"nama":"S. Gregorius Agung, Paus dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0904":{"nama":"Jumat Pekan Biasa XXII","warna":"hijau","musim":"Harian"},"0905":{"nama":"S. Teresa dari Kalkuta, perawan","warna":"putih","musim":"Peringatan Fakultatif"},"0906":{"nama":"Hari Minggu Biasa XXIII","warna":"hijau","musim":"Harian"},"0907":{"nama":"Senin Pekan Biasa XXIII","warna":"hijau","musim":"Harian"},"0908":{"nama":"Kelahiran Santa Perawan Maria","warna":"putih","musim":"Pesta"},"0909":{"nama":"S. Petrus Klaver, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0910":{"nama":"Kamis Pekan Biasa XXIII","warna":"hijau","musim":"Harian"},"0911":{"nama":"Jumat Pekan Biasa XXIII","warna":"hijau","musim":"Harian"},"0912":{"nama":"Nama Tersuci Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0913":{"nama":"Hari Minggu Biasa XXIV","warna":"hijau","musim":"Harian"},"0914":{"nama":"Salib Suci","warna":"merah","musim":"Pesta"},"0915":{"nama":"Santa Perawan Maria Berdukacita","warna":"putih","musim":"Peringatan Wajib"},"0916":{"nama":"S. Kornelius, Paus, dan S. Siprianus, uskup, martir","warna":"merah","musim":"Peringatan Wajib"},"0917":{"nama":"S. Hildegard dari Bingen, perawan dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0918":{"nama":"Jumat Pekan Biasa XXIV","warna":"hijau","musim":"Harian"},"0919":{"nama":"S. Yanuarius, uskup dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0920":{"nama":"Hari Minggu Biasa XXV","warna":"hijau","musim":"Harian"},"0921":{"nama":"S. Matius, rasul dan penulis Injil","warna":"merah","musim":"Pesta"},"0922":{"nama":"Selasa Pekan Biasa XXV","warna":"hijau","musim":"Harian"},"0923":{"nama":"S. Pius dari Pietrelcina, imam","warna":"putih","musim":"Peringatan Wajib"},"0924":{"nama":"Kamis Pekan Biasa XXV","warna":"hijau","musim":"Harian"},"0925":{"nama":"Jumat Pekan Biasa XXV","warna":"hijau","musim":"Harian"},"0926":{"nama":"S. Kosmas dan Damianus, uskup, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0927":{"nama":"Hari Minggu Biasa XXVI","warna":"hijau","musim":"Harian"},"0928":{"nama":"S. Laurensius Ruiz, dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0929":{"nama":"S. Mikael, Gabriel, dan Rafael, Malaikat Agung","warna":"putih","musim":"Pesta"},"0930":{"nama":"S. Hieronimus, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1001":{"nama":"S. Teresia dari Kanak-Kanak Yesus, perawan dan pujangga Ger","warna":"putih","musim":"Pesta"},"1002":{"nama":"Para Malaikat Pelindung","warna":"putih","musim":"Peringatan Wajib"},"1003":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1004":{"nama":"Hari Minggu Biasa XXVII","warna":"hijau","musim":"Harian"},"1005":{"nama":"S. Faustina Kowalska, perawan","warna":"putih","musim":"Peringatan Fakultatif"},"1006":{"nama":"S. Bruno, imam","warna":"putih","musim":"Peringatan Fakultatif"},"1007":{"nama":"Santa Perawan Maria, Ratu Rosario","warna":"putih","musim":"Peringatan Wajib"},"1008":{"nama":"Kamis Pekan Biasa XXVII","warna":"hijau","musim":"Harian"},"1009":{"nama":"S. Dionisius, uskup, dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Fakultatif"},"1010":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1011":{"nama":"Hari Minggu Biasa XXVIII","warna":"hijau","musim":"Harian"},"1012":{"nama":"Senin Pekan Biasa XXVIII","warna":"hijau","musim":"Harian"},"1013":{"nama":"Selasa Pekan Biasa XXVIII","warna":"hijau","musim":"Harian"},"1014":{"nama":"S. Kalistus I, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"1015":{"nama":"S. Teresia dari Avila, perawan dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1016":{"nama":"S. Hedwig, biarawati","warna":"putih","musim":"Peringatan Fakultatif"},"1017":{"nama":"S. Ignasius dari Antiokhia, uskup dan martir","warna":"merah","musim":"Peringatan Wajib"},"1018":{"nama":"Hari Minggu Biasa XXIX","warna":"hijau","musim":"Harian"},"1019":{"nama":"S. Paulus dari Salib, imam","warna":"putih","musim":"Peringatan Fakultatif"},"1020":{"nama":"Selasa Pekan Biasa XXIX","warna":"hijau","musim":"Harian"},"1021":{"nama":"Rabu Pekan Biasa XXIX","warna":"hijau","musim":"Harian"},"1022":{"nama":"S. Yohanes Paulus II, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"1023":{"nama":"S. Yohanes dari Capestrano, imam","warna":"putih","musim":"Peringatan Fakultatif"},"1024":{"nama":"S. Antonius Maria Claret, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"1025":{"nama":"Hari Minggu Biasa XXX","warna":"hijau","musim":"Harian"},"1026":{"nama":"Senin Pekan Biasa XXX","warna":"hijau","musim":"Harian"},"1027":{"nama":"Selasa Pekan Biasa XXX","warna":"hijau","musim":"Harian"},"1028":{"nama":"S. Simon dan Yudas, rasul","warna":"merah","musim":"Pesta"},"1029":{"nama":"Kamis Pekan Biasa XXX","warna":"hijau","musim":"Harian"},"1030":{"nama":"Jumat Pekan Biasa XXX","warna":"hijau","musim":"Harian"},"1031":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1101":{"nama":"Semua Orang Kudus","warna":"putih","musim":"Hari Raya"},"1102":{"nama":"Arwah Semua Orang Beriman","warna":"ungu","musim":"Harian"},"1103":{"nama":"S. Martinus de Porres, biarawan","warna":"putih","musim":"Peringatan Fakultatif"},"1104":{"nama":"S. Carolus Borromeus, uskup","warna":"putih","musim":"Peringatan Wajib"},"1105":{"nama":"Kamis Pekan Biasa XXXI","warna":"hijau","musim":"Harian"},"1106":{"nama":"Jumat Pekan Biasa XXXI","warna":"hijau","musim":"Harian"},"1107":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1108":{"nama":"Hari Minggu Biasa XXXII","warna":"hijau","musim":"Harian"},"1109":{"nama":"Pemberkatan Gereja Basilik Lateran","warna":"putih","musim":"Pesta"},"1110":{"nama":"S. Leo Agung, Paus dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1111":{"nama":"S. Martinus dari Tours, uskup","warna":"putih","musim":"Peringatan Wajib"},"1112":{"nama":"S. Yosafat, uskup dan martir","warna":"merah","musim":"Peringatan Wajib"},"1113":{"nama":"Jumat Pekan Biasa XXXII","warna":"hijau","musim":"Harian"},"1114":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1115":{"nama":"Hari Minggu Biasa XXXIII","warna":"hijau","musim":"Harian"},"1116":{"nama":"S. Gertrudis, perawan","warna":"putih","musim":"Peringatan Fakultatif"},"1117":{"nama":"S. Elisabet dari Hungaria, biarawati","warna":"putih","musim":"Peringatan Wajib"},"1118":{"nama":"Pemberkatan Basilika Santo Petrus Rasul dan Basilika Sant","warna":"putih","musim":"Peringatan Fakultatif"},"1119":{"nama":"Kamis Pekan Biasa XXXIII","warna":"hijau","musim":"Harian"},"1120":{"nama":"Jumat Pekan Biasa XXXIII","warna":"hijau","musim":"Harian"},"1121":{"nama":"Santa Perawan Maria Dipersembahkan dalam Kanisah","warna":"putih","musim":"Peringatan Wajib"},"1122":{"nama":"Tuhan Kita Yesus Kristus Raja Semesta Alam","warna":"putih","musim":"Hari Raya"},"1123":{"nama":"S. Klemens I, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"1124":{"nama":"S. Andreas Dũng Lac, imam, dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Wajib"},"1125":{"nama":"S. Katarina dari Aleksandria, perawan dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"1126":{"nama":"Kamis Pekan Biasa XXXIV","warna":"hijau","musim":"Harian"},"1127":{"nama":"Jumat Pekan Biasa XXXIV","warna":"hijau","musim":"Harian"},"1128":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1129":{"nama":"Hari Minggu Adven I","warna":"ungu","musim":"Harian"},"1130":{"nama":"S. Andreas, rasul","warna":"merah","musim":"Pesta"},"1201":{"nama":"B. Dionisius dan Redemptus, biarawan dan martir","warna":"merah","musim":"Peringatan Wajib"},"1202":{"nama":"Rabu Pekan Adven I","warna":"ungu","musim":"Harian"},"1203":{"nama":"S. Fransiskus Xaverius, imam","warna":"putih","musim":"Pesta"},"1204":{"nama":"S. Yohanes dari Damsyik, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"1205":{"nama":"Sabtu Pekan Adven I","warna":"ungu","musim":"Harian"},"1206":{"nama":"Hari Minggu Adven II","warna":"ungu","musim":"Harian"},"1207":{"nama":"S. Ambrosius, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1208":{"nama":"Santa Perawan Maria Dikandung Tanpa Noda","warna":"putih","musim":"Hari Raya"},"1209":{"nama":"S. Juan Diego Cuauhtlatoatzin","warna":"putih","musim":"Peringatan Fakultatif"},"1210":{"nama":"Santa Perawan Maria dari Loreto","warna":"putih","musim":"Peringatan Fakultatif"},"1211":{"nama":"S. Damasus I, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"1212":{"nama":"Santa Perawan Maria Guadalupe","warna":"putih","musim":"Peringatan Fakultatif"},"1213":{"nama":"Hari Minggu Adven III","warna":"ungu","musim":"Harian"},"1214":{"nama":"S. Yohanes dari Salib, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1215":{"nama":"Selasa Pekan Adven III","warna":"ungu","musim":"Harian"},"1216":{"nama":"Rabu Pekan Adven III","warna":"ungu","musim":"Harian"},"1217":{"nama":"Hari Biasa Khusus Adven (17 Desember)","warna":"ungu","musim":"Harian"},"1218":{"nama":"Hari Biasa Khusus Adven (18 Desember)","warna":"ungu","musim":"Harian"},"1219":{"nama":"Hari Biasa Khusus Adven (19 Desember)","warna":"ungu","musim":"Harian"},"1220":{"nama":"Hari Minggu Adven IV","warna":"ungu","musim":"Harian"},"1221":{"nama":"S. Petrus Kanisius, imam dan pujangga Gereja","warna":"ungu","musim":"Peringatan Fakultatif"},"1222":{"nama":"Hari Biasa Khusus Adven (22 Desember)","warna":"ungu","musim":"Harian"},"1223":{"nama":"S. Yohanes Kansius, imam","warna":"ungu","musim":"Peringatan Fakultatif"},"1224":{"nama":"Hari Biasa Khusus Adven (24 Desember)","warna":"ungu","musim":"Harian"},"1225":{"nama":"Natal","warna":"putih","musim":"Hari Raya"},"1226":{"nama":"S. Stefanus, martir pertama","warna":"merah","musim":"Pesta"},"1227":{"nama":"Keluarga Kudus, Yesus, Maria dan Yusuf","warna":"putih","musim":"Pesta"},"1228":{"nama":"Kanak-kanak Suci, martir","warna":"merah","musim":"Pesta"},"1229":{"nama":"S. Thomas Becket, uskup dan martir","warna":"putih","musim":"Peringatan Fakultatif"},"1230":{"nama":"Hari Keenam Dalam Oktaf Natal","warna":"putih","musim":"Harian"},"1231":{"nama":"S. Silvester I, Paus","warna":"putih","musim":"Peringatan Fakultatif"}};
-function keyMMDD(d){ return String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0'); }
-
 const WARNA_LITURGI_LABEL = {hijau:'Hijau', ungu:'Ungu', putih:'Putih', merah:'Merah'};
+
+// Kalender liturgi RESMI & LENGKAP per tahun (sumber: GCatholic.org, edisi Indonesia)
+// — 365 hari penuh termasuk Peringatan Wajib & Fakultatif. Dipakai APA ADANYA kalau
+// tahunnya cocok; tahun lain tetap pakai rumus Meeus/Jones/Butcher di bawah (Paskah dkk
+// dihitung, bukan hafalan). Kalau dapat file .ics tahun lain, tinggal tambah objek serupa.
+const KALENDER_LITURGI_2026 = {"0101":{"nama":"Santa Maria Bunda Allah","warna":"putih","musim":"Hari Raya"},"0102":{"nama":"S. Basilius Agung dan Gregorius dari Nazianze, uskup dan p","warna":"putih","musim":"Peringatan Wajib"},"0103":{"nama":"Nama Tersuci Yesus","warna":"putih","musim":"Peringatan Fakultatif"},"0104":{"nama":"Penampakan Tuhan","warna":"putih","musim":"Hari Raya"},"0105":{"nama":"Senin ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0106":{"nama":"Selasa ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0107":{"nama":"S. Raimundus dari Penyafort, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0108":{"nama":"Kamis ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0109":{"nama":"Jumat ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0110":{"nama":"Sabtu ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0111":{"nama":"Pembaptisan Tuhan","warna":"putih","musim":"Pesta"},"0112":{"nama":"Senin Pekan Biasa I","warna":"hijau","musim":"Harian"},"0113":{"nama":"S. Hilarius, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0114":{"nama":"Rabu Pekan Biasa I","warna":"hijau","musim":"Harian"},"0115":{"nama":"Kamis Pekan Biasa I","warna":"hijau","musim":"Harian"},"0116":{"nama":"Jumat Pekan Biasa I","warna":"hijau","musim":"Harian"},"0117":{"nama":"S. Antonius, abas","warna":"putih","musim":"Peringatan Wajib"},"0118":{"nama":"Hari Minggu Biasa II","warna":"hijau","musim":"Harian"},"0119":{"nama":"Senin Pekan Biasa II","warna":"hijau","musim":"Harian"},"0120":{"nama":"S. Fabianus, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0121":{"nama":"S. Agnes, perawan dan martir","warna":"merah","musim":"Peringatan Wajib"},"0122":{"nama":"S. Vinsensius, diakon dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0123":{"nama":"Jumat Pekan Biasa II","warna":"hijau","musim":"Harian"},"0124":{"nama":"S. Fransiskus dari Sales, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0125":{"nama":"Hari Minggu Biasa III","warna":"hijau","musim":"Harian"},"0126":{"nama":"S. Timotius dan Titus, uskup","warna":"putih","musim":"Peringatan Wajib"},"0127":{"nama":"S. Angela Merici, perawan","warna":"putih","musim":"Peringatan Fakultatif"},"0128":{"nama":"S. Tomas Aquino, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0129":{"nama":"Kamis Pekan Biasa III","warna":"hijau","musim":"Harian"},"0130":{"nama":"Jumat Pekan Biasa III","warna":"hijau","musim":"Harian"},"0131":{"nama":"S. Yohanes Bosko, imam","warna":"putih","musim":"Peringatan Wajib"},"0201":{"nama":"Hari Minggu Biasa IV","warna":"hijau","musim":"Harian"},"0202":{"nama":"Yesus Dipersembahkan di Kanisah","warna":"putih","musim":"Pesta"},"0203":{"nama":"S. Ansgarius, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"0204":{"nama":"Rabu Pekan Biasa IV","warna":"hijau","musim":"Harian"},"0205":{"nama":"S. Agata, perawan dan martir","warna":"merah","musim":"Peringatan Wajib"},"0206":{"nama":"S. Paulus Miki, imam, dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Wajib"},"0207":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0208":{"nama":"Hari Minggu Biasa V","warna":"hijau","musim":"Harian"},"0209":{"nama":"Senin Pekan Biasa V","warna":"hijau","musim":"Harian"},"0210":{"nama":"S. Skolastika, perawan","warna":"putih","musim":"Peringatan Wajib"},"0211":{"nama":"Santa Perawan Maria dari Lourdes","warna":"putih","musim":"Peringatan Fakultatif"},"0212":{"nama":"Kamis Pekan Biasa V","warna":"hijau","musim":"Harian"},"0213":{"nama":"Jumat Pekan Biasa V","warna":"hijau","musim":"Harian"},"0214":{"nama":"S. Sirilus, rahib, dan Metodius, uskup","warna":"putih","musim":"Peringatan Wajib"},"0215":{"nama":"Hari Minggu Biasa VI","warna":"hijau","musim":"Harian"},"0216":{"nama":"Senin Pekan Biasa VI","warna":"hijau","musim":"Harian"},"0217":{"nama":"Tujuh Santo Pendiri Ordo Hamba-hamba Santa Perwan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0218":{"nama":"Rabu Abu","warna":"ungu","musim":"Harian"},"0219":{"nama":"Hari Kamis ses Rabu Abu","warna":"ungu","musim":"Harian"},"0220":{"nama":"Hari Jumat ses Rabu Abu","warna":"ungu","musim":"Harian"},"0221":{"nama":"S. Petrus Damianus, uskup dan pujangga Gereja","warna":"ungu","musim":"Peringatan Fakultatif"},"0222":{"nama":"Hari Minggu Prapaskah I","warna":"ungu","musim":"Harian"},"0223":{"nama":"S. Polikarpus, uskup dan martir","warna":"ungu","musim":"Peringatan Fakultatif"},"0224":{"nama":"Selasa Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0225":{"nama":"Rabu Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0226":{"nama":"Kamis Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0227":{"nama":"S. Gregorius dari Narek, abas dan pujangga Gereja","warna":"ungu","musim":"Peringatan Fakultatif"},"0228":{"nama":"Sabtu Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0301":{"nama":"Hari Minggu Prapaskah II","warna":"ungu","musim":"Harian"},"0302":{"nama":"Senin Pekan Prapaskah II","warna":"ungu","musim":"Harian"},"0303":{"nama":"Selasa Pekan Prapaskah II","warna":"ungu","musim":"Harian"},"0304":{"nama":"S. Kasimirus","warna":"ungu","musim":"Peringatan Fakultatif"},"0305":{"nama":"Kamis Pekan Prapaskah II","warna":"ungu","musim":"Harian"},"0306":{"nama":"Jumat Pekan Prapaskah II","warna":"ungu","musim":"Harian"},"0307":{"nama":"S. Perpetua dan Felisitas, martir","warna":"ungu","musim":"Peringatan Fakultatif"},"0308":{"nama":"Hari Minggu Prapaskah III","warna":"ungu","musim":"Harian"},"0309":{"nama":"S. Fransiska Romana, biarawati","warna":"ungu","musim":"Peringatan Fakultatif"},"0310":{"nama":"Selasa Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0311":{"nama":"Rabu Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0312":{"nama":"Kamis Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0313":{"nama":"Jumat Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0314":{"nama":"Sabtu Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0315":{"nama":"Hari Minggu Prapaskah IV","warna":"ungu","musim":"Harian"},"0316":{"nama":"Senin Pekan Prapaskah IV","warna":"ungu","musim":"Harian"},"0317":{"nama":"S. Patrik, uskup","warna":"ungu","musim":"Peringatan Fakultatif"},"0318":{"nama":"S. Sirilus dari Yerusalem, uskup dan pujangga Gereja","warna":"ungu","musim":"Peringatan Fakultatif"},"0319":{"nama":"S. Yusuf, Suami Santa Maria","warna":"putih","musim":"Hari Raya"},"0320":{"nama":"Jumat Pekan Prapaskah IV","warna":"ungu","musim":"Harian"},"0321":{"nama":"Sabtu Pekan Prapaskah IV","warna":"ungu","musim":"Harian"},"0322":{"nama":"Hari Minggu Prapaskah V","warna":"ungu","musim":"Harian"},"0323":{"nama":"S. Turibius dari Mogrovejo, uskup","warna":"ungu","musim":"Peringatan Fakultatif"},"0324":{"nama":"Selasa Pekan Prapaskah V","warna":"ungu","musim":"Harian"},"0325":{"nama":"Kabar Sukacita","warna":"putih","musim":"Hari Raya"},"0326":{"nama":"Kamis Pekan Prapaskah V","warna":"ungu","musim":"Harian"},"0327":{"nama":"Jumat Pekan Prapaskah V","warna":"ungu","musim":"Harian"},"0328":{"nama":"Sabtu Pekan Prapaskah V","warna":"ungu","musim":"Harian"},"0329":{"nama":"Hari Minggu Palma Mengenangkan Sengsara Tuhan","warna":"merah","musim":"Harian"},"0330":{"nama":"Hari Senin dalam Pekan Suci","warna":"ungu","musim":"Harian"},"0331":{"nama":"Hari Selasa dalam Pekan Suci","warna":"ungu","musim":"Harian"},"0401":{"nama":"Hari Rabu dalam Pekan Suci","warna":"ungu","musim":"Harian"},"0402":{"nama":"Kamas Putih","warna":"putih","musim":"Harian"},"0403":{"nama":"Hari Jumat Agung","warna":"merah","musim":"Harian"},"0404":{"nama":"Hari Sabtu Suci","warna":"putih","musim":"Harian"},"0405":{"nama":"Paskah Kebangkitan Tuhan","warna":"putih","musim":"Harian"},"0406":{"nama":"Hari Senin dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0407":{"nama":"Hari Selasa dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0408":{"nama":"Hari Rabu dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0409":{"nama":"Hari Kamis dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0410":{"nama":"Hari Jumat dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0411":{"nama":"Hari Sabtu dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0412":{"nama":"Hari Minggu Paskah II","warna":"putih","musim":"Harian"},"0413":{"nama":"S. Martinus I, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0414":{"nama":"Selasa Pekan Paskah II","warna":"putih","musim":"Harian"},"0415":{"nama":"Rabu Pekan Paskah II","warna":"putih","musim":"Harian"},"0416":{"nama":"Kamis Pekan Paskah II","warna":"putih","musim":"Harian"},"0417":{"nama":"Jumat Pekan Paskah II","warna":"putih","musim":"Harian"},"0418":{"nama":"Sabtu Pekan Paskah II","warna":"putih","musim":"Harian"},"0419":{"nama":"Hari Minggu Paskah III","warna":"putih","musim":"Harian"},"0420":{"nama":"Senin Pekan Paskah III","warna":"putih","musim":"Harian"},"0421":{"nama":"S. Anselmus, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0422":{"nama":"Rabu Pekan Paskah III","warna":"putih","musim":"Harian"},"0423":{"nama":"S. Adalbertus, uskup dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0424":{"nama":"S. Fidelis dari Sigmaringen, imam dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0425":{"nama":"S. Markus, PenInj","warna":"merah","musim":"Pesta"},"0426":{"nama":"Hari Minggu Paskah IV","warna":"putih","musim":"Harian"},"0427":{"nama":"Senin Pekan Paskah IV","warna":"putih","musim":"Harian"},"0428":{"nama":"S. Louis-Mariæ Grignion de Montfort, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0429":{"nama":"S. Katarina dari Siena, perawan dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0430":{"nama":"S. Pius V, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"0501":{"nama":"S. Yusuf, Pekerja","warna":"putih","musim":"Peringatan Fakultatif"},"0502":{"nama":"S. Atanasius, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0503":{"nama":"Hari Minggu Paskah V","warna":"putih","musim":"Harian"},"0504":{"nama":"Senin Pekan Paskah V","warna":"putih","musim":"Harian"},"0505":{"nama":"Selasa Pekan Paskah V","warna":"putih","musim":"Harian"},"0506":{"nama":"Rabu Pekan Paskah V","warna":"putih","musim":"Harian"},"0507":{"nama":"Kamis Pekan Paskah V","warna":"putih","musim":"Harian"},"0508":{"nama":"Jumat Pekan Paskah V","warna":"putih","musim":"Harian"},"0509":{"nama":"Sabtu Pekan Paskah V","warna":"putih","musim":"Harian"},"0510":{"nama":"Hari Minggu Paskah VI","warna":"putih","musim":"Harian"},"0511":{"nama":"Senin Pekan Paskah VI","warna":"putih","musim":"Harian"},"0512":{"nama":"S. Nereus dan Akhilleus, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0513":{"nama":"Santa Perawan Maria dari Fatima","warna":"putih","musim":"Peringatan Fakultatif"},"0514":{"nama":"Kenaikan Tuhan","warna":"putih","musim":"Hari Raya"},"0515":{"nama":"Jumat Pekan Paskah VI","warna":"putih","musim":"Harian"},"0516":{"nama":"Sabtu Pekan Paskah VI","warna":"putih","musim":"Harian"},"0517":{"nama":"Hari Minggu Paskah VII","warna":"putih","musim":"Harian"},"0518":{"nama":"S. Yohanes I, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0519":{"nama":"Selasa Pekan Paskah VII","warna":"putih","musim":"Harian"},"0520":{"nama":"S. Bernardinus dari Siena, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0521":{"nama":"S. Kristoforus Magallanes, imam, dan kawan-kawan, ma","warna":"merah","musim":"Peringatan Fakultatif"},"0522":{"nama":"S. Rita dari Cascia, biarawati","warna":"putih","musim":"Peringatan Fakultatif"},"0523":{"nama":"Sabtu Pekan Paskah VII","warna":"putih","musim":"Harian"},"0524":{"nama":"Pentakosta","warna":"merah","musim":"Hari Raya"},"0525":{"nama":"Santa Perawan Maria, Bunda Gereja","warna":"putih","musim":"Peringatan Wajib"},"0526":{"nama":"S. Filipus Neri, imam","warna":"putih","musim":"Peringatan Wajib"},"0527":{"nama":"S. Agustinus dari Canterbury, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"0528":{"nama":"Kamis Pekan Biasa VIII","warna":"hijau","musim":"Harian"},"0529":{"nama":"S. Paulus VI, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"0530":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0531":{"nama":"Tritunggal Maha Kudus","warna":"putih","musim":"Hari Raya"},"0601":{"nama":"S. Yustinus, martir","warna":"merah","musim":"Peringatan Wajib"},"0602":{"nama":"S. Marselinus dan Petrus, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0603":{"nama":"S. Karolus Lwanga dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Wajib"},"0604":{"nama":"Kamis Pekan Biasa IX","warna":"hijau","musim":"Harian"},"0605":{"nama":"S. Bonifasius, uskup dan martir","warna":"merah","musim":"Peringatan Wajib"},"0606":{"nama":"S. Norbertus, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"0607":{"nama":"Tubuh dan Darah Kristus","warna":"putih","musim":"Hari Raya"},"0608":{"nama":"Senin Pekan Biasa X","warna":"hijau","musim":"Harian"},"0609":{"nama":"S. Efrem, diakon dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0610":{"nama":"Rabu Pekan Biasa X","warna":"hijau","musim":"Harian"},"0611":{"nama":"S. Barnabas, rasul","warna":"merah","musim":"Peringatan Wajib"},"0612":{"nama":"Hati Yesus Yang Mahakudus","warna":"putih","musim":"Hari Raya"},"0613":{"nama":"Hati Tak Bernoda Santa Perawan Maria","warna":"putih","musim":"Peringatan Wajib"},"0614":{"nama":"Hari Minggu Biasa XI","warna":"hijau","musim":"Harian"},"0615":{"nama":"Senin Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0616":{"nama":"Selasa Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0617":{"nama":"Rabu Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0618":{"nama":"Kamis Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0619":{"nama":"S. Romualdus, abas","warna":"putih","musim":"Peringatan Fakultatif"},"0620":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0621":{"nama":"Hari Minggu Biasa XII","warna":"hijau","musim":"Harian"},"0622":{"nama":"S. Paulinus dari Nola, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"0623":{"nama":"Selasa Pekan Biasa XII","warna":"hijau","musim":"Harian"},"0624":{"nama":"Kelahiran S. Yohanes Pembaptis","warna":"putih","musim":"Hari Raya"},"0625":{"nama":"Kamis Pekan Biasa XII","warna":"hijau","musim":"Harian"},"0626":{"nama":"Jumat Pekan Biasa XII","warna":"hijau","musim":"Harian"},"0627":{"nama":"S. Sirillus dari Aleksandria, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0628":{"nama":"Hari Minggu Biasa XIII","warna":"hijau","musim":"Harian"},"0629":{"nama":"S. Petrus dan Paulus, rasul","warna":"merah","musim":"Hari Raya"},"0630":{"nama":"Para Martir Pertama Gereja Roma yang Kudus","warna":"merah","musim":"Peringatan Fakultatif"},"0701":{"nama":"Rabu Pekan Biasa XIII","warna":"hijau","musim":"Harian"},"0702":{"nama":"Kamis Pekan Biasa XIII","warna":"hijau","musim":"Harian"},"0703":{"nama":"S. Tomas, rasul","warna":"merah","musim":"Pesta"},"0704":{"nama":"S. Elisabet dari Portugal","warna":"putih","musim":"Peringatan Fakultatif"},"0705":{"nama":"Hari Minggu Biasa XIV","warna":"hijau","musim":"Harian"},"0706":{"nama":"S. Maria Goretti, perawan dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0707":{"nama":"Selasa Pekan Biasa XIV","warna":"hijau","musim":"Harian"},"0708":{"nama":"Rabu Pekan Biasa XIV","warna":"hijau","musim":"Harian"},"0709":{"nama":"S. Agustinus Zhao Rong, imam, dan kawan-kawan, marti","warna":"merah","musim":"Peringatan Fakultatif"},"0710":{"nama":"Jumat Pekan Biasa XIV","warna":"hijau","musim":"Harian"},"0711":{"nama":"S. Benediktus, abas","warna":"putih","musim":"Peringatan Wajib"},"0712":{"nama":"Hari Minggu Biasa XV","warna":"hijau","musim":"Harian"},"0713":{"nama":"S. Henrikus","warna":"putih","musim":"Peringatan Fakultatif"},"0714":{"nama":"S. Kamillus de Lellis, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0715":{"nama":"S. Bonaventura, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0716":{"nama":"Bunda Maria dari Gunung Karmel","warna":"putih","musim":"Peringatan Fakultatif"},"0717":{"nama":"Jumat Pekan Biasa XV","warna":"hijau","musim":"Harian"},"0718":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0719":{"nama":"Hari Minggu Biasa XVI","warna":"hijau","musim":"Harian"},"0720":{"nama":"S. Apollinaris, uskup dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0721":{"nama":"S. Laurensius dari Brindisi, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0722":{"nama":"S. Maria Magdalena","warna":"putih","musim":"Pesta"},"0723":{"nama":"S. Birgitta, biarawati","warna":"putih","musim":"Peringatan Fakultatif"},"0724":{"nama":"S. Sharbel Makhlūf, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0725":{"nama":"S. Yakobus, rasul","warna":"merah","musim":"Pesta"},"0726":{"nama":"Hari Minggu Biasa XVII","warna":"hijau","musim":"Harian"},"0727":{"nama":"Senin Pekan Biasa XVII","warna":"hijau","musim":"Harian"},"0728":{"nama":"Selasa Pekan Biasa XVII","warna":"hijau","musim":"Harian"},"0729":{"nama":"S. Marta, Maria, dan Lazarus","warna":"putih","musim":"Peringatan Wajib"},"0730":{"nama":"S. Petrus Krisologus, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0731":{"nama":"S. Ignasius dari Loyola, imam","warna":"putih","musim":"Peringatan Wajib"},"0801":{"nama":"S. Alfonsus Maria de Liguori, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0802":{"nama":"Hari Minggu Biasa XVIII","warna":"hijau","musim":"Harian"},"0803":{"nama":"Senin Pekan Biasa XVIII","warna":"hijau","musim":"Harian"},"0804":{"nama":"S. Yohanes Maria Vianney, imam","warna":"putih","musim":"Peringatan Wajib"},"0805":{"nama":"Pemberkatan Gereja Basilika Santa Maria Maggiore","warna":"putih","musim":"Peringatan Fakultatif"},"0806":{"nama":"Yesus Menampakkan Kemuliaan-Nya","warna":"putih","musim":"Pesta"},"0807":{"nama":"S. Kayetanus, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0808":{"nama":"S. Dominikus, imam","warna":"putih","musim":"Peringatan Wajib"},"0809":{"nama":"Hari Minggu Biasa XIX","warna":"hijau","musim":"Harian"},"0810":{"nama":"S. Laurensius, diakon dan martir","warna":"merah","musim":"Pesta"},"0811":{"nama":"S. Klara, perawan","warna":"putih","musim":"Peringatan Wajib"},"0812":{"nama":"S. Yohana Fransiska de Chantal, biarawati","warna":"putih","musim":"Peringatan Fakultatif"},"0813":{"nama":"S. Pontianus, Paus, dan S. Hipolitus, imam, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0814":{"nama":"S. Maksimilianus Maria Kolbe, imam dan martir","warna":"merah","musim":"Peringatan Wajib"},"0815":{"nama":"S. Tarsisius, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0816":{"nama":"Santa Perawan Maria Diangkat ke Surga","warna":"putih","musim":"Hari Raya"},"0817":{"nama":"Kemerdekaan Republik Indonesia","warna":"putih","musim":"Harian"},"0818":{"nama":"Selasa Pekan Biasa XX","warna":"hijau","musim":"Harian"},"0819":{"nama":"S. Yohanes Eudes, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0820":{"nama":"S. Bernardus, abas dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0821":{"nama":"S. Pius X, Paus","warna":"putih","musim":"Peringatan Wajib"},"0822":{"nama":"Santa Perawan Maria, Ratu","warna":"putih","musim":"Peringatan Wajib"},"0823":{"nama":"Hari Minggu Biasa XXI","warna":"hijau","musim":"Harian"},"0824":{"nama":"S. Bartolomeus, rasul","warna":"merah","musim":"Pesta"},"0825":{"nama":"S. Louis IX, raja","warna":"putih","musim":"Peringatan Fakultatif"},"0826":{"nama":"Rabu Pekan Biasa XXI","warna":"hijau","musim":"Harian"},"0827":{"nama":"S. Monika","warna":"putih","musim":"Peringatan Wajib"},"0828":{"nama":"S. Agustinus, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0829":{"nama":"Kemartiran S. Yohanes Pembaptis","warna":"merah","musim":"Peringatan Wajib"},"0830":{"nama":"Hari Minggu Biasa XXII","warna":"hijau","musim":"Harian"},"0831":{"nama":"Senin Pekan Biasa XXII","warna":"hijau","musim":"Harian"},"0901":{"nama":"Selasa Pekan Biasa XXII","warna":"hijau","musim":"Harian"},"0902":{"nama":"Rabu Pekan Biasa XXII","warna":"hijau","musim":"Harian"},"0903":{"nama":"S. Gregorius Agung, Paus dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0904":{"nama":"Jumat Pekan Biasa XXII","warna":"hijau","musim":"Harian"},"0905":{"nama":"S. Teresa dari Kalkuta, perawan","warna":"putih","musim":"Peringatan Fakultatif"},"0906":{"nama":"Hari Minggu Biasa XXIII","warna":"hijau","musim":"Harian"},"0907":{"nama":"Senin Pekan Biasa XXIII","warna":"hijau","musim":"Harian"},"0908":{"nama":"Kelahiran Santa Perawan Maria","warna":"putih","musim":"Pesta"},"0909":{"nama":"S. Petrus Klaver, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0910":{"nama":"Kamis Pekan Biasa XXIII","warna":"hijau","musim":"Harian"},"0911":{"nama":"Jumat Pekan Biasa XXIII","warna":"hijau","musim":"Harian"},"0912":{"nama":"Nama Tersuci Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0913":{"nama":"Hari Minggu Biasa XXIV","warna":"hijau","musim":"Harian"},"0914":{"nama":"Salib Suci","warna":"merah","musim":"Pesta"},"0915":{"nama":"Santa Perawan Maria Berdukacita","warna":"putih","musim":"Peringatan Wajib"},"0916":{"nama":"S. Kornelius, Paus, dan S. Siprianus, uskup, martir","warna":"merah","musim":"Peringatan Wajib"},"0917":{"nama":"S. Hildegard dari Bingen, perawan dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0918":{"nama":"Jumat Pekan Biasa XXIV","warna":"hijau","musim":"Harian"},"0919":{"nama":"S. Yanuarius, uskup dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0920":{"nama":"Hari Minggu Biasa XXV","warna":"hijau","musim":"Harian"},"0921":{"nama":"S. Matius, rasul dan penulis Injil","warna":"merah","musim":"Pesta"},"0922":{"nama":"Selasa Pekan Biasa XXV","warna":"hijau","musim":"Harian"},"0923":{"nama":"S. Pius dari Pietrelcina, imam","warna":"putih","musim":"Peringatan Wajib"},"0924":{"nama":"Kamis Pekan Biasa XXV","warna":"hijau","musim":"Harian"},"0925":{"nama":"Jumat Pekan Biasa XXV","warna":"hijau","musim":"Harian"},"0926":{"nama":"S. Kosmas dan Damianus, uskup, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0927":{"nama":"Hari Minggu Biasa XXVI","warna":"hijau","musim":"Harian"},"0928":{"nama":"S. Laurensius Ruiz, dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0929":{"nama":"S. Mikael, Gabriel, dan Rafael, Malaikat Agung","warna":"putih","musim":"Pesta"},"0930":{"nama":"S. Hieronimus, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1001":{"nama":"S. Teresia dari Kanak-Kanak Yesus, perawan dan pujangga Ger","warna":"putih","musim":"Pesta"},"1002":{"nama":"Para Malaikat Pelindung","warna":"putih","musim":"Peringatan Wajib"},"1003":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1004":{"nama":"Hari Minggu Biasa XXVII","warna":"hijau","musim":"Harian"},"1005":{"nama":"S. Faustina Kowalska, perawan","warna":"putih","musim":"Peringatan Fakultatif"},"1006":{"nama":"S. Bruno, imam","warna":"putih","musim":"Peringatan Fakultatif"},"1007":{"nama":"Santa Perawan Maria, Ratu Rosario","warna":"putih","musim":"Peringatan Wajib"},"1008":{"nama":"Kamis Pekan Biasa XXVII","warna":"hijau","musim":"Harian"},"1009":{"nama":"S. Dionisius, uskup, dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Fakultatif"},"1010":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1011":{"nama":"Hari Minggu Biasa XXVIII","warna":"hijau","musim":"Harian"},"1012":{"nama":"Senin Pekan Biasa XXVIII","warna":"hijau","musim":"Harian"},"1013":{"nama":"Selasa Pekan Biasa XXVIII","warna":"hijau","musim":"Harian"},"1014":{"nama":"S. Kalistus I, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"1015":{"nama":"S. Teresia dari Avila, perawan dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1016":{"nama":"S. Hedwig, biarawati","warna":"putih","musim":"Peringatan Fakultatif"},"1017":{"nama":"S. Ignasius dari Antiokhia, uskup dan martir","warna":"merah","musim":"Peringatan Wajib"},"1018":{"nama":"Hari Minggu Biasa XXIX","warna":"hijau","musim":"Harian"},"1019":{"nama":"S. Paulus dari Salib, imam","warna":"putih","musim":"Peringatan Fakultatif"},"1020":{"nama":"Selasa Pekan Biasa XXIX","warna":"hijau","musim":"Harian"},"1021":{"nama":"Rabu Pekan Biasa XXIX","warna":"hijau","musim":"Harian"},"1022":{"nama":"S. Yohanes Paulus II, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"1023":{"nama":"S. Yohanes dari Capestrano, imam","warna":"putih","musim":"Peringatan Fakultatif"},"1024":{"nama":"S. Antonius Maria Claret, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"1025":{"nama":"Hari Minggu Biasa XXX","warna":"hijau","musim":"Harian"},"1026":{"nama":"Senin Pekan Biasa XXX","warna":"hijau","musim":"Harian"},"1027":{"nama":"Selasa Pekan Biasa XXX","warna":"hijau","musim":"Harian"},"1028":{"nama":"S. Simon dan Yudas, rasul","warna":"merah","musim":"Pesta"},"1029":{"nama":"Kamis Pekan Biasa XXX","warna":"hijau","musim":"Harian"},"1030":{"nama":"Jumat Pekan Biasa XXX","warna":"hijau","musim":"Harian"},"1031":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1101":{"nama":"Semua Orang Kudus","warna":"putih","musim":"Hari Raya"},"1102":{"nama":"Arwah Semua Orang Beriman","warna":"ungu","musim":"Harian"},"1103":{"nama":"S. Martinus de Porres, biarawan","warna":"putih","musim":"Peringatan Fakultatif"},"1104":{"nama":"S. Carolus Borromeus, uskup","warna":"putih","musim":"Peringatan Wajib"},"1105":{"nama":"Kamis Pekan Biasa XXXI","warna":"hijau","musim":"Harian"},"1106":{"nama":"Jumat Pekan Biasa XXXI","warna":"hijau","musim":"Harian"},"1107":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1108":{"nama":"Hari Minggu Biasa XXXII","warna":"hijau","musim":"Harian"},"1109":{"nama":"Pemberkatan Gereja Basilik Lateran","warna":"putih","musim":"Pesta"},"1110":{"nama":"S. Leo Agung, Paus dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1111":{"nama":"S. Martinus dari Tours, uskup","warna":"putih","musim":"Peringatan Wajib"},"1112":{"nama":"S. Yosafat, uskup dan martir","warna":"merah","musim":"Peringatan Wajib"},"1113":{"nama":"Jumat Pekan Biasa XXXII","warna":"hijau","musim":"Harian"},"1114":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1115":{"nama":"Hari Minggu Biasa XXXIII","warna":"hijau","musim":"Harian"},"1116":{"nama":"S. Gertrudis, perawan","warna":"putih","musim":"Peringatan Fakultatif"},"1117":{"nama":"S. Elisabet dari Hungaria, biarawati","warna":"putih","musim":"Peringatan Wajib"},"1118":{"nama":"Pemberkatan Basilika Santo Petrus Rasul dan Basilika Sant","warna":"putih","musim":"Peringatan Fakultatif"},"1119":{"nama":"Kamis Pekan Biasa XXXIII","warna":"hijau","musim":"Harian"},"1120":{"nama":"Jumat Pekan Biasa XXXIII","warna":"hijau","musim":"Harian"},"1121":{"nama":"Santa Perawan Maria Dipersembahkan dalam Kanisah","warna":"putih","musim":"Peringatan Wajib"},"1122":{"nama":"Tuhan Kita Yesus Kristus Raja Semesta Alam","warna":"putih","musim":"Hari Raya"},"1123":{"nama":"S. Klemens I, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"1124":{"nama":"S. Andreas Dũng Lac, imam, dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Wajib"},"1125":{"nama":"S. Katarina dari Aleksandria, perawan dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"1126":{"nama":"Kamis Pekan Biasa XXXIV","warna":"hijau","musim":"Harian"},"1127":{"nama":"Jumat Pekan Biasa XXXIV","warna":"hijau","musim":"Harian"},"1128":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1129":{"nama":"Hari Minggu Adven I","warna":"ungu","musim":"Harian"},"1130":{"nama":"S. Andreas, rasul","warna":"merah","musim":"Pesta"},"1201":{"nama":"B. Dionisius dan Redemptus, biarawan dan martir","warna":"merah","musim":"Peringatan Wajib"},"1202":{"nama":"Rabu Pekan Adven I","warna":"ungu","musim":"Harian"},"1203":{"nama":"S. Fransiskus Xaverius, imam","warna":"putih","musim":"Pesta"},"1204":{"nama":"S. Yohanes dari Damsyik, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"1205":{"nama":"Sabtu Pekan Adven I","warna":"ungu","musim":"Harian"},"1206":{"nama":"Hari Minggu Adven II","warna":"ungu","musim":"Harian"},"1207":{"nama":"S. Ambrosius, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1208":{"nama":"Santa Perawan Maria Dikandung Tanpa Noda","warna":"putih","musim":"Hari Raya"},"1209":{"nama":"S. Juan Diego Cuauhtlatoatzin","warna":"putih","musim":"Peringatan Fakultatif"},"1210":{"nama":"Santa Perawan Maria dari Loreto","warna":"putih","musim":"Peringatan Fakultatif"},"1211":{"nama":"S. Damasus I, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"1212":{"nama":"Santa Perawan Maria Guadalupe","warna":"putih","musim":"Peringatan Fakultatif"},"1213":{"nama":"Hari Minggu Adven III","warna":"ungu","musim":"Harian"},"1214":{"nama":"S. Yohanes dari Salib, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1215":{"nama":"Selasa Pekan Adven III","warna":"ungu","musim":"Harian"},"1216":{"nama":"Rabu Pekan Adven III","warna":"ungu","musim":"Harian"},"1217":{"nama":"Hari Biasa Khusus Adven (17 Desember)","warna":"ungu","musim":"Harian"},"1218":{"nama":"Hari Biasa Khusus Adven (18 Desember)","warna":"ungu","musim":"Harian"},"1219":{"nama":"Hari Biasa Khusus Adven (19 Desember)","warna":"ungu","musim":"Harian"},"1220":{"nama":"Hari Minggu Adven IV","warna":"ungu","musim":"Harian"},"1221":{"nama":"S. Petrus Kanisius, imam dan pujangga Gereja","warna":"ungu","musim":"Peringatan Fakultatif"},"1222":{"nama":"Hari Biasa Khusus Adven (22 Desember)","warna":"ungu","musim":"Harian"},"1223":{"nama":"S. Yohanes Kansius, imam","warna":"ungu","musim":"Peringatan Fakultatif"},"1224":{"nama":"Hari Biasa Khusus Adven (24 Desember)","warna":"ungu","musim":"Harian"},"1225":{"nama":"Natal","warna":"putih","musim":"Hari Raya"},"1226":{"nama":"S. Stefanus, martir pertama","warna":"merah","musim":"Pesta"},"1227":{"nama":"Keluarga Kudus, Yesus, Maria dan Yusuf","warna":"putih","musim":"Pesta"},"1228":{"nama":"Kanak-kanak Suci, martir","warna":"merah","musim":"Pesta"},"1229":{"nama":"S. Thomas Becket, uskup dan martir","warna":"putih","musim":"Peringatan Fakultatif"},"1230":{"nama":"Hari Keenam Dalam Oktaf Natal","warna":"putih","musim":"Harian"},"1231":{"nama":"S. Silvester I, Paus","warna":"putih","musim":"Peringatan Fakultatif"}};
+const KALENDER_LITURGI_2027 = {"0101":{"nama":"Santa Maria Bunda Allah","warna":"putih","musim":"Hari Raya"},"0102":{"nama":"S. Basilius Agung dan Gregorius dari Nazianze, uskup dan p","warna":"putih","musim":"Peringatan Wajib"},"0103":{"nama":"Penampakan Tuhan","warna":"putih","musim":"Hari Raya"},"0104":{"nama":"Senin ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0105":{"nama":"Selasa ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0106":{"nama":"Rabu ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0107":{"nama":"S. Raimundus dari Penyafort, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0108":{"nama":"Jumat ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0109":{"nama":"Sabtu ses Penampakan Tuhan","warna":"putih","musim":"Harian"},"0110":{"nama":"Pembaptisan Tuhan","warna":"putih","musim":"Pesta"},"0111":{"nama":"Senin Pekan Biasa I","warna":"hijau","musim":"Harian"},"0112":{"nama":"Selasa Pekan Biasa I","warna":"hijau","musim":"Harian"},"0113":{"nama":"S. Hilarius, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0114":{"nama":"Kamis Pekan Biasa I","warna":"hijau","musim":"Harian"},"0115":{"nama":"Jumat Pekan Biasa I","warna":"hijau","musim":"Harian"},"0116":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0117":{"nama":"Hari Minggu Biasa II","warna":"hijau","musim":"Harian"},"0118":{"nama":"Senin Pekan Biasa II","warna":"hijau","musim":"Harian"},"0119":{"nama":"Selasa Pekan Biasa II","warna":"hijau","musim":"Harian"},"0120":{"nama":"S. Fabianus, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0121":{"nama":"S. Agnes, perawan dan martir","warna":"merah","musim":"Peringatan Wajib"},"0122":{"nama":"S. Vinsensius, diakon dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0123":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0124":{"nama":"Hari Minggu Biasa III","warna":"hijau","musim":"Harian"},"0125":{"nama":"Pertobatan S. Paulus, rasul","warna":"putih","musim":"Pesta"},"0126":{"nama":"S. Timotius dan Titus, uskup","warna":"putih","musim":"Peringatan Wajib"},"0127":{"nama":"S. Angela Merici, perawan","warna":"putih","musim":"Peringatan Fakultatif"},"0128":{"nama":"S. Tomas Aquino, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0129":{"nama":"Jumat Pekan Biasa III","warna":"hijau","musim":"Harian"},"0130":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0131":{"nama":"Hari Minggu Biasa IV","warna":"hijau","musim":"Harian"},"0201":{"nama":"Senin Pekan Biasa IV","warna":"hijau","musim":"Harian"},"0202":{"nama":"Yesus Dipersembahkan di Kanisah","warna":"putih","musim":"Pesta"},"0203":{"nama":"S. Ansgarius, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"0204":{"nama":"Kamis Pekan Biasa IV","warna":"hijau","musim":"Harian"},"0205":{"nama":"S. Agata, perawan dan martir","warna":"merah","musim":"Peringatan Wajib"},"0206":{"nama":"S. Paulus Miki, imam, dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Wajib"},"0207":{"nama":"Hari Minggu Biasa V","warna":"hijau","musim":"Harian"},"0208":{"nama":"S. Hieronimus Emilianus","warna":"putih","musim":"Peringatan Fakultatif"},"0209":{"nama":"Selasa Pekan Biasa V","warna":"hijau","musim":"Harian"},"0210":{"nama":"Rabu Abu","warna":"ungu","musim":"Harian"},"0211":{"nama":"Santa Perawan Maria dari Lourdes","warna":"ungu","musim":"Peringatan Fakultatif"},"0212":{"nama":"Hari Jumat ses Rabu Abu","warna":"ungu","musim":"Harian"},"0213":{"nama":"Hari Sabtu ses Rabu Abu","warna":"ungu","musim":"Harian"},"0214":{"nama":"Hari Minggu Prapaskah I","warna":"ungu","musim":"Harian"},"0215":{"nama":"Senin Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0216":{"nama":"Selasa Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0217":{"nama":"Tujuh Santo Pendiri Ordo Hamba-hamba Santa Perwan Mari","warna":"ungu","musim":"Peringatan Fakultatif"},"0218":{"nama":"Kamis Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0219":{"nama":"Jumat Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0220":{"nama":"Sabtu Pekan Prapaskah I","warna":"ungu","musim":"Harian"},"0221":{"nama":"Hari Minggu Prapaskah II","warna":"ungu","musim":"Harian"},"0222":{"nama":"Takhta S. Petrus, rasul","warna":"putih","musim":"Pesta"},"0223":{"nama":"S. Polikarpus, uskup dan martir","warna":"ungu","musim":"Peringatan Fakultatif"},"0224":{"nama":"Rabu Pekan Prapaskah II","warna":"ungu","musim":"Harian"},"0225":{"nama":"Kamis Pekan Prapaskah II","warna":"ungu","musim":"Harian"},"0226":{"nama":"Jumat Pekan Prapaskah II","warna":"ungu","musim":"Harian"},"0227":{"nama":"S. Gregorius dari Narek, abas dan pujangga Gereja","warna":"ungu","musim":"Peringatan Fakultatif"},"0228":{"nama":"Hari Minggu Prapaskah III","warna":"ungu","musim":"Harian"},"0301":{"nama":"Senin Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0302":{"nama":"Selasa Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0303":{"nama":"Rabu Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0304":{"nama":"S. Kasimirus","warna":"ungu","musim":"Peringatan Fakultatif"},"0305":{"nama":"Jumat Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0306":{"nama":"Sabtu Pekan Prapaskah III","warna":"ungu","musim":"Harian"},"0307":{"nama":"Hari Minggu Prapaskah IV","warna":"ungu","musim":"Harian"},"0308":{"nama":"S. Yohanes a Deo, biarawan","warna":"ungu","musim":"Peringatan Fakultatif"},"0309":{"nama":"S. Fransiska Romana, biarawati","warna":"ungu","musim":"Peringatan Fakultatif"},"0310":{"nama":"Rabu Pekan Prapaskah IV","warna":"ungu","musim":"Harian"},"0311":{"nama":"Kamis Pekan Prapaskah IV","warna":"ungu","musim":"Harian"},"0312":{"nama":"Jumat Pekan Prapaskah IV","warna":"ungu","musim":"Harian"},"0313":{"nama":"Sabtu Pekan Prapaskah IV","warna":"ungu","musim":"Harian"},"0314":{"nama":"Hari Minggu Prapaskah V","warna":"ungu","musim":"Harian"},"0315":{"nama":"Senin Pekan Prapaskah V","warna":"ungu","musim":"Harian"},"0316":{"nama":"Selasa Pekan Prapaskah V","warna":"ungu","musim":"Harian"},"0317":{"nama":"S. Patrik, uskup","warna":"ungu","musim":"Peringatan Fakultatif"},"0318":{"nama":"S. Sirilus dari Yerusalem, uskup dan pujangga Gereja","warna":"ungu","musim":"Peringatan Fakultatif"},"0319":{"nama":"S. Yusuf, Suami Santa Maria","warna":"putih","musim":"Hari Raya"},"0320":{"nama":"Sabtu Pekan Prapaskah V","warna":"ungu","musim":"Harian"},"0321":{"nama":"Hari Minggu Palma Mengenangkan Sengsara Tuhan","warna":"merah","musim":"Harian"},"0322":{"nama":"Hari Senin dalam Pekan Suci","warna":"ungu","musim":"Harian"},"0323":{"nama":"Hari Selasa dalam Pekan Suci","warna":"ungu","musim":"Harian"},"0324":{"nama":"Hari Rabu dalam Pekan Suci","warna":"ungu","musim":"Harian"},"0325":{"nama":"Kamas Putih","warna":"putih","musim":"Harian"},"0326":{"nama":"Hari Jumat Agung","warna":"merah","musim":"Harian"},"0327":{"nama":"Hari Sabtu Suci","warna":"putih","musim":"Harian"},"0328":{"nama":"Paskah Kebangkitan Tuhan","warna":"putih","musim":"Harian"},"0329":{"nama":"Hari Senin dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0330":{"nama":"Hari Selasa dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0331":{"nama":"Hari Rabu dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0401":{"nama":"Hari Kamis dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0402":{"nama":"Hari Jumat dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0403":{"nama":"Hari Sabtu dalam Oktaf Paskah","warna":"putih","musim":"Hari Raya"},"0404":{"nama":"Hari Minggu Paskah II","warna":"putih","musim":"Harian"},"0405":{"nama":"Kabar Sukacita","warna":"putih","musim":"Hari Raya"},"0406":{"nama":"Selasa Pekan Paskah II","warna":"putih","musim":"Harian"},"0407":{"nama":"S. Yohanes Baptista de La Salle, imam","warna":"putih","musim":"Peringatan Wajib"},"0408":{"nama":"Kamis Pekan Paskah II","warna":"putih","musim":"Harian"},"0409":{"nama":"Jumat Pekan Paskah II","warna":"putih","musim":"Harian"},"0410":{"nama":"Sabtu Pekan Paskah II","warna":"putih","musim":"Harian"},"0411":{"nama":"Hari Minggu Paskah III","warna":"putih","musim":"Harian"},"0412":{"nama":"Senin Pekan Paskah III","warna":"putih","musim":"Harian"},"0413":{"nama":"S. Martinus I, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0414":{"nama":"Rabu Pekan Paskah III","warna":"putih","musim":"Harian"},"0415":{"nama":"Kamis Pekan Paskah III","warna":"putih","musim":"Harian"},"0416":{"nama":"Jumat Pekan Paskah III","warna":"putih","musim":"Harian"},"0417":{"nama":"Sabtu Pekan Paskah III","warna":"putih","musim":"Harian"},"0418":{"nama":"Hari Minggu Paskah IV","warna":"putih","musim":"Harian"},"0419":{"nama":"Senin Pekan Paskah IV","warna":"putih","musim":"Harian"},"0420":{"nama":"Selasa Pekan Paskah IV","warna":"putih","musim":"Harian"},"0421":{"nama":"S. Anselmus, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0422":{"nama":"Kamis Pekan Paskah IV","warna":"putih","musim":"Harian"},"0423":{"nama":"S. Adalbertus, uskup dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0424":{"nama":"S. Fidelis dari Sigmaringen, imam dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0425":{"nama":"Hari Minggu Paskah V","warna":"putih","musim":"Harian"},"0426":{"nama":"Senin Pekan Paskah V","warna":"putih","musim":"Harian"},"0427":{"nama":"Selasa Pekan Paskah V","warna":"putih","musim":"Harian"},"0428":{"nama":"S. Louis-Mariæ Grignion de Montfort, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0429":{"nama":"S. Katarina dari Siena, perawan dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0430":{"nama":"S. Pius V, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"0501":{"nama":"S. Yusuf, Pekerja","warna":"putih","musim":"Peringatan Fakultatif"},"0502":{"nama":"Hari Minggu Paskah VI","warna":"putih","musim":"Harian"},"0503":{"nama":"S. Filipus dan Yakobus, rasul","warna":"merah","musim":"Pesta"},"0504":{"nama":"Selasa Pekan Paskah VI","warna":"putih","musim":"Harian"},"0505":{"nama":"Rabu Pekan Paskah VI","warna":"putih","musim":"Harian"},"0506":{"nama":"Kenaikan Tuhan","warna":"putih","musim":"Hari Raya"},"0507":{"nama":"Jumat Pekan Paskah VI","warna":"putih","musim":"Harian"},"0508":{"nama":"Sabtu Pekan Paskah VI","warna":"putih","musim":"Harian"},"0509":{"nama":"Hari Minggu Paskah VII","warna":"putih","musim":"Harian"},"0510":{"nama":"S. Yohanes dari Avila, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0511":{"nama":"Selasa Pekan Paskah VII","warna":"putih","musim":"Harian"},"0512":{"nama":"S. Nereus dan Akhilleus, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0513":{"nama":"Santa Perawan Maria dari Fatima","warna":"putih","musim":"Peringatan Fakultatif"},"0514":{"nama":"S. Matias, rasul","warna":"merah","musim":"Pesta"},"0515":{"nama":"Sabtu Pekan Paskah VII","warna":"putih","musim":"Harian"},"0516":{"nama":"Pentakosta","warna":"merah","musim":"Hari Raya"},"0517":{"nama":"Santa Perawan Maria, Bunda Gereja","warna":"putih","musim":"Peringatan Wajib"},"0518":{"nama":"S. Yohanes I, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0519":{"nama":"Rabu Pekan Biasa VII","warna":"hijau","musim":"Harian"},"0520":{"nama":"S. Bernardinus dari Siena, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0521":{"nama":"S. Kristoforus Magallanes, imam, dan kawan-kawan, ma","warna":"merah","musim":"Peringatan Fakultatif"},"0522":{"nama":"S. Rita dari Cascia, biarawati","warna":"putih","musim":"Peringatan Fakultatif"},"0523":{"nama":"Tritunggal Maha Kudus","warna":"putih","musim":"Hari Raya"},"0524":{"nama":"Senin Pekan Biasa VIII","warna":"hijau","musim":"Harian"},"0525":{"nama":"S. Beda Venerabilis, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0526":{"nama":"S. Filipus Neri, imam","warna":"putih","musim":"Peringatan Wajib"},"0527":{"nama":"S. Agustinus dari Canterbury, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"0528":{"nama":"Jumat Pekan Biasa VIII","warna":"hijau","musim":"Harian"},"0529":{"nama":"S. Paulus VI, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"0530":{"nama":"Tubuh dan Darah Kristus","warna":"putih","musim":"Hari Raya"},"0531":{"nama":"Santa Perawan Maria Mengunjungi Elisabet Saudaranya","warna":"putih","musim":"Pesta"},"0601":{"nama":"S. Yustinus, martir","warna":"merah","musim":"Peringatan Wajib"},"0602":{"nama":"S. Marselinus dan Petrus, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0603":{"nama":"S. Karolus Lwanga dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Wajib"},"0604":{"nama":"Hati Yesus Yang Mahakudus","warna":"putih","musim":"Hari Raya"},"0605":{"nama":"Hati Tak Bernoda Santa Perawan Maria","warna":"putih","musim":"Peringatan Wajib"},"0606":{"nama":"Hari Minggu Biasa X","warna":"hijau","musim":"Harian"},"0607":{"nama":"Senin Pekan Biasa X","warna":"hijau","musim":"Harian"},"0608":{"nama":"Selasa Pekan Biasa X","warna":"hijau","musim":"Harian"},"0609":{"nama":"S. Efrem, diakon dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0610":{"nama":"Kamis Pekan Biasa X","warna":"hijau","musim":"Harian"},"0611":{"nama":"S. Barnabas, rasul","warna":"merah","musim":"Peringatan Wajib"},"0612":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0613":{"nama":"Hari Minggu Biasa XI","warna":"hijau","musim":"Harian"},"0614":{"nama":"Senin Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0615":{"nama":"Selasa Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0616":{"nama":"Rabu Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0617":{"nama":"Kamis Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0618":{"nama":"Jumat Pekan Biasa XI","warna":"hijau","musim":"Harian"},"0619":{"nama":"S. Romualdus, abas","warna":"putih","musim":"Peringatan Fakultatif"},"0620":{"nama":"Hari Minggu Biasa XII","warna":"hijau","musim":"Harian"},"0621":{"nama":"S. Aloisius Gonzaga, biarawan","warna":"putih","musim":"Peringatan Wajib"},"0622":{"nama":"S. Paulinus dari Nola, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"0623":{"nama":"Rabu Pekan Biasa XII","warna":"hijau","musim":"Harian"},"0624":{"nama":"Kelahiran S. Yohanes Pembaptis","warna":"putih","musim":"Hari Raya"},"0625":{"nama":"Jumat Pekan Biasa XII","warna":"hijau","musim":"Harian"},"0626":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0627":{"nama":"Hari Minggu Biasa XIII","warna":"hijau","musim":"Harian"},"0628":{"nama":"S. Ireneus, uskup, martir dan pujangga Gereja","warna":"merah","musim":"Peringatan Wajib"},"0629":{"nama":"S. Petrus dan Paulus, rasul","warna":"merah","musim":"Hari Raya"},"0630":{"nama":"Para Martir Pertama Gereja Roma yang Kudus","warna":"merah","musim":"Peringatan Fakultatif"},"0701":{"nama":"Kamis Pekan Biasa XIII","warna":"hijau","musim":"Harian"},"0702":{"nama":"Jumat Pekan Biasa XIII","warna":"hijau","musim":"Harian"},"0703":{"nama":"S. Tomas, rasul","warna":"merah","musim":"Pesta"},"0704":{"nama":"Hari Minggu Biasa XIV","warna":"hijau","musim":"Harian"},"0705":{"nama":"S. Antonius Maria Zakkaria, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0706":{"nama":"S. Maria Goretti, perawan dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0707":{"nama":"Rabu Pekan Biasa XIV","warna":"hijau","musim":"Harian"},"0708":{"nama":"Kamis Pekan Biasa XIV","warna":"hijau","musim":"Harian"},"0709":{"nama":"S. Agustinus Zhao Rong, imam, dan kawan-kawan, marti","warna":"merah","musim":"Peringatan Fakultatif"},"0710":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0711":{"nama":"Hari Minggu Biasa XV","warna":"hijau","musim":"Harian"},"0712":{"nama":"Senin Pekan Biasa XV","warna":"hijau","musim":"Harian"},"0713":{"nama":"S. Henrikus","warna":"putih","musim":"Peringatan Fakultatif"},"0714":{"nama":"S. Kamillus de Lellis, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0715":{"nama":"S. Bonaventura, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0716":{"nama":"Bunda Maria dari Gunung Karmel","warna":"putih","musim":"Peringatan Fakultatif"},"0717":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0718":{"nama":"Hari Minggu Biasa XVI","warna":"hijau","musim":"Harian"},"0719":{"nama":"Senin Pekan Biasa XVI","warna":"hijau","musim":"Harian"},"0720":{"nama":"S. Apollinaris, uskup dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0721":{"nama":"S. Laurensius dari Brindisi, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0722":{"nama":"S. Maria Magdalena","warna":"putih","musim":"Pesta"},"0723":{"nama":"S. Birgitta, biarawati","warna":"putih","musim":"Peringatan Fakultatif"},"0724":{"nama":"S. Sharbel Makhlūf, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0725":{"nama":"Hari Minggu Biasa XVII","warna":"hijau","musim":"Harian"},"0726":{"nama":"S. Yoakim dan Anna, orang tua Santa Perawan Maria","warna":"putih","musim":"Peringatan Wajib"},"0727":{"nama":"Selasa Pekan Biasa XVII","warna":"hijau","musim":"Harian"},"0728":{"nama":"Rabu Pekan Biasa XVII","warna":"hijau","musim":"Harian"},"0729":{"nama":"S. Marta, Maria, dan Lazarus","warna":"putih","musim":"Peringatan Wajib"},"0730":{"nama":"S. Petrus Krisologus, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0731":{"nama":"S. Ignasius dari Loyola, imam","warna":"putih","musim":"Peringatan Wajib"},"0801":{"nama":"Hari Minggu Biasa XVIII","warna":"hijau","musim":"Harian"},"0802":{"nama":"S. Eusebius Vercelli, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"0803":{"nama":"Selasa Pekan Biasa XVIII","warna":"hijau","musim":"Harian"},"0804":{"nama":"S. Yohanes Maria Vianney, imam","warna":"putih","musim":"Peringatan Wajib"},"0805":{"nama":"Pemberkatan Gereja Basilika Santa Maria Maggiore","warna":"putih","musim":"Peringatan Fakultatif"},"0806":{"nama":"Yesus Menampakkan Kemuliaan-Nya","warna":"putih","musim":"Pesta"},"0807":{"nama":"S. Kayetanus, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0808":{"nama":"Hari Minggu Biasa XIX","warna":"hijau","musim":"Harian"},"0809":{"nama":"S. Teresia Benedikta dari Salib, perawan dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"0810":{"nama":"S. Laurensius, diakon dan martir","warna":"merah","musim":"Pesta"},"0811":{"nama":"S. Klara, perawan","warna":"putih","musim":"Peringatan Wajib"},"0812":{"nama":"S. Yohana Fransiska de Chantal, biarawati","warna":"putih","musim":"Peringatan Fakultatif"},"0813":{"nama":"S. Pontianus, Paus, dan S. Hipolitus, imam, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0814":{"nama":"S. Maksimilianus Maria Kolbe, imam dan martir","warna":"merah","musim":"Peringatan Wajib"},"0815":{"nama":"Santa Perawan Maria Diangkat ke Surga","warna":"putih","musim":"Hari Raya"},"0816":{"nama":"S. Stefanus dari Hungaria","warna":"putih","musim":"Peringatan Fakultatif"},"0817":{"nama":"Kemerdekaan Republik Indonesia","warna":"putih","musim":"Harian"},"0818":{"nama":"Rabu Pekan Biasa XX","warna":"hijau","musim":"Harian"},"0819":{"nama":"S. Yohanes Eudes, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0820":{"nama":"S. Bernardus, abas dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0821":{"nama":"S. Pius X, Paus","warna":"putih","musim":"Peringatan Wajib"},"0822":{"nama":"Hari Minggu Biasa XXI","warna":"hijau","musim":"Harian"},"0823":{"nama":"S. Rosa dari Lima, perawan","warna":"putih","musim":"Peringatan Fakultatif"},"0824":{"nama":"S. Bartolomeus, rasul","warna":"merah","musim":"Pesta"},"0825":{"nama":"S. Louis IX, raja","warna":"putih","musim":"Peringatan Fakultatif"},"0826":{"nama":"Kamis Pekan Biasa XXI","warna":"hijau","musim":"Harian"},"0827":{"nama":"S. Monika","warna":"putih","musim":"Peringatan Wajib"},"0828":{"nama":"S. Agustinus, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0829":{"nama":"Hari Minggu Biasa XXII","warna":"hijau","musim":"Harian"},"0830":{"nama":"Senin Pekan Biasa XXII","warna":"hijau","musim":"Harian"},"0831":{"nama":"Selasa Pekan Biasa XXII","warna":"hijau","musim":"Harian"},"0901":{"nama":"Rabu Pekan Biasa XXII","warna":"hijau","musim":"Harian"},"0902":{"nama":"Kamis Pekan Biasa XXII","warna":"hijau","musim":"Harian"},"0903":{"nama":"S. Gregorius Agung, Paus dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0904":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0905":{"nama":"Hari Minggu Biasa XXIII","warna":"hijau","musim":"Harian"},"0906":{"nama":"Senin Pekan Biasa XXIII","warna":"hijau","musim":"Harian"},"0907":{"nama":"Selasa Pekan Biasa XXIII","warna":"hijau","musim":"Harian"},"0908":{"nama":"Kelahiran Santa Perawan Maria","warna":"putih","musim":"Pesta"},"0909":{"nama":"S. Petrus Klaver, imam","warna":"putih","musim":"Peringatan Fakultatif"},"0910":{"nama":"Jumat Pekan Biasa XXIII","warna":"hijau","musim":"Harian"},"0911":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0912":{"nama":"Hari Minggu Biasa XXIV","warna":"hijau","musim":"Harian"},"0913":{"nama":"S. Yohanes Krisostomus, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"0914":{"nama":"Salib Suci","warna":"merah","musim":"Pesta"},"0915":{"nama":"Santa Perawan Maria Berdukacita","warna":"putih","musim":"Peringatan Wajib"},"0916":{"nama":"S. Kornelius, Paus, dan S. Siprianus, uskup, martir","warna":"merah","musim":"Peringatan Wajib"},"0917":{"nama":"S. Hildegard dari Bingen, perawan dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"0918":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0919":{"nama":"Hari Minggu Biasa XXV","warna":"hijau","musim":"Harian"},"0920":{"nama":"S. Andreas Kim Tae-gŏn, imam, Paulus Chŏng Ha-sang,","warna":"merah","musim":"Peringatan Wajib"},"0921":{"nama":"S. Matius, rasul dan penulis Injil","warna":"merah","musim":"Pesta"},"0922":{"nama":"Rabu Pekan Biasa XXV","warna":"hijau","musim":"Harian"},"0923":{"nama":"S. Pius dari Pietrelcina, imam","warna":"putih","musim":"Peringatan Wajib"},"0924":{"nama":"Jumat Pekan Biasa XXV","warna":"hijau","musim":"Harian"},"0925":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"0926":{"nama":"Hari Minggu Biasa XXVI","warna":"hijau","musim":"Harian"},"0927":{"nama":"S. Vinsensius a Paulo, imam","warna":"putih","musim":"Peringatan Wajib"},"0928":{"nama":"S. Laurensius Ruiz, dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Fakultatif"},"0929":{"nama":"S. Mikael, Gabriel, dan Rafael, Malaikat Agung","warna":"putih","musim":"Pesta"},"0930":{"nama":"S. Hieronimus, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1001":{"nama":"S. Teresia dari Kanak-Kanak Yesus, perawan dan pujangga Ger","warna":"putih","musim":"Pesta"},"1002":{"nama":"Para Malaikat Pelindung","warna":"putih","musim":"Peringatan Wajib"},"1003":{"nama":"Hari Minggu Biasa XXVII","warna":"hijau","musim":"Harian"},"1004":{"nama":"S. Fransiskus dari Assisi","warna":"putih","musim":"Peringatan Wajib"},"1005":{"nama":"S. Faustina Kowalska, perawan","warna":"putih","musim":"Peringatan Fakultatif"},"1006":{"nama":"S. Bruno, imam","warna":"putih","musim":"Peringatan Fakultatif"},"1007":{"nama":"Santa Perawan Maria, Ratu Rosario","warna":"putih","musim":"Peringatan Wajib"},"1008":{"nama":"Jumat Pekan Biasa XXVII","warna":"hijau","musim":"Harian"},"1009":{"nama":"S. Dionisius, uskup, dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Fakultatif"},"1010":{"nama":"Hari Minggu Biasa XXVIII","warna":"hijau","musim":"Harian"},"1011":{"nama":"S. Yohanes XXIII, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"1012":{"nama":"Selasa Pekan Biasa XXVIII","warna":"hijau","musim":"Harian"},"1013":{"nama":"Rabu Pekan Biasa XXVIII","warna":"hijau","musim":"Harian"},"1014":{"nama":"S. Kalistus I, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"1015":{"nama":"S. Teresia dari Avila, perawan dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1016":{"nama":"S. Hedwig, biarawati","warna":"putih","musim":"Peringatan Fakultatif"},"1017":{"nama":"Hari Minggu Biasa XXIX","warna":"hijau","musim":"Harian"},"1018":{"nama":"S. Lukas, penulis Injil","warna":"merah","musim":"Pesta"},"1019":{"nama":"S. Paulus dari Salib, imam","warna":"putih","musim":"Peringatan Fakultatif"},"1020":{"nama":"Rabu Pekan Biasa XXIX","warna":"hijau","musim":"Harian"},"1021":{"nama":"Kamis Pekan Biasa XXIX","warna":"hijau","musim":"Harian"},"1022":{"nama":"S. Yohanes Paulus II, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"1023":{"nama":"S. Yohanes dari Capestrano, imam","warna":"putih","musim":"Peringatan Fakultatif"},"1024":{"nama":"Hari Minggu Biasa XXX","warna":"hijau","musim":"Harian"},"1025":{"nama":"Senin Pekan Biasa XXX","warna":"hijau","musim":"Harian"},"1026":{"nama":"Selasa Pekan Biasa XXX","warna":"hijau","musim":"Harian"},"1027":{"nama":"Rabu Pekan Biasa XXX","warna":"hijau","musim":"Harian"},"1028":{"nama":"S. Simon dan Yudas, rasul","warna":"merah","musim":"Pesta"},"1029":{"nama":"Jumat Pekan Biasa XXX","warna":"hijau","musim":"Harian"},"1030":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1031":{"nama":"Hari Minggu Biasa XXXI","warna":"hijau","musim":"Harian"},"1101":{"nama":"Semua Orang Kudus","warna":"putih","musim":"Hari Raya"},"1102":{"nama":"Arwah Semua Orang Beriman","warna":"ungu","musim":"Harian"},"1103":{"nama":"S. Martinus de Porres, biarawan","warna":"putih","musim":"Peringatan Fakultatif"},"1104":{"nama":"S. Carolus Borromeus, uskup","warna":"putih","musim":"Peringatan Wajib"},"1105":{"nama":"Jumat Pekan Biasa XXXI","warna":"hijau","musim":"Harian"},"1106":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1107":{"nama":"Hari Minggu Biasa XXXII","warna":"hijau","musim":"Harian"},"1108":{"nama":"Senin Pekan Biasa XXXII","warna":"hijau","musim":"Harian"},"1109":{"nama":"Pemberkatan Gereja Basilik Lateran","warna":"putih","musim":"Pesta"},"1110":{"nama":"S. Leo Agung, Paus dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1111":{"nama":"S. Martinus dari Tours, uskup","warna":"putih","musim":"Peringatan Wajib"},"1112":{"nama":"S. Yosafat, uskup dan martir","warna":"merah","musim":"Peringatan Wajib"},"1113":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1114":{"nama":"Hari Minggu Biasa XXXIII","warna":"hijau","musim":"Harian"},"1115":{"nama":"S. Albertus Agung, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"1116":{"nama":"S. Gertrudis, perawan","warna":"putih","musim":"Peringatan Fakultatif"},"1117":{"nama":"S. Elisabet dari Hungaria, biarawati","warna":"putih","musim":"Peringatan Wajib"},"1118":{"nama":"Pemberkatan Basilika Santo Petrus Rasul dan Basilika Sant","warna":"putih","musim":"Peringatan Fakultatif"},"1119":{"nama":"Jumat Pekan Biasa XXXIII","warna":"hijau","musim":"Harian"},"1120":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1121":{"nama":"Tuhan Kita Yesus Kristus Raja Semesta Alam","warna":"putih","musim":"Hari Raya"},"1122":{"nama":"S. Sesilia, perawan dan martir","warna":"merah","musim":"Peringatan Wajib"},"1123":{"nama":"S. Klemens I, Paus dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"1124":{"nama":"S. Andreas Dũng Lac, imam, dan kawan-kawan, martir","warna":"merah","musim":"Peringatan Wajib"},"1125":{"nama":"S. Katarina dari Aleksandria, perawan dan martir","warna":"merah","musim":"Peringatan Fakultatif"},"1126":{"nama":"Jumat Pekan Biasa XXXIV","warna":"hijau","musim":"Harian"},"1127":{"nama":"Santa Perawan Maria","warna":"putih","musim":"Peringatan Fakultatif"},"1128":{"nama":"Hari Minggu Adven I","warna":"ungu","musim":"Harian"},"1129":{"nama":"Senin Pekan Adven I","warna":"ungu","musim":"Harian"},"1130":{"nama":"S. Andreas, rasul","warna":"merah","musim":"Pesta"},"1201":{"nama":"B. Dionisius dan Redemptus, biarawan dan martir","warna":"merah","musim":"Peringatan Wajib"},"1202":{"nama":"Kamis Pekan Adven I","warna":"ungu","musim":"Harian"},"1203":{"nama":"S. Fransiskus Xaverius, imam","warna":"putih","musim":"Pesta"},"1204":{"nama":"S. Yohanes dari Damsyik, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Fakultatif"},"1205":{"nama":"Hari Minggu Adven II","warna":"ungu","musim":"Harian"},"1206":{"nama":"S. Nikolaus, uskup","warna":"putih","musim":"Peringatan Fakultatif"},"1207":{"nama":"S. Ambrosius, uskup dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1208":{"nama":"Santa Perawan Maria Dikandung Tanpa Noda","warna":"putih","musim":"Hari Raya"},"1209":{"nama":"S. Juan Diego Cuauhtlatoatzin","warna":"putih","musim":"Peringatan Fakultatif"},"1210":{"nama":"Santa Perawan Maria dari Loreto","warna":"putih","musim":"Peringatan Fakultatif"},"1211":{"nama":"S. Damasus I, Paus","warna":"putih","musim":"Peringatan Fakultatif"},"1212":{"nama":"Hari Minggu Adven III","warna":"ungu","musim":"Harian"},"1213":{"nama":"S. Lusia, perawan dan martir","warna":"merah","musim":"Peringatan Wajib"},"1214":{"nama":"S. Yohanes dari Salib, imam dan pujangga Gereja","warna":"putih","musim":"Peringatan Wajib"},"1215":{"nama":"Rabu Pekan Adven III","warna":"ungu","musim":"Harian"},"1216":{"nama":"Kamis Pekan Adven III","warna":"ungu","musim":"Harian"},"1217":{"nama":"Hari Biasa Khusus Adven (17 Desember)","warna":"ungu","musim":"Harian"},"1218":{"nama":"Hari Biasa Khusus Adven (18 Desember)","warna":"ungu","musim":"Harian"},"1219":{"nama":"Hari Minggu Adven IV","warna":"ungu","musim":"Harian"},"1220":{"nama":"Hari Biasa Khusus Adven (20 Desember)","warna":"ungu","musim":"Harian"},"1221":{"nama":"S. Petrus Kanisius, imam dan pujangga Gereja","warna":"ungu","musim":"Peringatan Fakultatif"},"1222":{"nama":"Hari Biasa Khusus Adven (22 Desember)","warna":"ungu","musim":"Harian"},"1223":{"nama":"S. Yohanes Kansius, imam","warna":"ungu","musim":"Peringatan Fakultatif"},"1224":{"nama":"Hari Biasa Khusus Adven (24 Desember)","warna":"ungu","musim":"Harian"},"1225":{"nama":"Natal","warna":"putih","musim":"Hari Raya"},"1226":{"nama":"Keluarga Kudus, Yesus, Maria dan Yusuf","warna":"putih","musim":"Pesta"},"1227":{"nama":"S. Yohanes, rasul dan penulis Injil","warna":"putih","musim":"Pesta"},"1228":{"nama":"Kanak-kanak Suci, martir","warna":"merah","musim":"Pesta"},"1229":{"nama":"S. Thomas Becket, uskup dan martir","warna":"putih","musim":"Peringatan Fakultatif"},"1230":{"nama":"Hari Keenam Dalam Oktaf Natal","warna":"putih","musim":"Harian"},"1231":{"nama":"S. Silvester I, Paus","warna":"putih","musim":"Peringatan Fakultatif"}};
+function keyMMDD(d){ return String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0'); }
+const KALENDER_LITURGI_RESMI = {2026: KALENDER_LITURGI_2026, 2027: KALENDER_LITURGI_2027};
 
 // Fungsi utama: kembalikan {nama, warna, musim} kalau tanggal ini pas hari raya/pesta/
 // hari Minggu tertentu, atau null kalau bukan (biar PJ isi manual, misal Misa Jumat Pertama dll).
@@ -856,10 +969,10 @@ function getInfoLiturgi(tanggalInput){
   const d = new Date(tanggalInput); d.setHours(0,0,0,0);
   const tahun = d.getFullYear();
 
-  // Prioritas 1: data resmi lengkap 2026 (kalau ada). Ini paling akurat karena
+  // Prioritas 1: data resmi lengkap (kalau ada utk tahun ini). Paling akurat karena
   // termasuk semua Peringatan Wajib/Fakultatif, bukan cuma Hari Raya/Minggu.
-  if(tahun === 2026){
-    const dataResmi = KALENDER_LITURGI_2026[keyMMDD(d)];
+  if(KALENDER_LITURGI_RESMI[tahun]){
+    const dataResmi = KALENDER_LITURGI_RESMI[tahun][keyMMDD(d)];
     if(dataResmi) return dataResmi;
   }
 
@@ -936,8 +1049,42 @@ function getWarnaMusim(d){
    Setiap kali app di-upgrade, naikkan APP_VERSION & tambah entri baru di atas
    CHANGELOG. Status "sudah dilihat" disimpan per-HP/browser lewat localStorage
    (bukan Firestore), jadi nggak perlu ubah Firestore Rules buat fitur ini. */
-const APP_VERSION = '1.2.0';
+const APP_VERSION = '1.7.0';
 const CHANGELOG = [
+  {versi:'1.7.0', tanggal:'30 Sep 2026', catatan:[
+    'Kalender Liturgi 2027 ditambahkan (365 hari lengkap dari GCatholic.org, termasuk semua Peringatan Wajib & Fakultatif) — saran nama & warna liturgi otomatis sekarang akurat penuh untuk 2026 maupun 2027, bukan cuma Hari Raya/Minggu saja.'
+  ]},
+  {versi:'1.6.0', tanggal:'30 Sep 2026', catatan:[
+    'Tampilan dirapikan: header lebih ringkas (Pembaruan, Bantuan, Keluar ada di menu titik tiga), jarak antar-bagian dilonggarkan, dan baris jadwal menampilkan jam besar dengan nama yang lebih lega.',
+    'Kartu "Tugasmu berikutnya" di Beranda, lengkap dengan tombol Absen Sekarang saat jendela absen terbuka.',
+    'PJ: ringkasan absen (hadir/telat/tidak/belum) dan daftar yang belum punya akun di Beranda.',
+    'Jadwal Baru kini bisa memakai mode "Perayaan / Jam Bebas": tanggal dan jam tiap slot bebas, nama dan warna liturgi tetap tersaran otomatis (termasuk Pekan Suci).',
+    'Edit Jadwal: PJ bisa mengubah tanggal dan jam slot, serta menambah atau menghapus slot.',
+    'Animasi centang dan getar saat absen berhasil.'
+  ]},
+  {versi:'1.5.5', tanggal:'29 Sep 2026', catatan:['Tautan "Lihat di peta" di Detail Absen sekarang berwarna terang dan mudah dibaca.']},
+  {versi:'1.5.4', tanggal:'29 Sep 2026', catatan:['Lokasi absen QR memakai jaringan dan GPS sekaligus supaya cepat terkunci, dan menunggu maksimal 15 detik.']},
+  {versi:'1.5.3', tanggal:'29 Sep 2026', catatan:['Absen QR menunggu lokasi terkunci (maks 25 detik) sebelum mengirim, supaya koordinat tidak kosong.']},
+  {versi:'1.5.2', tanggal:'29 Sep 2026', catatan:['Absen QR: lokasi dipantau selama kamera terbuka dan statusnya tampil di layar scan, jadi lokasi tidak mudah gagal tercatat.']},
+  {versi:'1.5.1', tanggal:'29 Sep 2026', catatan:['Perbaikan pemindai QR absen: memakai pemindai bawaan Chrome dan cadangan pustaka, jadi tidak gagal memuat lagi.']},
+  {versi:'1.5.0', tanggal:'29 Sep 2026', catatan:[
+    'Foto profil bisa diatur posisinya: geser dan cubit di dalam bingkai bulat dengan garis bantu 3x3.',
+    'Fitur Pengumuman: PJ bisa kirim foto dan catatan; muncul sebagai popup saat buka aplikasi dan penanda "Ada Pengumuman" di atas.',
+    'Absen sekarang lewat scan QR di meja operator, lokasi ikut tercatat dan bisa dicek PJ.'
+  ]},
+  {versi:'1.4.0', tanggal:'29 Sep 2026', catatan:[
+    'Tombol Back di HP sekarang menutup sheet/foto besar, lalu kembali ke Beranda, baru keluar aplikasi.',
+    'Sheet (Profil, dll) bisa ditutup dengan geser ke bawah, dan halaman di belakangnya tidak ikut ter-scroll lagi.',
+    'Kartu jadwal: nama panjang turun ke bawah, ikon absen tetap di sampingnya. Nama dibatasi maksimal 30 karakter.',
+    'PJ bisa melihat tanda "Belum punya akun" di daftar Petugas.'
+  ]},
+  {versi:'1.3.0', tanggal:'28 Sep 2026', catatan:[
+    'Foto profil bisa diketuk buat dilihat layar penuh, mirip Instagram. Foto baru diunggah lebih tajam (foto lama tetap seperti semula sampai diunggah ulang).',
+    'Log Aktivitas sekarang otomatis dihapus kalau umurnya lebih dari 30 hari.',
+    'Perbaikan \"Isi Otomatis\": nama yang sudah kamu taruh manual di jadwal itu nggak akan terpilih lagi di slot lain.',
+    'Perbaikan: jadwal bulan depan (mis. Misa Jumat Pertama) sekarang tampil di Beranda sebagai \"Jadwal Mendatang\". Slot manual juga bisa diatur tanggal & jamnya.',
+    'Tombol \"Absen Sekarang\", \"Isi slot ini\", dan \"Batal\" sekarang berbentuk tombol.'
+  ]},
   {versi:'1.2.0', tanggal:'12 Sep 2026', catatan:[
     'Perbaikan bug: popup Pembaruan Aplikasi dulu nggak pernah muncul sama sekali di update pertama — sekarang beres.',
     'Fitur baru: PJ bisa "Gabungkan Riwayat Petugas" — buat nyambungin riwayat tugas lama ke akun petugas yang aktif sekarang (berguna kalau petugas pernah dihapus & ditambah ulang, dan riwayatnya kebetulan kepisah).',
@@ -1034,6 +1181,7 @@ const USERS_COLLECTION = 'komsos-users';
 const PROFIL_COLLECTION = 'komsos-profil';
 let profilMap = {}; // { [petugasId]: {foto, tglLahir, bio, gantiNamaCount, gantiNamaBulan} }
 let modalLocked = false;
+let petugasAdaAkun = null; // Set petugasId yang sudah punya akun; null = belum termuat
 // (Dulu ada batas kadaluarsa pesan di sini, sekarang arsip chat disimpan permanen — lihat pruneChatPesan.)
 let chatCache = {}; // { [jadwalId]: [{id, petugasId, nama, teks, waktu, replyTo?, diedit?}] }
 let chatUnsubscribe = null;
@@ -1368,6 +1516,12 @@ async function loadData(){
   db.collection(KOMSOS_COLLECTION).doc('log-aktivitas').onSnapshot(doc=>{
     if(doc.exists){ logAktivitas = doc.data().payload || []; updateLogDotDanBadge(); }
   });
+  db.collection(USERS_COLLECTION).onSnapshot(snap=>{
+    const set = new Set();
+    snap.forEach(d=>{ const pid = d.data().petugasId; if(pid) set.add(pid); });
+    petugasAdaAkun = set;
+    renderPetugas();
+  }, e=>console.error('Gagal memuat daftar akun', e));
   db.collection(PROFIL_COLLECTION).onSnapshot(snap=>{
     profilMap = {};
     snap.forEach(doc=>{ profilMap[doc.id] = doc.data(); });
@@ -1387,7 +1541,8 @@ async function saveProfil(petugasId, data){
 function avatarHtml(profil, nama, size){
   size = size || 40;
   if(profil && profil.foto){
-    return `<img src="${profil.foto}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; flex-shrink:0; border:1px solid var(--line);">`;
+    const zoom = size >= 30 ? ` class="avatar-zoom" data-nama="${escapeHtml(nama||'')}"` : '';
+    return `<img${zoom} src="${profil.foto}" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; flex-shrink:0; border:1px solid var(--line);">`;
   }
   const inisial = (nama||'?').trim().charAt(0).toUpperCase();
   return `<div style="width:${size}px; height:${size}px; border-radius:50%; background:var(--grad); display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-weight:800; color:#fff; font-size:${Math.round(size*0.4)}px; flex-shrink:0;">${inisial}</div>`;
@@ -1422,7 +1577,8 @@ function renderUlangTahunBanner(){
 /* ---------------- UPLOAD & KOMPRES FOTO PROFIL ----------------
    Foto disimpan langsung sebagai data URL base64 di Firestore (bukan Firebase
    Storage), makanya WAJIB dikompres dulu di sisi HP biar dokumennya nggak
-   kegedean. Target: sisi terpanjang 240px, JPEG kualitas 0.6 (~15-30KB/foto). */
+   kegedean. Target: sisi terpanjang 640px, JPEG kualitas 0.75 (~40-80KB/foto) —
+   cukup tajam buat dilihat layar penuh, tapi tetap jauh di bawah batas 1MB dokumen. */
 function resizeImageFile(file, maxDim, quality){
   return new Promise((resolve, reject)=>{
     const reader = new FileReader();
@@ -1444,26 +1600,6 @@ function resizeImageFile(file, maxDim, quality){
     reader.readAsDataURL(file);
   });
 }
-async function handleFotoUpload(inputEl, petugasId){
-  const file = inputEl.files && inputEl.files[0];
-  if(!file) return;
-  if(!file.type.startsWith('image/')){ showToast('File harus berupa gambar.'); return; }
-  try{
-    showToast('Mengunggah foto...');
-    const dataUrl = await resizeImageFile(file, 240, 0.6);
-    await saveProfil(petugasId, {foto: dataUrl});
-    showToast('Foto profil diperbarui.');
-    renderPetugas();
-    if(petugasId===currentPetugasId) renderNavProfilAvatar();
-    openPetugasDetail(petugasId);
-  }catch(e){
-    console.error(e);
-    showToast('Gagal mengunggah foto. Coba lagi.');
-  }finally{
-    inputEl.value = '';
-  }
-}
-
 /* ---------------- WAJIB ISI TANGGAL LAHIR (sekali, sesudah login) ---------------- */
 function cekWajibProfil(){
   if(!currentPetugasId) return;
@@ -1499,10 +1635,26 @@ async function simpanTglLahirWajib(){
 // Dipanggil di setiap aksi PJ/petugas yang mengubah data, biar ada jejak audit.
 // Nggak pernah melempar error ke pemanggilnya — kalau gagal simpan log, aksi
 // utamanya (tambah jadwal, dsb) tetap jalan seperti biasa.
+// Log Aktivitas cuma disimpan LOG_MAKS_HARI hari. Log ini satu dokumen Firestore
+// ('log-aktivitas') yang isinya array & selalu ditimpa — jadi nggak menumpuk jadi
+// dokumen baru — tapi tetap dirapikan biar dokumennya kecil & nggak berisi sampah lama.
+const LOG_MAKS_HARI = 30;
+function bersihkanLogLama(){
+  try{
+    const batas = Date.now() - LOG_MAKS_HARI*24*3600*1000;
+    const bersih = logAktivitas.filter(l=> new Date(l.waktu).getTime() >= batas);
+    if(bersih.length !== logAktivitas.length){
+      logAktivitas = bersih;
+      saveList('log-aktivitas', logAktivitas).catch(e=>console.error(e));
+      updateLogDotDanBadge();
+    }
+  }catch(e){ console.error('bersihkanLogLama gagal', e); }
+}
 function catatLog(aksi, siapaOverride){
   try{
     const siapa = siapaOverride || ((currentUserData && currentUserData.nama) ? currentUserData.nama : 'Sistem');
     logAktivitas.unshift({ waktu: new Date().toISOString(), siapa, aksi });
+    logAktivitas = logAktivitas.filter(l=> Date.now() - new Date(l.waktu).getTime() <= LOG_MAKS_HARI*24*3600*1000);
     if(logAktivitas.length > 200) logAktivitas = logAktivitas.slice(0, 200);
     saveList('log-aktivitas', logAktivitas).catch(e=>console.error(e));
     updateLogDotDanBadge();
@@ -1537,8 +1689,8 @@ function bukaLogAktivitas(){
   document.getElementById('modalTitle').textContent = 'Log Aktivitas';
   const isi = logAktivitas.length===0
     ? '<div class="empty-note">Belum ada aktivitas tercatat.</div>'
-    : `<div class="section-sub" style="margin-bottom:10px;">Menampilkan ${Math.min(logAktivitas.length,100)} aktivitas terakhir.</div>` +
-      logAktivitas.slice(0,100).map(l=>{
+    : `<div class="section-sub" style="margin-bottom:10px;">${logAktivitas.length} aktivitas dalam ${LOG_MAKS_HARI} hari terakhir. Yang lebih lama dihapus otomatis.</div>` +
+      logAktivitas.map(l=>{
         const d = new Date(l.waktu).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
         return `<div class="hist-line"><span><b>${escapeHtml(l.siapa)}</b> ${escapeHtml(l.aksi)}</span><span style="color:var(--muted); white-space:nowrap; margin-left:8px;">${d}</span></div>`;
       }).join('');
@@ -1597,7 +1749,7 @@ let authReady = new Promise(resolve=>{
       }catch(e){
         currentUserData = {petugasId:null, nama:user.email, role:'viewer'};
       }
-      currentRole = currentUserData.role === 'editor' ? 'editor' : 'viewer';
+      currentRole = currentUserData.role === 'editor' ? 'editor' : (currentUserData.role === 'kiosk' ? 'kiosk' : 'viewer');
       currentPetugasId = currentUserData.petugasId || null;
     }else{
       currentUser = null;
@@ -1772,6 +1924,8 @@ async function tryResetPassword(){
 }
 
 async function enterApp(){
+  if(currentRole === 'kiosk'){ mulaiKiosk(); return; }
+  mulaiPengumuman();
   await dataReady;
   document.getElementById('gate').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
@@ -1788,7 +1942,7 @@ async function enterApp(){
   document.getElementById('loadingOverlay').style.display = 'none';
   cekWajibProfil();
   cekPembaruanVersi();
-  if(currentRole === 'editor') perbaikiJudulJadwalLama();
+  if(currentRole === 'editor'){ perbaikiJudulJadwalLama(); bersihkanLogLama(); }
 }
 
 // Jadwal Jan-Agu 2026 yang diimpor dulu (id diawali 'imp2026-') sempat tersimpan
@@ -1972,13 +2126,457 @@ function renderInfoLiturgiHariIni(){
 setInterval(()=>{ if(currentUser) renderPengingat(); }, 5*60*1000);
 
 /* ---------------- NAV ---------------- */
-function goPage(name){
+function goPage(name, dariPop){
+  if(!dariPop && name !== currentActivePage){ try{ history.pushState({page:name}, ''); }catch(e){} }
   currentActivePage = name;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.bottomnav button').forEach(b=>b.classList.remove('active'));
   document.querySelector(`.bottomnav button[data-page="${name}"]`).classList.add('active');
   if(name==='home') renderPengingat();
+}
+
+/* ---------------- TOMBOL BACK HP + SWIPE TUTUP SHEET ----------------
+   Setiap sheet/foto besar yang terbuka & tiap pindah halaman dicatat di riwayat browser,
+   jadi tombol back HP menutup sheet dulu, lalu kembali ke Beranda, baru keluar app. */
+try{ history.replaceState({page:'home'}, ''); }catch(e){}
+let sheetPushed = false, lbPushed = false, suppressPop = 0, lapFn = null;
+function lapisanBuka(fn){ lapFn = fn; history.pushState({lap:1}, ''); }
+function lapisanTutup(){ if(lapFn){ lapFn = null; suppressPop++; history.back(); } }
+const _ov = document.getElementById('modalOverlay');
+const _sheet = _ov.querySelector('.modal-sheet');
+new MutationObserver(()=>{
+  const open = _ov.classList.contains('open');
+  document.body.classList.toggle('modal-open', open);
+  if(open){ _sheet.style.transition='none'; _sheet.style.transform=''; }
+  if(open && !sheetPushed){ history.pushState({modal:1}, ''); sheetPushed = true; }
+  else if(!open && sheetPushed){ sheetPushed = false; suppressPop++; history.back(); }
+}).observe(_ov, {attributes:true, attributeFilter:['class']});
+const _lb = document.getElementById('fotoLightbox');
+if(_lb) new MutationObserver(()=>{
+  const open = _lb.classList.contains('open');
+  if(open && !lbPushed){ history.pushState({lb:1}, ''); lbPushed = true; }
+  else if(!open && lbPushed){ lbPushed = false; suppressPop++; history.back(); }
+}).observe(_lb, {attributes:true, attributeFilter:['class']});
+window.addEventListener('popstate', (e)=>{
+  if(suppressPop>0){ suppressPop--; return; }
+  if(lapFn){ const f = lapFn; lapFn = null; f(); return; }
+  if(lbPushed){ lbPushed = false; tutupFotoBesar(); return; }
+  if(sheetPushed){
+    if(modalLocked){ history.pushState({modal:1}, ''); return; }
+    sheetPushed = false; closeModal(); return;
+  }
+  goPage((e.state && e.state.page) || 'home', true);
+});
+// Swipe ke bawah pada sheet untuk menutup (hanya kalau isi sheet sedang di posisi paling atas).
+(function(){
+  let y0=null, dy=0, t0=0;
+  const scrolled = (el)=>{
+    for(let n=el; n && n!==_ov; n=n.parentElement){ if(n.scrollHeight>n.clientHeight && n.scrollTop>0) return true; }
+    return false;
+  };
+  _sheet.addEventListener('touchstart', e=>{
+    y0 = scrolled(e.target) ? null : e.touches[0].clientY; dy=0; t0=Date.now();
+    _sheet.style.transition='none';
+  }, {passive:true});
+  _sheet.addEventListener('touchmove', e=>{
+    if(y0===null) return;
+    dy = e.touches[0].clientY - y0;
+    if(dy>0){ e.preventDefault(); _sheet.style.transform = `translateY(${dy}px)`; }
+    else { dy=0; _sheet.style.transform=''; }
+  }, {passive:false});
+  _sheet.addEventListener('touchend', ()=>{
+    if(y0===null) return; y0=null;
+    _sheet.style.transition='transform .2s ease';
+    const cepat = dy>50 && (Date.now()-t0)<250;
+    if((dy>110 || cepat) && !modalLocked){
+      _sheet.style.transform='translateY(100%)';
+      setTimeout(closeModal, 180);
+    } else { _sheet.style.transform=''; }
+  });
+})();
+
+
+/* ================= LIB, PANGGIL SERVER ================= */
+async function muatLib(urls, glob){
+  if(window[glob]) return;
+  for(const url of [].concat(urls)){
+    try{
+      await new Promise((res, rej)=>{ const sc = document.createElement('script'); sc.src = url; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
+      if(window[glob]) return;
+    }catch(e){}
+  }
+  throw new Error('Gagal memuat pustaka.');
+}
+const LIB_JSQR = ['https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js','https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js','https://unpkg.com/jsqr@1.4.0/dist/jsQR.js'];
+const LIB_QR = ['https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js','https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js','https://unpkg.com/qrcode-generator@1.4.4/qrcode.js'];
+async function panggilAbsen(body){
+  const t = await auth.currentUser.getIdToken();
+  const r = await fetch('/.netlify/functions/absen-qr', {method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer '+t}, body:JSON.stringify(body)});
+  const d = await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(d.error || 'Gagal terhubung ke server.');
+  return d;
+}
+
+/* ================= EDITOR FOTO PROFIL (bulat + grid 3x3) ================= */
+async function handleFotoUpload(inputEl, petugasId){
+  const file = inputEl.files && inputEl.files[0];
+  inputEl.value = '';
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ showToast('File harus berupa gambar.'); return; }
+  bukaEditorFoto(file, async (dataUrl)=>{
+    try{
+      showToast('Menyimpan foto...');
+      await saveProfil(petugasId, {foto: dataUrl});
+      showToast('Foto profil diperbarui.');
+      renderPetugas();
+      if(petugasId===currentPetugasId) renderNavProfilAvatar();
+      openPetugasDetail(petugasId);
+    }catch(e){ console.error(e); showToast('Gagal menyimpan foto. Coba lagi.'); }
+  });
+}
+function bukaEditorFoto(file, onSave){
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = ()=>{
+    const S = Math.min(window.innerWidth-40, 340);
+    const w = img.naturalWidth, h = img.naturalHeight;
+    const min = S/Math.min(w,h);
+    let sc = min, tx = (S-w*sc)/2, ty = (S-h*sc)/2;
+    const wrap = document.createElement('div'); wrap.className='ed-wrap';
+    wrap.innerHTML = `<div style="font-weight:700;">Atur posisi foto</div>
+      <div class="ed-stage" style="width:${S}px;height:${S}px;"><div class="ed-dim"></div><div class="ed-grid"></div></div>
+      <div style="font-size:12px;opacity:.7;">Geser dan cubit untuk mengatur</div>
+      <div style="display:flex;gap:10px;width:${S}px;"><button class="btn-secondary" id="edBatal" style="flex:1;">Batal</button><button class="btn-primary" id="edSimpan" style="flex:1;">Simpan</button></div>`;
+    const stage = wrap.querySelector('.ed-stage');
+    img.style.width = w+'px'; img.style.height = h+'px';
+    stage.insertBefore(img, stage.firstChild);
+    document.body.appendChild(wrap);
+    const clamp = ()=>{ tx = Math.min(0, Math.max(S-w*sc, tx)); ty = Math.min(0, Math.max(S-h*sc, ty)); };
+    const draw = ()=>{ clamp(); img.style.transform = `translate(${tx}px,${ty}px) scale(${sc})`; };
+    draw();
+    const ptr = new Map(); let d0=0, sc0=1;
+    const zoomKe = (ns, cx, cy)=>{ ns = Math.min(min*5, Math.max(min, ns)); tx = cx-(cx-tx)*ns/sc; ty = cy-(cy-ty)*ns/sc; sc = ns; draw(); };
+    stage.addEventListener('pointerdown', e=>{ stage.setPointerCapture(e.pointerId); ptr.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(ptr.size===2){ const [a,b]=[...ptr.values()]; d0=Math.hypot(a.x-b.x,a.y-b.y); sc0=sc; } });
+    stage.addEventListener('pointermove', e=>{
+      if(!ptr.has(e.pointerId)) return;
+      const o = ptr.get(e.pointerId), n = {x:e.clientX,y:e.clientY};
+      if(ptr.size===1){ tx += n.x-o.x; ty += n.y-o.y; ptr.set(e.pointerId,n); draw(); }
+      else{ ptr.set(e.pointerId,n); const [a,b]=[...ptr.values()]; zoomKe(sc0*Math.hypot(a.x-b.x,a.y-b.y)/d0, S/2, S/2); }
+    });
+    const lepas = e=>{ ptr.delete(e.pointerId); };
+    stage.addEventListener('pointerup', lepas); stage.addEventListener('pointercancel', lepas);
+    stage.addEventListener('wheel', e=>{ e.preventDefault(); const r=stage.getBoundingClientRect(); zoomKe(sc*(e.deltaY<0?1.08:0.92), e.clientX-r.left, e.clientY-r.top); }, {passive:false});
+    const tutup = ()=>{ wrap.remove(); URL.revokeObjectURL(url); };
+    lapisanBuka(tutup);
+    wrap.querySelector('#edBatal').onclick = ()=>{ tutup(); lapisanTutup(); };
+    wrap.querySelector('#edSimpan').onclick = ()=>{
+      const c = document.createElement('canvas'); c.width = c.height = 800;
+      c.getContext('2d').drawImage(img, -tx/sc, -ty/sc, S/sc, S/sc, 0, 0, 800, 800);
+      const data = c.toDataURL('image/jpeg', 0.85);
+      tutup(); lapisanTutup(); onSave(data);
+    };
+  };
+  img.onerror = ()=>showToast('Foto tidak bisa dibuka.');
+  img.src = url;
+}
+
+/* ================= PENGUMUMAN ================= */
+const PENG_COL = 'komsos-pengumuman';
+let pengList = [], pengStarted = false, pengPopupDone = false;
+const pengDilihat = ()=>{ try{ return JSON.parse(localStorage.getItem('komsos_peng_seen')||'[]'); }catch(e){ return []; } };
+function pengBaru(){ const sd = new Set(pengDilihat()); return pengList.filter(p=>!sd.has(p.id)); }
+function updatePengNote(){ const el = document.getElementById('pengNote'); if(el) el.style.display = pengBaru().length ? 'block' : 'none'; }
+function mulaiPengumuman(){
+  if(pengStarted) return; pengStarted = true;
+  db.collection(PENG_COL).orderBy('dibuat','desc').onSnapshot(snap=>{
+    pengList = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    updatePengNote();
+    if(document.getElementById('pengOpen')) isiPengumuman();
+    if(!pengPopupDone){
+      pengPopupDone = true;
+      setTimeout(()=>{ if(!modalLocked && pengBaru().length && !document.getElementById('modalOverlay').classList.contains('open')) bukaPengumuman(); }, 700);
+    }
+  }, e=>console.error('Pengumuman gagal dimuat', e));
+}
+function isiPengumuman(){
+  const isi = pengList.length ? pengList.map(p=>`<div class="peng-card">
+      <div style="font-size:11.5px;color:var(--muted);">${new Date(p.dibuat).toLocaleString('id-ID',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}${p.oleh?` · ${escapeHtml(p.oleh)}`:''}</div>
+      ${p.foto?`<img src="${p.foto}" alt="Pengumuman" onclick="bukaFotoBesar(this.src,'Pengumuman')">`:''}
+      ${p.teks?`<div style="white-space:pre-wrap;font-size:15px;">${escapeHtml(p.teks)}</div>`:''}
+      ${currentRole==='editor'?`<button class="btn-secondary" style="margin-top:10px;color:var(--maroon);border-color:var(--maroon-bg);" onclick="hapusPengumuman('${p.id}')">🗑 Hapus</button>`:''}
+    </div>`).join('') : '<div class="empty-note">Belum ada pengumuman.</div>';
+  document.getElementById('modalBody').innerHTML = `<div id="pengOpen">${currentRole==='editor'?'<button class="btn-primary" style="width:100%;margin-bottom:14px;" onclick="formPengumuman()">＋ Buat Pengumuman</button>':''}${isi}</div>`;
+}
+function bukaPengumuman(){
+  document.getElementById('modalTitle').textContent = 'Pengumuman';
+  isiPengumuman();
+  document.getElementById('modalOverlay').classList.add('open');
+  localStorage.setItem('komsos_peng_seen', JSON.stringify(pengList.map(p=>p.id)));
+  updatePengNote();
+}
+function formPengumuman(){
+  document.getElementById('modalBody').innerHTML = `
+    <textarea id="pengTeks" class="modal-field" maxlength="1000" rows="5" placeholder="Tulis catatan pengumuman (boleh dikosongkan kalau hanya foto)"></textarea>
+    <input type="file" id="pengFoto" accept="image/*" class="modal-field" style="margin-top:8px;" onchange="const f=this.files[0];document.getElementById('pengPrev').src=f?URL.createObjectURL(f):'';">
+    <img id="pengPrev" style="width:100%;border-radius:10px;margin-top:8px;">
+    <div style="display:flex;gap:10px;margin-top:12px;"><button class="btn-secondary" style="flex:1;" onclick="bukaPengumuman()">Batal</button><button class="btn-primary" style="flex:1;" id="pengKirim" onclick="kirimPengumuman()">Kirim</button></div>`;
+}
+async function kirimPengumuman(){
+  const teks = document.getElementById('pengTeks').value.trim();
+  const f = document.getElementById('pengFoto').files[0];
+  if(!teks && !f){ showToast('Isi catatan atau pilih foto dulu.'); return; }
+  const btn = document.getElementById('pengKirim'); btn.disabled = true; btn.textContent = 'Mengirim...';
+  try{
+    let foto = null;
+    if(f){
+      let dim = 1600, q = 0.85; foto = await resizeImageFile(f, dim, q);
+      while(foto.length > 850000 && dim > 800){ dim -= 200; q -= 0.05; foto = await resizeImageFile(f, dim, q); }
+      if(foto.length > 950000) throw new Error('Foto terlalu besar.');
+    }
+    await db.collection(PENG_COL).add({teks, foto, dibuat:new Date().toISOString(), oleh:(currentUserData&&currentUserData.nama)||''});
+    catatLog('membuat pengumuman baru');
+    showToast('Pengumuman terkirim.'); bukaPengumuman();
+  }catch(e){ console.error(e); showToast('Gagal mengirim pengumuman.'); btn.disabled = false; btn.textContent = 'Kirim'; }
+}
+async function hapusPengumuman(id){
+  if(!confirm('Hapus pengumuman ini untuk semua orang?')) return;
+  try{ await db.collection(PENG_COL).doc(id).delete(); catatLog('menghapus pengumuman'); showToast('Pengumuman dihapus.'); }
+  catch(e){ console.error(e); showToast('Gagal menghapus.'); }
+}
+
+/* ================= ABSEN QR: SCANNER (petugas) ================= */
+async function mulaiScanAbsen(jid, sid){
+  const j = jadwalList.find(x=>x.id===jid); const s = j && j.slots.find(x=>x.id===sid);
+  if(!s) return;
+  const telat = Date.now() > slotDateTime(s).getTime();
+  let alasan = '';
+  if(telat){
+    const el = document.getElementById('absenAlasan'); alasan = el ? el.value.trim() : '';
+    if(!alasan){ showToast('Alasan keterlambatan wajib diisi.'); return; }
+  }
+  // Pemindai bawaan Chrome (tanpa internet) dipakai dulu; kalau tidak ada, muat jsQR.
+  let bd = null;
+  try{ if('BarcodeDetector' in window) bd = new BarcodeDetector({formats:['qr_code']}); }catch(e){}
+  if(!bd){ try{ await muatLib(LIB_JSQR, 'jsQR'); }catch(e){ showToast('Pemindai gagal dimuat. Coba pindah jaringan (mis. data seluler) lalu ulangi.'); return; } }
+  let stream;
+  try{ stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false}); }
+  catch(e){ showToast('Izin kamera ditolak. Aktifkan izin kamera untuk situs ini di Chrome.'); return; }
+  // Lokasi dipantau terus selama kamera terbuka, jadi tidak gagal hanya karena scan agak lama.
+  let posisi = null, gpsDitolak = false; const tMulai = Date.now();
+  const setGps = (t)=>{ const g = document.getElementById('scanGps'); if(g) g.textContent = t; };
+  // Dua pemantau sekaligus: jaringan (cepat, cukup di dalam ruangan) dan GPS (lebih akurat). Dipakai yang paling akurat.
+  const wids = [];
+  const terimaPos = p=>{ const a = Math.round(p.coords.accuracy); if(!posisi || a <= posisi.akurasi) posisi = {lat:p.coords.latitude, lng:p.coords.longitude, akurasi:a}; setGps('📍 Lokasi siap (±' + posisi.akurasi + ' m)'); };
+  const galatPos = e=>{ if(e.code===1){ gpsDitolak = true; setGps('📍 Izin lokasi ditolak. Aktifkan di pengaturan situs Chrome.'); } else if(!posisi) setGps('📍 Lokasi belum tersedia, pastikan Lokasi HP menyala...'); };
+  if(navigator.geolocation) [false, true].forEach(h=>wids.push(navigator.geolocation.watchPosition(terimaPos, galatPos, {enableHighAccuracy:h, maximumAge:15000, timeout:30000})));
+  const wrap = document.createElement('div'); wrap.className = 'scan-wrap';
+  wrap.innerHTML = `<div style="font-weight:700;">Arahkan kamera ke QR di meja operator</div><video playsinline muted></video><div id="scanInfo" style="font-size:13px;opacity:.8;">Mencari QR...</div><div id="scanGps" style="font-size:12px;opacity:.8;">📍 Mencari lokasi...</div><button class="btn-secondary" id="scanBatal">Batal</button>`;
+  document.body.appendChild(wrap);
+  const video = wrap.querySelector('video'); video.srcObject = stream; await video.play().catch(()=>{});
+  let aktif = true;
+  const tutup = ()=>{ aktif = false; wids.forEach(i=>navigator.geolocation.clearWatch(i)); stream.getTracks().forEach(t=>t.stop()); wrap.remove(); };
+  lapisanBuka(tutup);
+  wrap.querySelector('#scanBatal').onclick = ()=>{ tutup(); lapisanTutup(); };
+  const c = document.createElement('canvas'), cx = c.getContext('2d', {willReadFrequently:true});
+  const info = wrap.querySelector('#scanInfo');
+  const loop = async ()=>{
+    if(!aktif) return;
+    if(video.videoWidth){
+      let teks = null;
+      if(bd){ try{ const r = await bd.detect(video); if(r[0]) teks = r[0].rawValue; }catch(e){} }
+      else{
+        c.width = video.videoWidth; c.height = video.videoHeight; cx.drawImage(video, 0, 0);
+        const h = window.jsQR(cx.getImageData(0,0,c.width,c.height).data, c.width, c.height);
+        if(h) teks = h.data;
+      }
+      if(teks && teks.startsWith('KOMSOSABSEN:')){
+        // Pemindai bisa membaca QR dalam sekejap, tapi GPS butuh beberapa detik: tunggu lokasi dulu (maks 25 detik).
+        if(!posisi && !gpsDitolak && Date.now()-tMulai < 15000){ info.textContent = 'QR terbaca. Menunggu lokasi... (maks 15 detik)'; setTimeout(loop, 500); return; }
+        aktif = false; info.textContent = 'Memverifikasi...';
+        try{
+          for(let i=0; i<10 && !posisi && !gpsDitolak; i++) await new Promise(r=>setTimeout(r,500));
+          const lokasi = posisi;
+          const r = await panggilAbsen({action:'scan', kode:teks.slice(12), jadwalId:jid, slotId:sid, alasan, lokasi});
+          tutup(); lapisanTutup(); closeModal();
+          catatLog(`absen "hadir${r.telat?' (telat)':''}" via QR untuk slot ${namaHariDari(s)} ${s.jam} jadwal "${j.namaMisa}"`);
+          efekBerhasil();
+          showToast(r.telat ? 'Absen tercatat (terlambat).' : 'Absen hadir tercatat. Terima kasih! 🙏');
+        }catch(e){
+          info.textContent = e.message + ' — arahkan lagi ke QR.'; aktif = true;
+        }
+      }
+    }
+    setTimeout(loop, 180);
+  };
+  loop();
+}
+function lihatAbsen(jid, sid, pid){
+  const j = jadwalList.find(x=>x.id===jid); const s = j && j.slots.find(x=>x.id===sid);
+  const rec = s && s.absensi && s.absensi[pid]; if(!rec) return;
+  const lok = rec.lat!=null ? `${rec.jarak!=null?`±${rec.jarak} m dari gereja · `:''}<a href="https://www.google.com/maps?q=${rec.lat},${rec.lng}" target="_blank" rel="noopener" style="color:#7dd3fc;font-weight:700;text-decoration:underline;">Lihat di peta</a> (akurasi ±${rec.akurasi||'?'} m)` : 'Lokasi tidak tersedia';
+  document.getElementById('modalTitle').textContent = 'Detail Absen';
+  document.getElementById('modalBody').innerHTML = `<div style="line-height:1.7;font-size:15px;">
+    <b>${escapeHtml(namaPetugas(pid))}</b><br>
+    Status: ${rec.status==='hadir' ? (rec.telat?'⚠️ Hadir (telat)':'✅ Hadir tepat waktu') : '❌ Tidak hadir'}<br>
+    Waktu: ${new Date(rec.waktu).toLocaleString('id-ID')}<br>
+    ${rec.alasan?`Alasan: ${escapeHtml(rec.alasan)}<br>`:''}
+    ${rec.status==='hadir' ? `Verifikasi: ${rec.metode==='qr'?'✅ Scan QR':'⚠️ Manual (tanpa scan QR)'}<br>Lokasi: ${lok}` : ''}</div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+/* ================= ABSEN QR: LAYAR KIOSK (komputer operator) ================= */
+async function mulaiKiosk(){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+  try{ await muatLib(LIB_QR, 'qrcode'); }catch(e){}
+  const k = document.createElement('div'); k.id = 'kiosk';
+  k.innerHTML = `<div id="kioskJudul" style="font-size:clamp(22px,4vw,38px);font-weight:800;">Silakan scan untuk absensi kehadiran</div>
+    <img id="kioskQR" alt=""><div style="width:min(78vw,68vh);height:8px;background:#e5e7eb;border-radius:8px;overflow:hidden;"><div id="kioskBar" style="height:100%;background:var(--blue);width:100%;"></div></div>
+    <div style="color:#666;font-size:15px;">Buka aplikasi KOMSOS → Absen Sekarang → Scan QR &amp; Hadir</div><div id="kioskErr" style="color:#b91c1c;font-size:13px;"></div>`;
+  document.body.appendChild(k);
+  try{ navigator.wakeLock && await navigator.wakeLock.request('screen'); }catch(e){}
+  let n=0; for(const el of ['kioskJudul']){ document.getElementById(el).onclick = async ()=>{
+    if(++n < 5) return; n = 0;
+    const pw = prompt('Kata sandi akun ini untuk keluar:'); if(!pw) return;
+    try{ await auth.signInWithEmailAndPassword(auth.currentUser.email, pw); await auth.signOut(); location.reload(); }catch(e){ alert('Kata sandi salah.'); }
+  }; }
+  let daftar = [], base = 0, offset = 0, sedangAmbil = false, terakhir = -1;
+  const ambil = async ()=>{
+    if(sedangAmbil) return; sedangAmbil = true;
+    try{ const r = await panggilAbsen({action:'token'}); daftar = r.kode; base = r.base; offset = r.now - Date.now(); document.getElementById('kioskErr').textContent = ''; }
+    catch(e){ document.getElementById('kioskErr').textContent = 'Menghubungi server: ' + e.message; }
+    sedangAmbil = false;
+  };
+  await ambil();
+  setInterval(async ()=>{
+    if(!window.qrcode){ try{ await muatLib(LIB_QR, 'qrcode'); }catch(e){ document.getElementById('kioskErr').textContent = 'Pustaka QR gagal dimuat. Periksa internet lalu tekan F5.'; return; } }
+    const now = Date.now() + offset, n = Math.floor(now/30000), i = n - base;
+    if(i >= daftar.length - 4 || i < 0) ambil();
+    if(i >= 0 && i < daftar.length && n !== terakhir){
+      terakhir = n;
+      const q = window.qrcode(0, 'M'); q.addData('KOMSOSABSEN:' + n + ':' + daftar[i]); q.make();
+      document.getElementById('kioskQR').src = q.createDataURL(8, 4);
+    }
+    document.getElementById('kioskBar').style.width = (100 - (now % 30000)/300) + '%';
+  }, 500);
+}
+
+
+/* ================= 1.6.0: MENU, TUGAS SAYA, RINGKASAN PJ, JADWAL BEBAS ================= */
+function namaHariDari(s){ return new Date(s.tanggal).toLocaleDateString('id-ID',{weekday:'long'}); }
+(function(){
+  const u = document.getElementById('updateDot'), m = document.getElementById('menuDot');
+  if(u && m){ const f = ()=>{ m.style.display = (u.style.display==='none') ? 'none' : 'block'; }; new MutationObserver(f).observe(u,{attributes:true, attributeFilter:['style']}); f(); }
+})();
+function bukaMenuAkun(){
+  const p = petugasList.find(x=>x.id===currentPetugasId);
+  const nama = (p && p.nama) || (currentUserData && (currentUserData.nama || currentUserData.email)) || 'Akun';
+  const rb = document.getElementById('roleBadge');
+  const item = (ic, t, fn, cls='')=>`<button class="menu-item ${cls}" onclick="closeModal(); setTimeout(()=>{ ${fn} }, 240);"><span class="mi-ic">${ic}</span><span>${t}</span></button>`;
+  document.getElementById('modalTitle').textContent = 'Menu';
+  document.getElementById('modalBody').innerHTML = `<div class="menu-user"><b>${escapeHtml(nama)}</b><small>${rb ? escapeHtml(rb.textContent) : ''}</small></div>`
+    + (currentPetugasId ? item('👤','Profil saya','bukaProfilSendiri()') : '')
+    + item('🆕','Pembaruan Aplikasi','bukaPembaruan()')
+    + item('❓','Bantuan','bukaBantuan()')
+    + (currentRole==='editor' ? item('🧪','Kirim notifikasi uji coba','kirimNotifikasiUjiCoba()') : '')
+    + item('🚪','Keluar','logout()','danger');
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function efekBerhasil(){
+  try{ navigator.vibrate && navigator.vibrate([40,50,40]); }catch(e){}
+  const d = document.createElement('div'); d.className = 'ok-pop';
+  d.innerHTML = '<svg viewBox="0 0 60 60" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle class="c" cx="30" cy="30" r="26" stroke="#34D399"></circle><path class="t" d="M18 31l8 8 16-17" stroke="#34D399"></path></svg>';
+  document.body.appendChild(d); setTimeout(()=>d.remove(), 1500);
+}
+
+function slotSaya(){
+  const out = []; if(!currentPetugasId) return out;
+  jadwalList.forEach(j=>(j.slots||[]).forEach(s=>{ if((s.petugas||[]).includes(currentPetugasId)) out.push({j, s, t:slotDateTime(s).getTime()}); }));
+  return out.sort((a,b)=>a.t-b.t);
+}
+function renderTugasSaya(){
+  const el = document.getElementById('tugasSayaArea'); if(!el) return;
+  const now = Date.now();
+  const nxt = slotSaya().find(x=>{ const ak = new Date(x.s.tanggal); ak.setHours(23,59,59,999); return ak.getTime() >= now; });
+  if(!nxt){ el.innerHTML = ''; return; }
+  const {j, s, t} = nxt, rec = s.absensi ? s.absensi[currentPetugasId] : null, diff = t - now;
+  const kapan = diff <= 0 ? 'Jam tugasmu sudah tiba' : diff < 3600e3 ? `${Math.max(1, Math.round(diff/60000))} menit lagi` : diff < 86400e3 ? `${Math.round(diff/3600e3)} jam lagi` : `${Math.ceil(diff/86400e3)} hari lagi`;
+  let aksi = '';
+  if(rec) aksi = `<div style="font-weight:700;">${rec.status==='hadir' ? (rec.telat ? '⚠️ Absen tercatat (telat)' : '✅ Kamu sudah absen') : '❌ Tercatat tidak hadir'}</div>`;
+  else if(jendelaAbsenTerbuka(s)) aksi = `<button class="btn-primary" style="width:100%;" onclick="bukaAbsenModal('${j.id}','${s.id}')">✋ Absen Sekarang</button>`;
+  el.innerHTML = `<div class="tugas-card"><div class="tk">Tugasmu berikutnya</div>
+    <div class="tj">${namaHariDari(s)}, ${new Date(s.tanggal).toLocaleDateString('id-ID',{day:'2-digit',month:'short'})} · ${s.jam}</div>
+    <div class="ts">${escapeHtml(j.namaMisa)} — ${kapan}</div>${aksi}</div>`;
+}
+function dataRingkasanPJ(){
+  const semua = []; jadwalList.forEach(j=>(j.slots||[]).forEach(s=>semua.push(s)));
+  const kunci = s=>{ const d = new Date(s.tanggal); d.setHours(0,0,0,0); return d.getTime(); };
+  const h = new Date(); h.setHours(0,0,0,0); let target = h.getTime();
+  if(!semua.some(s=>kunci(s)===target)){ const nx = semua.map(kunci).filter(k=>k>target); if(!nx.length) return null; target = Math.min(...nx); }
+  const g = {hadir:[], telat:[], tidak:[], belum:[]};
+  semua.filter(s=>kunci(s)===target).forEach(s=>(s.petugas||[]).forEach(pid=>{
+    const r = s.absensi && s.absensi[pid], it = {nama:namaPetugas(pid), jam:s.jam};
+    if(!r) g.belum.push(it); else if(r.status==='hadir') (r.telat ? g.telat : g.hadir).push(it); else g.tidak.push(it);
+  }));
+  const tanpaAkun = petugasAdaAkun ? petugasList.filter(p=>!p.dihapus && !p.nonaktif && !petugasAdaAkun.has(p.id)) : [];
+  return {target, g, tanpaAkun};
+}
+function renderRingkasanPJ(){
+  const el = document.getElementById('ringkasanPJArea'); if(!el) return;
+  if(currentRole!=='editor'){ el.innerHTML = ''; return; }
+  const d = dataRingkasanPJ(); if(!d){ el.innerHTML = ''; return; }
+  const hari = new Date(d.target).toLocaleDateString('id-ID',{weekday:'long', day:'2-digit', month:'short'});
+  const adalah = new Date().setHours(0,0,0,0) === d.target ? 'Hari ini' : 'Jadwal terdekat';
+  el.innerHTML = `<div class="rg-card" onclick="bukaRingkasanPJ()"><div class="rk">${adalah} · ${hari} — ketuk untuk detail</div>
+    <div class="rg-row"><div class="rg-chip"><b>${d.g.hadir.length}</b>hadir</div><div class="rg-chip"><b>${d.g.telat.length}</b>telat</div><div class="rg-chip"><b>${d.g.tidak.length}</b>tidak</div><div class="rg-chip"><b>${d.g.belum.length}</b>belum</div></div>
+    ${d.tanpaAkun.length ? `<div class="rg-note">${d.tanpaAkun.length} petugas belum punya akun</div>` : ''}</div>`;
+}
+function bukaRingkasanPJ(){
+  const d = dataRingkasanPJ(); if(!d) return;
+  const blok = (ic, t, arr)=> arr.length ? `<div style="margin-bottom:14px;"><b>${ic} ${t} (${arr.length})</b><div style="color:var(--muted); font-size:14px; line-height:1.7;">${arr.map(x=>`${escapeHtml(x.nama)} · ${x.jam}`).join('<br>')}</div></div>` : '';
+  document.getElementById('modalTitle').textContent = 'Ringkasan Absen';
+  document.getElementById('modalBody').innerHTML = blok('✅','Hadir',d.g.hadir) + blok('⚠️','Telat',d.g.telat) + blok('❌','Tidak hadir',d.g.tidak) + blok('⏳','Belum absen',d.g.belum)
+    + (d.tanpaAkun.length ? `<div><b>🚫 Belum punya akun (${d.tanpaAkun.length})</b><div style="color:var(--muted); font-size:14px; line-height:1.7;">${d.tanpaAkun.map(p=>escapeHtml(p.nama)).join(', ')}</div></div>` : '');
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function renderBerandaExtra(){ renderTugasSaya(); renderRingkasanPJ(); }
+const _rhv = refreshHomeViews;
+refreshHomeViews = function(){ _rhv.apply(this, arguments); try{ renderBerandaExtra(); }catch(e){ console.error(e); } };
+setInterval(()=>{ try{ renderBerandaExtra(); }catch(e){} }, 60000);
+
+/* ---- Jadwal Baru: mode bebas ---- */
+let modeJadwal = 'pola';
+function setModeJadwal(m){
+  if(m===modeJadwal) return; modeJadwal = m; currentSlots = [];
+  ['slotEditorArea','autoFillWrap','saranLiturgiArea'].forEach(id=>{ const e = document.getElementById(id); if(e) e.innerHTML = ''; });
+  saranLiturgiSekarang = null;
+  document.getElementById('blokPola').style.display = m==='pola' ? '' : 'none';
+  document.getElementById('blokBebas').style.display = m==='bebas' ? '' : 'none';
+  document.getElementById('modePola').classList.toggle('on', m==='pola');
+  document.getElementById('modeBebas').classList.toggle('on', m==='bebas');
+}
+function pilihTanggalBebas(){
+  if(!document.getElementById('tglBebas').value) return;
+  if(currentSlots.length===0) addManualSlot(); else renderSlotEditor();
+  updateSaranLiturgi();
+}
+
+/* ---- Edit jadwal tersimpan: ubah tanggal/jam, tambah/hapus slot ---- */
+function setEditSlotTanggal(idx, val){ if(!val) return; editSlotsTemp[idx].tanggal = new Date(val+'T00:00:00').toISOString(); renderEditSlotEditor(); }
+function setEditSlotJam(idx, val){ if(val) editSlotsTemp[idx].jam = val; renderEditSlotEditor(); }
+function removeEditSlot(idx){
+  const s = editSlotsTemp[idx];
+  const ada = s.absensi && Object.keys(s.absensi).length;
+  if(!confirm(ada ? 'Slot ini sudah punya catatan absen. Hapus juga catatannya?' : 'Hapus slot ini?')) return;
+  editSlotsTemp.splice(idx,1); renderEditSlotEditor();
+}
+function addEditSlot(){
+  const akhir = editSlotsTemp[editSlotsTemp.length-1];
+  const base = akhir ? new Date(akhir.tanggal) : new Date();
+  editSlotsTemp.push({id:'s'+Date.now(), hari:'Lainnya', jam: akhir ? akhir.jam : '18:00', tanggal: base.toISOString(), petugas:[null,null]});
+  renderEditSlotEditor();
 }
 
 /* ---------------- TAB PROFIL (bottom nav, gaya Instagram) ----------------
@@ -2119,24 +2717,26 @@ function buildJadwalCardsHtml(list){
         }else if(slotSudahLewatUntukAbsen(s)){
           badge = ' ⏳';
         }
-        return nama + badge;
+        const klik = (currentRole==='editor' && rec) ? ` onclick="lihatAbsen('${j.id}','${s.id}','${id}')" style="cursor:pointer;"` : '';
+        return `<span class="nm-row"><span class="nm-t">${nama}</span><span class="nm-b"${klik}>${badge.trim()}</span></span>`;
       });
       const sisaSeat = Math.max(0, 2 - s.petugas.length);
       const sudahIkut = currentPetugasId && s.petugas.includes(currentPetugasId);
 
       let aksi = '';
       if(sudahIkut){
-        aksi = ` <a onclick="batalkanSlotSendiri('${j.id}','${s.id}')" style="color:var(--maroon); text-decoration:underline; cursor:pointer; font-size:12.5px; white-space:nowrap;">(batal)</a>`;
+        aksi = `<button class="btn-mini batal" onclick="batalkanSlotSendiri('${j.id}','${s.id}')">Batal</button>`;
         const recSaya = s.absensi ? s.absensi[currentPetugasId] : null;
         if(!recSaya && jendelaAbsenTerbuka(s)){
-          aksi += ` <a onclick="bukaAbsenModal('${j.id}','${s.id}')" style="color:var(--blue-deep); text-decoration:underline; cursor:pointer; font-size:12.5px; white-space:nowrap;">| Absen Sekarang</a>`;
+          aksi = `<button class="btn-mini absen" onclick="bukaAbsenModal('${j.id}','${s.id}')">✋ Absen Sekarang</button>` + aksi;
         }
+        aksi = `<span class="slot-aksi">${aksi}</span>`;
       }else if(sisaSeat > 0 && currentPetugasId){
-        aksi = ` <a onclick="isiSlotSendiri('${j.id}','${s.id}')" style="color:var(--blue-deep); text-decoration:underline; cursor:pointer; font-size:12.5px; white-space:nowrap;">+ isi slot ini</a>`;
+        aksi = `<span class="slot-aksi"><button class="btn-mini" onclick="isiSlotSendiri('${j.id}','${s.id}')">+ Isi slot ini</button></span>`;
       }
 
-      const nm = namaTerisi.length ? namaTerisi.join(' & ') : '<span style="color:var(--muted);">(kosong)</span>';
-      return `<div class="slot-line"><span class="waktu">${s.hari}, ${tglStr} — ${s.jam}</span><span class="nama">${nm}${aksi}</span></div>`;
+      const nm = namaTerisi.length ? namaTerisi.join('') : '<span style="color:var(--muted);">(kosong)</span>';
+      return `<div class="slot-line"><span class="waktu"><span class="w-hari">${tgl.toLocaleDateString('id-ID',{weekday:'long'})}, ${tglStr}</span><span class="w-jam">${s.jam}</span></span><span class="nama">${nm}${aksi}</span></div>`;
     }).join('');
     const jadwalLewat = jadwalSudahLewat(j);
     const tombolObrolan = jadwalLewat
@@ -2145,7 +2745,7 @@ function buildJadwalCardsHtml(list){
     return `<div class="jadwal-card">
       <div class="judul">PETUGAS OPERATOR ${escapeHtml(j.namaMisa.toUpperCase())}</div>
       ${musimBadge}
-      <div style="font-size:11px; color:var(--muted); margin-bottom:8px;">Absen: ✅ hadir · ⚠️ telat · ❌ tidak hadir · ⏳ belum absen</div>
+      <div class="legend-abs"><span>✅ hadir</span><span>⚠️ telat</span><span>❌ tidak hadir</span><span>⏳ belum absen</span></div>
       ${slots}
       <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
         ${tombolObrolan}
@@ -2165,10 +2765,10 @@ async function isiSlotSendiri(jadwalId, slotId){
   if(!s) return;
   if(s.petugas.includes(currentPetugasId)){ showToast('Kamu sudah ada di slot ini.'); return; }
   if(s.petugas.length >= 2){ showToast('Slot ini sudah penuh, coba refresh.'); refreshHomeViews(); return; }
-  if(!confirm(`Isi slot ${s.hari}, ${s.jam} (${j.namaMisa}) dengan namamu?`)) return;
+  if(!confirm(`Isi slot ${namaHariDari(s)}, ${s.jam} (${j.namaMisa}) dengan namamu?`)) return;
   s.petugas.push(currentPetugasId);
   await saveList('jadwal-list', jadwalList);
-  catatLog(`mengisi sendiri slot ${s.hari} ${s.jam} di jadwal "${j.namaMisa}"`);
+  catatLog(`mengisi sendiri slot ${namaHariDari(s)} ${s.jam} di jadwal "${j.namaMisa}"`);
   refreshHomeViews();
   renderPetugas();
   showToast('Berhasil! Namamu ditambahkan ke slot ini. 🙏');
@@ -2182,7 +2782,7 @@ async function batalkanSlotSendiri(jadwalId, slotId){
   if(!confirm('Batalkan keikutsertaanmu di slot ini?')) return;
   s.petugas = s.petugas.filter(id=>id!==currentPetugasId);
   await saveList('jadwal-list', jadwalList);
-  catatLog(`membatalkan diri dari slot ${s.hari} ${s.jam} di jadwal "${j.namaMisa}"`);
+  catatLog(`membatalkan diri dari slot ${namaHariDari(s)} ${s.jam} di jadwal "${j.namaMisa}"`);
   refreshHomeViews();
   renderPetugas();
   showToast('Kamu dibatalkan dari slot ini.');
@@ -2201,14 +2801,14 @@ function bukaAbsenModal(jadwalId, slotId){
 
   document.getElementById('modalTitle').textContent = 'Absen Kehadiran';
   document.getElementById('modalBody').innerHTML = `
-    <div class="section-sub" style="margin-bottom:10px;">${escapeHtml(j.namaMisa)} — ${s.hari}, ${tglStr} jam ${s.jam}</div>
+    <div class="section-sub" style="margin-bottom:10px;">${escapeHtml(j.namaMisa)} — ${namaHariDari(s)}, ${tglStr} jam ${s.jam}</div>
     ${telat ? `<div class="section-sub" style="color:var(--maroon); margin-bottom:4px;">⚠️ Sudah lewat jam mulai tugas. Kalau kamu pilih "Saya Hadir", wajib isi alasan keterlambatan dulu.</div>` : ''}
     <div id="absenAlasanWrap" style="display:${telat ? 'block' : 'none'}; margin:10px 0;">
       <label style="display:block; font-size:11.5px; font-weight:600; color:var(--muted); margin-bottom:6px;">Alasan Terlambat <span style="color:var(--maroon);">*wajib</span></label>
       <textarea id="absenAlasan" class="modal-field" maxlength="200" placeholder="Contoh: macet di jalan, ada urusan mendadak, dst."></textarea>
     </div>
     <div style="display:flex; gap:10px; margin-top:6px;">
-      <button class="btn-primary" style="flex:1;" onclick="submitAbsen('${jadwalId}','${slotId}','hadir')">✅ Saya Hadir</button>
+      <button class="btn-primary" style="flex:1;" onclick="mulaiScanAbsen('${jadwalId}','${slotId}')">📷 Scan QR &amp; Hadir</button>
       <button class="btn-secondary" style="flex:1; color:var(--maroon); border-color:var(--maroon-bg);" onclick="submitAbsen('${jadwalId}','${slotId}','tidak_hadir')">❌ Tidak Hadir</button>
     </div>
   `;
@@ -2235,7 +2835,7 @@ async function submitAbsen(jadwalId, slotId, status){
     alasan,
   };
   await saveList('jadwal-list', jadwalList);
-  catatLog(`absen "${status==='hadir' ? (telat?'hadir (telat)':'hadir') : 'tidak hadir'}" untuk slot ${s.hari} ${s.jam} jadwal "${j.namaMisa}"${alasan ? ` — alasan: "${alasan}"` : ''}`);
+  catatLog(`absen "${status==='hadir' ? (telat?'hadir (telat)':'hadir') : 'tidak hadir'}" untuk slot ${namaHariDari(s)} ${s.jam} jadwal "${j.namaMisa}"${alasan ? ` — alasan: "${alasan}"` : ''}`);
   closeModal();
   refreshHomeViews();
   showToast(status === 'hadir' ? (telat ? 'Absen tercatat (terlambat).' : 'Absen hadir tercatat. Terima kasih! 🙏') : 'Absen tidak hadir tercatat.');
@@ -2459,11 +3059,29 @@ function renderJadwalBulanIni(){
   const area = document.getElementById('jadwalIniListArea');
   if(!area) return;
   const now = new Date();
-  const list = jadwalUntukBulan(now.getMonth(), now.getFullYear());
-  area.innerHTML = list.length>0
-    ? buildJadwalCardsHtml(list)
-    : `<div class="empty-note">Belum ada jadwal untuk ${BULAN_NAMA[now.getMonth()]} ${now.getFullYear()}.</div>`;
-  if(list.length>0) tandaiObrolanAktifDiKartu(list);
+  const bln = now.getMonth(), thn = now.getFullYear();
+  const tglAwal = (j)=> j.slots && j.slots.length ? Math.min(...j.slots.map(s=>new Date(s.tanggal).getTime())) : new Date(j.tglSabtu).getTime();
+  // Jadwal "bulan ini" = yang punya slot di bulan ini (atau tglSabtu-nya di bulan ini).
+  const bulanIni = jadwalList.filter(j=>{
+    const d = new Date(j.tglSabtu);
+    if(d.getMonth()===bln && d.getFullYear()===thn) return true;
+    return (j.slots||[]).some(s=>{ const t=new Date(s.tanggal); return t.getMonth()===bln && t.getFullYear()===thn; });
+  }).sort((a,b)=>tglAwal(a)-tglAwal(b));
+  // Jadwal mendatang di bulan-bulan berikutnya (mis. Misa Jumat Pertama bulan depan)
+  // yang belum lewat — dulu ini nggak tampil sama sekali sampai bulannya tiba.
+  const idBulanIni = new Set(bulanIni.map(j=>j.id));
+  const mendatang = jadwalList.filter(j=> !idBulanIni.has(j.id) && !jadwalSudahLewat(j) && tglAwal(j) > Date.now() - 24*3600*1000)
+    .sort((a,b)=>tglAwal(a)-tglAwal(b));
+
+  let html = bulanIni.length>0
+    ? buildJadwalCardsHtml(bulanIni)
+    : `<div class="empty-note">Belum ada jadwal untuk ${BULAN_NAMA[bln]} ${thn}.</div>`;
+  if(mendatang.length>0){
+    html += `<div class="jadwal-sub">Jadwal Mendatang</div>` + buildJadwalCardsHtml(mendatang);
+  }
+  area.innerHTML = html;
+  const semua = bulanIni.concat(mendatang);
+  if(semua.length>0) tandaiObrolanAktifDiKartu(semua);
 }
 
 function renderRekap(){
@@ -2556,8 +3174,8 @@ function renderEditSaranLiturgi(j){
 
 function renderEditSlotEditor(){
   const area = document.getElementById('editSlotEditorArea');
-  if(!area || editSlotsTemp.length===0) return;
-  const acuan = new Date(editSlotsTemp[0].tanggal);
+  if(!area) return;
+  const acuan = editSlotsTemp[0] ? new Date(editSlotsTemp[0].tanggal) : new Date();
   const bulan = acuan.getMonth(), tahun = acuan.getFullYear();
   const label = (id)=>{
     const p = petugasList.find(x=>x.id===id);
@@ -2570,7 +3188,8 @@ function renderEditSlotEditor(){
     const sel1 = s.petugas[0] || '';
     const sel2 = s.petugas[1] || '';
     return `<div class="slot-editor" style="margin-bottom:10px;">
-      <div class="slot-head"><span>${tglStr} — ${s.jam}</span></div>
+      <div class="slot-head"><span>${tglStr} — ${s.jam}</span><span class="remove-slot" onclick="removeEditSlot(${idx})">Hapus</span></div>
+      <div class="slot-input-row"><input type="date" value="${tglLokalStr(s.tanggal)}" onchange="setEditSlotTanggal(${idx},this.value)"><input type="time" value="${s.jam}" onchange="setEditSlotJam(${idx},this.value)"></div>
       <select onchange="setEditSlotPetugas(${idx},0,this.value)">
         <option value="">— Kosongkan —</option>
         ${petugasList.filter(p=>!p.dihapus).map(p=>`<option value="${p.id}" ${p.id===sel1?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
@@ -2580,7 +3199,7 @@ function renderEditSlotEditor(){
         ${petugasList.filter(p=>!p.dihapus).map(p=>`<option value="${p.id}" ${p.id===sel2?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
       </select>
     </div>`;
-  }).join('');
+  }).join('') + `<button class="btn-secondary" style="width:100%; margin-bottom:12px;" onclick="addEditSlot()">＋ Tambah slot</button>`;
 }
 function setEditSlotPetugas(idx, slotIdx, val){
   editSlotsTemp[idx].petugas[slotIdx] = val || null;
@@ -2801,7 +3420,10 @@ function renderPetugas(){
     const ultah = ulangTahunHariIni(p.id) ? ' 🎂' : '';
     const namaBlok = `<div style="display:flex; align-items:center; gap:12px; min-width:0; flex:1; margin-right:10px;">
         ${avatarHtml(profil, p.nama, 38)}
-        <span class="nm" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(p.nama)}${ultah}</span>
+        <div style="min-width:0; flex:1;">
+          <span class="nm" style="display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(p.nama)}${ultah}</span>
+          ${(currentRole==='editor' && petugasAdaAkun && !petugasAdaAkun.has(p.id) && !p.nonaktif) ? '<span class="belum-akun">Belum punya akun</span>' : ''}
+        </div>
       </div>`;
     if(p.nonaktif){
       return `<div class="petugas-row" onclick="openPetugasDetail('${p.id}')" style="opacity:0.55;">
@@ -2878,7 +3500,7 @@ function openPetugasDetail(id){
       <div class="profil-edit-block">
         <label>Ganti Nama</label>
         <div style="display:flex; gap:8px;">
-          <input type="text" id="editNamaSendiri" value="${escapeHtml(p.nama)}" style="flex:1; padding:9px 10px; border:1px solid transparent; border-radius:8px; font-family:inherit; font-size:13.5px; background:var(--field-bg); color:#1A2033;">
+          <input type="text" id="editNamaSendiri" maxlength="30" value="${escapeHtml(p.nama)}" style="flex:1; padding:9px 10px; border:1px solid transparent; border-radius:8px; font-family:inherit; font-size:13.5px; background:var(--field-bg); color:#1A2033;">
           <button class="btn-secondary" ${sisa<=0?'disabled':''} onclick="simpanNamaSendiri('${id}')">Simpan</button>
         </div>
         <div class="jatah-nama ${sisa<=0?'habis':''}">${sisa<=0 ? 'Jatah ganti nama bulan ini sudah habis. Direset lagi tiap tanggal 1.' : `Sisa jatah ganti nama bulan ini: ${sisa}x. Direset tiap tanggal 1.`}</div>
@@ -2933,6 +3555,7 @@ async function simpanNamaSendiri(id){
   const input = document.getElementById('editNamaSendiri');
   const namaBaru = input.value.trim();
   if(!namaBaru){ showToast('Nama tidak boleh kosong.'); return; }
+  if(namaBaru.length > 30){ showToast('Nama maksimal 30 karakter.'); return; }
   const p = petugasList.find(x=>x.id===id);
   if(!p) return;
   if(namaBaru === p.nama){ showToast('Nama tidak berubah.'); return; }
@@ -3103,7 +3726,7 @@ function cariReferensiRusak(){
       s.petugas.forEach(pid=>{
         if(idAktif.has(pid)) return;
         if(!grup[pid]) grup[pid] = [];
-        grup[pid].push({jadwalId:j.id, namaMisa:j.namaMisa, hari:s.hari, tanggal:s.tanggal, jam:s.jam});
+        grup[pid].push({jadwalId:j.id, namaMisa:j.namaMisa, hari:namaHariDari(s), tanggal:s.tanggal, jam:s.jam});
       });
     });
   });
@@ -3233,6 +3856,7 @@ function closeModal(){
 function resetForm(){
   document.getElementById('namaMisa').value = '';
   document.getElementById('tglSabtu').value = '';
+  const tb = document.getElementById('tglBebas'); if(tb) tb.value = '';
   currentSlots = [];
   document.getElementById('slotEditorArea').innerHTML = '';
   document.getElementById('saranLiturgiArea').innerHTML = '';
@@ -3255,10 +3879,11 @@ function generateSlots(){
 let saranLiturgiSekarang = null;
 function updateSaranLiturgi(){
   const area = document.getElementById('saranLiturgiArea');
-  const sabtuVal = document.getElementById('tglSabtu').value;
+  const bebas = modeJadwal==='bebas';
+  const sabtuVal = document.getElementById(bebas ? 'tglBebas' : 'tglSabtu').value;
   if(!area || !sabtuVal){ if(area) area.innerHTML=''; saranLiturgiSekarang=null; return; }
   const sabtu = new Date(sabtuVal + 'T00:00:00');
-  const minggu = tambahHari(sabtu, 1);
+  const minggu = bebas ? sabtu : tambahHari(sabtu, 1);
   const info = getInfoLiturgi(minggu);
   if(!info){ area.innerHTML=''; saranLiturgiSekarang=null; return; }
   saranLiturgiSekarang = info.nama;
@@ -3273,15 +3898,29 @@ function terapkanSaranLiturgi(){
   document.getElementById('namaMisa').value = saranLiturgiSekarang;
 }
 
+function tglLokalStr(iso){
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function setSlotTanggal(idx, val){
+  if(!val) return;
+  currentSlots[idx].tanggal = new Date(val + 'T00:00:00').toISOString();
+  renderSlotEditor();
+}
+function setSlotJam(idx, val){
+  if(val) currentSlots[idx].jam = val;
+  renderSlotEditor();
+}
 function addManualSlot(){
-  const sabtuVal = document.getElementById('tglSabtu').value;
-  const base = sabtuVal ? new Date(sabtuVal+'T00:00:00') : new Date();
-  currentSlots.push({id:'s'+Date.now(), hari:'Lainnya', jam:'18:00', tanggal: base.toISOString(), petugas:[null,null]});
+  const v = document.getElementById(modeJadwal==='bebas' ? 'tglBebas' : 'tglSabtu').value;
+  const akhir = currentSlots.length ? currentSlots[currentSlots.length-1] : null;
+  const base = akhir ? new Date(akhir.tanggal) : (v ? new Date(v+'T00:00:00') : new Date());
+  currentSlots.push({id:'s'+Date.now(), hari:'Lainnya', jam: akhir ? akhir.jam : '18:00', tanggal: base.toISOString(), petugas:[null,null]});
   renderSlotEditor();
 }
 
 function getFormBulanTahun(){
-  const v = document.getElementById('tglSabtu').value;
+  const v = document.getElementById(modeJadwal==='bebas' ? 'tglBebas' : 'tglSabtu').value;
   const d = v ? new Date(v) : new Date();
   return {bulan:d.getMonth(), tahun:d.getFullYear()};
 }
@@ -3302,6 +3941,7 @@ function renderSlotEditor(){
     const sel2 = s.petugas[1] || '';
     return `<div class="slot-editor">
       <div class="slot-head"><span>${tglStr} — ${s.jam}</span><span class="remove-slot" onclick="removeSlot(${idx})">Hapus</span></div>
+      ${s.hari==='Lainnya' ? `<div class="slot-input-row"><input type="date" value="${tglLokalStr(s.tanggal)}" onchange="setSlotTanggal(${idx},this.value)"><input type="time" value="${s.jam}" onchange="setSlotJam(${idx},this.value)"></div>` : ''}
       <select onchange="setSlotPetugas(${idx},0,this.value)">
         <option value="">— Pilih petugas 1 —</option>
         ${petugasList.filter(p=>!p.dihapus).map(p=>`<option value="${p.id}" ${p.id===sel1?'selected':''}>${escapeHtml(p.nama)}${label(p.id)}</option>`).join('')}
@@ -3316,7 +3956,7 @@ function renderSlotEditor(){
   const wrap = document.getElementById('autoFillWrap');
   if(wrap){
     wrap.innerHTML = currentSlots.length>0
-      ? `<button class="btn-secondary" style="width:100%; margin-bottom:16px;" onclick="autoFillSlots()">⚡ Isi Otomatis Slot Kosong</button>`
+      ? `<button class="btn-secondary" style="width:100%; margin-bottom:10px;" onclick="addManualSlot()">＋ Tambah slot lain</button><button class="btn-secondary" style="width:100%; margin-bottom:16px;" onclick="autoFillSlots()">⚡ Isi Otomatis Slot Kosong</button>`
       : '';
   }
 }
@@ -3357,15 +3997,23 @@ function autoFillSlots(){
   });
   currentSlots.forEach(s=> s.petugas.forEach(pid=>{ if(pid && running.hasOwnProperty(pid)) running[pid] = (running[pid]||0)+1; }));
 
+  // Siapa saja yang SUDAH ditaruh di jadwal ini (manual maupun hasil acak) nggak boleh
+  // terpilih lagi selama masih ada petugas lain yang belum kebagian jadwal ini.
+  const sudahDipakai = new Set();
+  currentSlots.forEach(s=> s.petugas.forEach(pid=>{ if(pid) sudahDipakai.add(pid); }));
+
   let filledAny = false;
   currentSlots.forEach(s=>{
     for(let i=0;i<2;i++){
       if(!s.petugas[i]){
-        const candidates = shuffleArray(petugasList.filter(p=> !p.opsional && !p.nonaktif && !p.dihapus && !s.petugas.includes(p.id)));
-        if(candidates.length===0) continue;
-        candidates.sort((a,b)=> (running[a.id]||0) - (running[b.id]||0));
-        const pick = candidates[0];
+        const semua = petugasList.filter(p=> !p.opsional && !p.nonaktif && !p.dihapus && !s.petugas.includes(p.id));
+        if(semua.length===0) continue;
+        const belumDipakai = semua.filter(p=>!sudahDipakai.has(p.id));
+        const kandidat = shuffleArray(belumDipakai.length>0 ? belumDipakai : semua);
+        kandidat.sort((a,b)=> (running[a.id]||0) - (running[b.id]||0));
+        const pick = kandidat[0];
         s.petugas[i] = pick.id;
+        sudahDipakai.add(pick.id);
         running[pick.id] = (running[pick.id]||0)+1;
         filledAny = true;
       }
@@ -3377,7 +4025,7 @@ function autoFillSlots(){
 
 async function simpanJadwal(){
   const namaMisa = document.getElementById('namaMisa').value.trim();
-  const sabtuVal = document.getElementById('tglSabtu').value;
+  const sabtuVal = document.getElementById(modeJadwal==='bebas' ? 'tglBebas' : 'tglSabtu').value;
   if(!namaMisa){ showToast('Isi dulu nama hari raya/misanya'); return; }
   if(!sabtuVal || currentSlots.length===0){ showToast('Pilih tanggal & pastikan slot terisi'); return; }
 
@@ -3385,7 +4033,7 @@ async function simpanJadwal(){
     id: 'j' + Date.now(),
     namaMisa,
     tglSabtu: sabtuVal,
-    slots: currentSlots.map(s=>({...s, petugas: s.petugas.filter(Boolean)}))
+    slots: currentSlots.map(s=>({...s, petugas: s.petugas.filter(Boolean)})).sort((a,b)=>slotDateTime(a)-slotDateTime(b))
   };
   jadwalList.push(entry);
   await saveList('jadwal-list', jadwalList);
@@ -3398,6 +4046,33 @@ async function simpanJadwal(){
   goPage('home');
   showHomePanel('menu');
 }
+
+/* ---------------- FOTO PROFIL LAYAR PENUH ---------------- */
+function bukaFotoBesar(src, nama){
+  const lb = document.getElementById('fotoLightbox');
+  if(!lb || !src) return;
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lbNama').textContent = nama || '';
+  lb.classList.add('open');
+}
+function tutupFotoBesar(){
+  const lb = document.getElementById('fotoLightbox');
+  if(lb) lb.classList.remove('open');
+}
+// Capture phase: klik foto profil selalu buka layar penuh, tanpa ikut memicu
+// klik kartu/baris di belakangnya (mis. buka detail petugas).
+document.addEventListener('click', (e)=>{
+  const img = e.target && e.target.closest ? e.target.closest('img.avatar-zoom') : null;
+  if(!img) return;
+  e.preventDefault(); e.stopPropagation();
+  bukaFotoBesar(img.src, img.getAttribute('data-nama'));
+}, true);
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') tutupFotoBesar(); });
 </script>
+<div id="fotoLightbox" onclick="tutupFotoBesar()">
+  <button class="lb-tutup" onclick="tutupFotoBesar()" aria-label="Tutup">✕</button>
+  <img id="lbImg" alt="Foto profil">
+  <div class="lb-nama" id="lbNama"></div>
+</div>
 </body>
 </html>
