@@ -52,6 +52,9 @@ exports.handler = async function (event) {
     }
 
     // 4. Kirim ke semua sekaligus.
+    // "webpush.notification" menjaga perilaku notifikasi web (getar & tetap tampil
+    // sampai disentuh) walau sekarang yang menampilkan adalah Firebase SDK, bukan
+    // service worker kita (supaya tidak dobel).
     const resp = await admin.messaging().sendEachForMulticast({
       tokens,
       notification: {
@@ -61,11 +64,41 @@ exports.handler = async function (event) {
       android: {
         notification: { channelId: 'komsos-pengingat' },
       },
+      webpush: {
+        notification: {
+          requireInteraction: true,
+          vibrate: [200, 100, 200],
+          tag: 'komsos-uji-coba', // notifikasi uji coba berikutnya menggantikan yang lama
+        },
+      },
     });
+
+    // 5. Bersihkan token HP yang sudah mati (aplikasi dihapus / izin dicabut /
+    //    token lama setelah diperbarui), supaya daftar token tidak menumpuk.
+    const tokenMati = [];
+    resp.responses.forEach((r, i) => {
+      if (!r.success && r.error) {
+        const kode = r.error.code;
+        if (kode === 'messaging/registration-token-not-registered' ||
+            kode === 'messaging/invalid-registration-token') {
+          tokenMati.push(tokens[i]);
+        }
+      }
+    });
+    if (tokenMati.length) {
+      const ops = [];
+      usersSnap.forEach(doc => {
+        const punya = (doc.data().fcmTokens || []).filter(t => tokenMati.includes(t));
+        if (punya.length) {
+          ops.push(doc.ref.update({ fcmTokens: admin.firestore.FieldValue.arrayRemove(...punya) }));
+        }
+      });
+      await Promise.all(ops);
+    }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ terkirim: resp.successCount, gagal: resp.failureCount }),
+      body: JSON.stringify({ terkirim: resp.successCount, gagal: resp.failureCount, dibersihkan: tokenMati.length }),
     };
   } catch (e) {
     console.error(e);
