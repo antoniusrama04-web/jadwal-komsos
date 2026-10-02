@@ -17,32 +17,35 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Ini yang jalan kalau app lagi ketutup / HP lagi dikunci —
-// notifikasi otomatis muncul dari sini, termasuk di layar kunci.
-// CATATAN PENTING soal suara: Web Push API (standar yang dipakai semua
-// browser, bukan cuma Firebase) TIDAK mengizinkan file suara custom untuk
-// notifikasi yang muncul saat app tertutup/HP terkunci — browser hanya
-// boleh memutar suara notifikasi BAWAAN sistem Android/HP kamu di kondisi
-// ini. Suara bel custom yang kamu upload HANYA bisa berbunyi kalau app-nya
-// sedang terbuka di layar (lihat playNotifSound() di index.html) — itu
-// sudah cukup untuk skenario presentasi karena HP kalian akan dibuka.
+// Ini yang jalan kalau app lagi ketutup / HP lagi dikunci.
+//
+// PENYEBAB NOTIFIKASI DOBEL (sudah diperbaiki di sini):
+// Kalau pesan dari server punya bagian "notification" (title + body), Firebase SDK
+// SUDAH menampilkan notifikasinya sendiri secara otomatis sebelum fungsi ini jalan.
+// Kalau di sini kita memanggil showNotification() lagi, hasilnya DUA notifikasi.
+// Jadi: kalau pesannya sudah punya "notification", fungsi ini tidak melakukan apa-apa.
+// Kita hanya menampilkan manual untuk pesan "data saja" (tanpa bagian notification).
+//
+// CATATAN soal suara: Web Push API tidak mengizinkan suara custom untuk notifikasi
+// saat app tertutup/HP terkunci. Suara bel custom hanya bunyi kalau app sedang
+// terbuka (lihat playNotifSound() di index.html).
 messaging.onBackgroundMessage((payload) => {
-  const title = (payload.notification && payload.notification.title) || 'Pengingat KOMSOS';
-  const body = (payload.notification && payload.notification.body) || '';
+  if (payload && payload.notification) return; // sudah ditampilkan otomatis oleh SDK
+
+  const data = (payload && payload.data) || {};
+  const title = data.title || 'Pengingat KOMSOS';
+  const body = data.body || '';
   self.registration.showNotification(title, {
     body,
     vibrate: [200, 100, 200],
-    tag: 'komsos-pengingat-' + Date.now(), // tag unik biar tidak menimpa notifikasi sebelumnya
-    requireInteraction: true, // notifikasi tetap nongol sampai disentuh, tidak hilang sendiri
+    tag: data.tag || 'komsos-pengingat',
+    requireInteraction: true,
     renotify: true,
   });
 });
 
-// Tanpa ini, waktu notifikasi di-tap (di layar kunci / notification tray),
-// nggak ada yang ngatur "abis di-tap, buka app-nya" — perilakunya jadi
-// nggak konsisten antar-HP/browser. Sekarang: kalau tab KOMSOS udah kebuka
-// di suatu tempat, itu yang difokuskan (bukan buka tab baru); kalau belum
-// ada sama sekali, baru dibukain tab baru ke halaman utama.
+// Waktu notifikasi di-tap: kalau tab KOMSOS sudah terbuka, fokuskan itu;
+// kalau belum ada, buka tab baru ke halaman utama.
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(

@@ -1007,7 +1007,7 @@ nav.bottomnav button .ic-avatar-wrap > div{width:28px !important; height:28px !i
   </div>
 </div>
 <audio id="bellSound" src="./mixkit-happy-bells-notification-937.wav" preload="auto"></audio>
-<audio id="welcomeSound" src="./sounds/selamat-datang.mp3" preload="auto"></audio>
+<audio id="welcomeSound" src="./selamat-datang.mp3" preload="auto"></audio>
 
 <script>
 /* ---------------- CONFIG ---------------- */
@@ -2090,8 +2090,19 @@ function mainkanSuaraSelamatDatang(){
     if(!a) return;
     a.currentTime = 0;
     const p = a.play();
-    // Kalau diblokir sistem, diam saja (layar tetap tampil tanpa suara).
-    if(p && p.catch) p.catch(()=>{});
+    if(p && p.catch) p.catch((err)=>{
+      console.warn('Suara selamat datang tidak bisa diputar:', err && err.name, err && err.message);
+      // Cadangan: kalau diblokir sistem, putar begitu pengguna menyentuh layar
+      // selama layar sambutan masih tampil.
+      const el = document.getElementById('welcome');
+      const coba = ()=>{
+        document.removeEventListener('touchstart', coba);
+        document.removeEventListener('click', coba);
+        if(el && el.classList.contains('show')){ a.currentTime = 0; a.play().catch(()=>{}); }
+      };
+      document.addEventListener('touchstart', coba, {once:true});
+      document.addEventListener('click', coba, {once:true});
+    });
   }catch(e){}
 }
 
