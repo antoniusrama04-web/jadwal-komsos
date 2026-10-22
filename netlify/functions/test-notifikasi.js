@@ -1,7 +1,8 @@
 const admin = require('firebase-admin');
+const { kirimNotifikasi } = require('./lib/tokens');
 
 // Kredensial diambil dari Environment Variable di Netlify (FIREBASE_SERVICE_ACCOUNT),
-// sama seperti yang dipakai cek-pengingat.js — tidak ditulis langsung di kode ini.
+// tidak ditulis langsung di kode ini.
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
@@ -10,17 +11,16 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 const USERS_COLLECTION = 'komsos-users';
 
-// Dipanggil dari tombol "Kirim Sekarang" di halaman utama (khusus PJ).
-// Fungsinya: kirim SATU notifikasi uji coba ke SEMUA HP yang sudah pernah
-// menekan "Aktifkan Notifikasi" — dipakai untuk demo/presentasi supaya
-// tidak perlu menunggu jam pengingat asli.
+// Dipanggil dari tombol "Kirim Sekarang" (khusus PJ). Mengirim SATU notifikasi uji
+// coba ke semua orang yang sudah mengaktifkan notifikasi. Tiap orang hanya dikirimi
+// ke SATU jenis perangkat (APK diutamakan, lalu browser), supaya tidak dobel.
 exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   try {
-    // 1. Pastikan yang memanggil ini benar-benar sudah login (verifikasi token Firebase Auth).
+    // 1. Pastikan pemanggil sudah login.
     const authHeader = event.headers.authorization || event.headers.Authorization || '';
     const idToken = authHeader.replace('Bearer ', '').trim();
     if (!idToken) {
@@ -28,78 +28,45 @@ exports.handler = async function (event) {
     }
     const decoded = await admin.auth().verifyIdToken(idToken);
 
-    // 2. Pastikan yang memanggil ini memang PJ (role: 'editor'), bukan viewer biasa.
+    // 2. Pastikan pemanggil adalah PJ (role: 'editor').
     const callerDoc = await db.collection(USERS_COLLECTION).doc(decoded.uid).get();
     const callerData = callerDoc.exists ? callerDoc.data() : null;
     if (!callerData || callerData.role !== 'editor') {
       return { statusCode: 403, body: JSON.stringify({ error: 'Hanya PJ yang boleh mengirim notifikasi uji coba.' }) };
     }
 
-    // 3. Kumpulkan semua token HP dari semua akun yang pernah aktifkan notifikasi.
+    // 3. Kirim (pemilihan jenis perangkat & pembersihan token mati ada di lib/tokens.js).
     const usersSnap = await db.collection(USERS_COLLECTION).get();
-    let tokens = [];
-    usersSnap.forEach(doc => {
-      const t = doc.data().fcmTokens || [];
-      tokens = tokens.concat(t);
-    });
-    tokens = [...new Set(tokens)]; // buang duplikat
-
-    if (tokens.length === 0) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ terkirim: 0, pesan: 'Belum ada satu pun HP yang mengaktifkan notifikasi.' }),
-      };
-    }
-
-    // 4. Kirim ke semua sekaligus.
-    // "webpush.notification" menjaga perilaku notifikasi web (getar & tetap tampil
-    // sampai disentuh) walau sekarang yang menampilkan adalah Firebase SDK, bukan
-    // service worker kita (supaya tidak dobel).
-    const resp = await admin.messaging().sendEachForMulticast({
-      tokens,
-      notification: {
-        title: '🔔 Uji Coba Notifikasi KOMSOS',
-        body: 'Kalau HP kamu bunyi & notifikasi ini muncul, sistemnya berhasil! 🎉',
-      },
-      android: {
-        notification: { channelId: 'komsos-pengingat' },
-      },
-      webpush: {
+    const hasil = await kirimNotifikasi({
+      admin,
+      messaging: admin.messaging(),
+      usersSnap,
+      pesan: {
         notification: {
-          requireInteraction: true,
-          vibrate: [200, 100, 200],
-          tag: 'komsos-uji-coba', // notifikasi uji coba berikutnya menggantikan yang lama
+          title: '🔔 Uji Coba Notifikasi KOMSOS',
+          body: 'Kalau HP kamu bunyi & notifikasi ini muncul, sistemnya berhasil! 🎉',
+        },
+        android: { notification: { channelId: 'komsos-pengingat' } },
+        webpush: {
+          notification: {
+            requireInteraction: true,
+            vibrate: [200, 100, 200],
+            tag: 'komsos-uji-coba',
+          },
         },
       },
     });
 
-    // 5. Bersihkan token HP yang sudah mati (aplikasi dihapus / izin dicabut /
-    //    token lama setelah diperbarui), supaya daftar token tidak menumpuk.
-    const tokenMati = [];
-    resp.responses.forEach((r, i) => {
-      if (!r.success && r.error) {
-        const kode = r.error.code;
-        if (kode === 'messaging/registration-token-not-registered' ||
-            kode === 'messaging/invalid-registration-token') {
-          tokenMati.push(tokens[i]);
-        }
-      }
-    });
-    if (tokenMati.length) {
-      const ops = [];
-      usersSnap.forEach(doc => {
-        const punya = (doc.data().fcmTokens || []).filter(t => tokenMati.includes(t));
-        if (punya.length) {
-          ops.push(doc.ref.update({ fcmTokens: admin.firestore.FieldValue.arrayRemove(...punya) }));
-        }
-      });
-      await Promise.all(ops);
-    }
+    // Catatan ke log Netlify (tanpa menampilkan token).
+    console.log('[test-notifikasi] ringkasan:', JSON.stringify(hasil));
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ terkirim: resp.successCount, gagal: resp.failureCount, dibersihkan: tokenMati.length }),
-    };
+    if (hasil.terkirim === 0 && hasil.akunDilayani === 0) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ ...hasil, pesan: 'Belum ada satu pun HP yang mengaktifkan notifikasi.' }),
+      };
+    }
+    return { statusCode: 200, body: JSON.stringify(hasil) };
   } catch (e) {
     console.error(e);
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };

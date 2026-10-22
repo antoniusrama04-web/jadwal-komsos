@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+const { hashToken, normalisasiPlatform, tambahToken } = require('./lib/tokens');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -8,16 +9,13 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 const USERS_COLLECTION = 'komsos-users';
 
-// Dipanggil dari tombol "Aktifkan Notifikasi". Tujuannya: pastikan SATU token
-// (= satu HP/browser) cuma nempel ke SATU akun yang lagi aktif di HP itu.
+// Dipanggil dari aplikasi (APK maupun browser) untuk menyimpan token notifikasi.
+// Body: { token, platform }  ->  platform = 'android' (APK) atau 'web' (browser).
 //
-// Kenapa ini perlu: kalau HP yang sama pernah dipakai login akun lain, dan token
-// push-nya (yang levelnya per-browser, bukan per-akun) masih tersimpan di akun
-// lama itu, server pengingat akan mengirim notifikasi ke KEDUA akun sekaligus
-// untuk satu kejadian yang sama — makanya orang bisa dapat notifikasi dobel.
-//
-// Jadi tiap kali "Aktifkan Notifikasi" ditekan: hapus dulu token ini dari semua
-// akun LAIN (bukan akun yang sedang login), baru simpan ke akun yang aktif ini.
+// 1. Satu token (= satu HP/browser) hanya boleh nempel ke SATU akun: dihapus dulu
+//    dari akun lain.
+// 2. Token disimpan lengkap dengan label jenisnya, dan tiap jenis dibatasi paling
+//    banyak 2 token terbaru per akun, supaya token lama tidak menumpuk.
 exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
@@ -32,31 +30,42 @@ exports.handler = async function (event) {
 
     const body = JSON.parse(event.body || '{}');
     const token = body.token;
-    if (!token) {
+    if (!token || typeof token !== 'string') {
       return { statusCode: 400, body: JSON.stringify({ error: 'Token kosong.' }) };
     }
+    const platform = normalisasiPlatform(body.platform);
 
-    // Cari SEMUA akun yang kebetulan masih menyimpan token ini.
+    // 1. Lepaskan token ini dari akun LAIN.
     const snap = await db.collection(USERS_COLLECTION).where('fcmTokens', 'array-contains', token).get();
     const ops = [];
     snap.forEach((doc) => {
       if (doc.id !== decoded.uid) {
         ops.push(
-          db.collection(USERS_COLLECTION).doc(doc.id).update({
+          doc.ref.update({
             fcmTokens: admin.firestore.FieldValue.arrayRemove(token),
+            ['fcmTokenInfo.' + hashToken(token)]: admin.firestore.FieldValue.delete(),
           })
         );
       }
     });
     await Promise.all(ops);
 
-    // Baru simpan ke akun yang sedang login sekarang.
-    await db.collection(USERS_COLLECTION).doc(decoded.uid).set(
-      { fcmTokens: admin.firestore.FieldValue.arrayUnion(token) },
-      { merge: true }
-    );
+    // 2. Simpan ke akun yang sedang login, beserta labelnya, lalu rapikan.
+    const ref = db.collection(USERS_COLLECTION).doc(decoded.uid);
+    let jumlahToken = 0;
+    await db.runTransaction(async (tx) => {
+      const doc = await tx.get(ref);
+      const data = doc.exists ? doc.data() : {};
+      const { tokens, info } = tambahToken(data, token, platform, admin.firestore.Timestamp.now());
+      jumlahToken = tokens.length;
+      if (doc.exists) tx.update(ref, { fcmTokens: tokens, fcmTokenInfo: info });
+      else tx.set(ref, { fcmTokens: tokens, fcmTokenInfo: info }, { merge: true });
+    });
 
-    return { statusCode: 200, body: JSON.stringify({ ok: true, dibersihkanDariAkunLain: ops.length }) };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: true, platform, dibersihkanDariAkunLain: ops.length, jumlahTokenAkunIni: jumlahToken }),
+    };
   } catch (e) {
     console.error(e);
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
