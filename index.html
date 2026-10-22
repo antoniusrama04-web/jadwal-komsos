@@ -1514,7 +1514,7 @@ if(isNativeApp && window.Capacitor.Plugins && window.Capacitor.Plugins.PushNotif
         await fetch('/.netlify/functions/sinkron-token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
-          body: JSON.stringify({ token })
+          body: JSON.stringify({ token, platform: 'android' })
         });
         punyaTokenTersimpan = true;
         renderNotifBanner();
@@ -1576,7 +1576,7 @@ async function aktifkanNotifikasiNative(){
     const res = await fetch('/.netlify/functions/sinkron-token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
-      body: JSON.stringify({ token })
+      body: JSON.stringify({ token, platform: 'android' })
     });
     if(!res.ok){ throw new Error('sinkron-token gagal'); }
     punyaTokenTersimpan = true;
@@ -1674,7 +1674,7 @@ async function aktifkanNotifikasi(){
       const res = await fetch('/.netlify/functions/sinkron-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
-        body: JSON.stringify({ token })
+        body: JSON.stringify({ token, platform: 'web' })
       });
       if(!res.ok){ throw new Error('sinkron-token gagal'); }
       punyaTokenTersimpan = true;
@@ -1728,6 +1728,38 @@ async function cekTokenTersimpan(){
   renderNotifBanner();
 }
 
+// Setiap aplikasi dibuka (setelah login), daftarkan ulang token HP ini ke server
+// LENGKAP dengan label jenisnya (APK atau browser). Ini yang membuat server tahu
+// mana token APK dan mana token Chrome, sehingga satu orang cuma dikirimi satu
+// notifikasi (APK diutamakan). Berjalan diam-diam, tanpa meminta izin apa pun.
+let sudahSinkronTokenSesiIni = false;
+async function sinkronTokenDiam(){
+  if(sudahSinkronTokenSesiIni || !currentUser) return;
+  sudahSinkronTokenSesiIni = true;
+  try{
+    if(isNativeApp){
+      const PN = window.Capacitor.Plugins && window.Capacitor.Plugins.PushNotifications;
+      let sudah = false;
+      try{ sudah = localStorage.getItem('komsosNativeTokenRegisteredDiHPIni') === '1'; }catch(e){}
+      if(!PN || !sudah) return;                 // belum pernah diaktifkan di HP ini
+      const izin = await PN.checkPermissions();
+      if(izin.receive === 'granted'){ PN.register(); }   // listener 'registration' yang mengirim token + label
+    }else{
+      const didukung = ('Notification' in window) && firebase.messaging.isSupported && firebase.messaging.isSupported();
+      if(!didukung || Notification.permission !== 'granted') return;
+      await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      const token = await firebase.messaging().getToken({ vapidKey: VAPID_KEY });
+      if(!token) return;
+      const idToken = await currentUser.getIdToken();
+      await fetch('/.netlify/functions/sinkron-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+        body: JSON.stringify({ token, platform: 'web' })
+      });
+    }
+  }catch(e){ console.warn('Sinkron token diam-diam gagal:', e); sudahSinkronTokenSesiIni = false; }
+}
+
 async function kirimNotifikasiUjiCoba(){
   if(!currentUser || currentRole !== 'editor'){ showToast('Hanya PJ yang bisa kirim notifikasi uji coba.'); return; }
   const btn = document.getElementById('btnUjiNotif');
@@ -1746,7 +1778,7 @@ async function kirimNotifikasiUjiCoba(){
     }else if(!data.terkirim){
       showToast(data.pesan || 'Belum ada HP yang mengaktifkan notifikasi.');
     }else{
-      showToast(`Terkirim ke ${data.terkirim} HP!`);
+      showToast(data.akunDilayani !== undefined ? `Terkirim ke ${data.akunDilayani} orang (${data.terkirim} HP)!` : `Terkirim ke ${data.terkirim} HP!`);
       playNotifSound();
     }
   }catch(e){
@@ -2285,6 +2317,7 @@ async function enterApp(){
   renderUlangTahunBanner();
   renderNavProfilAvatar();
   cekTokenTersimpan();
+  sinkronTokenDiam();
   document.getElementById('loadingOverlay').style.display = 'none';
   cekWajibProfil();
   cekPembaruanVersi();
