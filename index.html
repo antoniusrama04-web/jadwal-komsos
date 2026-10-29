@@ -387,6 +387,8 @@ background:linear-gradient(var(--tint-3),var(--tint-3)) 33.33% 0/1px 100% no-rep
   display:flex; align-items:center; justify-content:center; background:var(--grad);
 }
 .home-menu-btn .hm-label{font-family:'Sora', sans-serif; font-weight:700; font-size:19px; color:var(--text);}
+.home-menu-btn .hm-text{display:flex; flex-direction:column; gap:3px;}
+.home-menu-btn .hm-sub{font-family:'Plus Jakarta Sans', sans-serif; font-weight:400; font-size:16px; color:var(--muted);}
 .home-panel{display:none;}
 .home-panel.active{display:block;}
 .panel-back{
@@ -885,6 +887,38 @@ nav.bottomnav button .ic-avatar-wrap > div{width:28px !important; height:28px !i
         <div class="section-title">Beranda</div>
         <div class="section-sub">Pilih menu di bawah ini.</div>
         <div class="home-menu">
+          <button class="home-menu-btn" onclick="showHomePanel('timOperator')">
+            <span class="hm-icon"><svg class="ico"><use href="#i-users"/></svg></span>
+            <span class="hm-label">Tim Operator</span>
+          </button>
+          <button class="home-menu-btn" onclick="fiturBelumTersedia('Tim Lapangan')">
+            <span class="hm-icon"><svg class="ico"><use href="#i-wrench"/></svg></span>
+            <span class="hm-text"><span class="hm-label">Tim Lapangan</span><span class="hm-sub">(segera hadir)</span></span>
+          </button>
+          <button class="home-menu-btn" onclick="fiturBelumTersedia('Tim Media')">
+            <span class="hm-icon"><svg class="ico"><use href="#i-camera"/></svg></span>
+            <span class="hm-text"><span class="hm-label">Tim Media</span><span class="hm-sub">(segera hadir)</span></span>
+          </button>
+          <button class="home-menu-btn" onclick="fiturBelumTersedia('Kalender DPP')">
+            <span class="hm-icon"><svg class="ico"><use href="#i-calendar"/></svg></span>
+            <span class="hm-text"><span class="hm-label">Kalender DPP</span><span class="hm-sub">(segera hadir)</span></span>
+          </button>
+          <button class="home-menu-btn" onclick="bukaBantuan()">
+            <span class="hm-icon"><svg class="ico"><use href="#i-help"/></svg></span>
+            <span class="hm-label">Tentang Aplikasi</span>
+          </button>
+          <button class="home-menu-btn" onclick="openSaranModal()">
+            <span class="hm-icon"><svg class="ico"><use href="#i-message"/></svg></span>
+            <span class="hm-label">Kotak Saran</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="homePanel-timOperator" class="home-panel">
+        <div class="panel-back" onclick="showHomePanel('menu')"><span class="pb-arrow">&#8592;</span>Kembali ke Beranda</div>
+        <div class="section-title" style="font-size:25px; padding-bottom:10px; margin-bottom:14px;">Tim Operator</div>
+        <div class="section-sub">Pilih menu di bawah ini.</div>
+        <div class="home-menu">
           <button class="home-menu-btn" onclick="showHomePanel('jadwalIni')">
             <span class="hm-icon"><svg class="ico"><use href="#i-calendar"/></svg></span>
             <span class="hm-label">Jadwal Bulan Ini</span>
@@ -897,21 +931,17 @@ nav.bottomnav button .ic-avatar-wrap > div{width:28px !important; height:28px !i
             <span class="hm-icon"><svg class="ico ico-ok"><use href="#i-check-circle"/></svg></span>
             <span class="hm-label">Rekap Absensi</span>
           </button>
-          <button class="home-menu-btn" onclick="openSaranModal()">
-            <span class="hm-icon"><svg class="ico"><use href="#i-message"/></svg></span>
-            <span class="hm-label">Kotak Saran</span>
-          </button>
         </div>
       </div>
 
       <div id="homePanel-jadwalIni" class="home-panel">
-        <div class="panel-back" onclick="showHomePanel('menu')"><span class="pb-arrow">&#8592;</span>Kembali ke Beranda</div>
+        <div class="panel-back" onclick="showHomePanel('timOperator')"><span class="pb-arrow">&#8592;</span>Kembali ke Tim Operator</div>
         <div class="section-title" style="font-size:25px; padding-bottom:10px; margin-bottom:14px;">Jadwal Bulan Ini</div>
         <div id="jadwalIniListArea"></div>
       </div>
 
       <div id="homePanel-rekap" class="home-panel">
-        <div class="panel-back" onclick="showHomePanel('menu')"><span class="pb-arrow">&#8592;</span>Kembali ke Beranda</div>
+        <div class="panel-back" onclick="showHomePanel('timOperator')"><span class="pb-arrow">&#8592;</span>Kembali ke Tim Operator</div>
         <div class="section-title" style="font-size:25px; padding-bottom:10px; margin-bottom:14px;">Rekap Jadwal</div>
         <div class="section-sub">Pilih bulan & tahun untuk lihat total tugas tiap petugas.</div>
         <div class="filter-row">
@@ -922,7 +952,7 @@ nav.bottomnav button .ic-avatar-wrap > div{width:28px !important; height:28px !i
       </div>
 
       <div id="homePanel-absensi" class="home-panel">
-        <div class="panel-back" onclick="showHomePanel('menu')"><span class="pb-arrow">&#8592;</span>Kembali ke Beranda</div>
+        <div class="panel-back" onclick="showHomePanel('timOperator')"><span class="pb-arrow">&#8592;</span>Kembali ke Tim Operator</div>
         <div class="section-title" style="font-size:25px; padding-bottom:10px; margin-bottom:14px;">Rekap Absensi</div>
         <div class="section-sub">Kehadiran petugas operator per bulan — otomatis tercatat dari tombol "Absen Sekarang" di tiap jadwal.</div>
         <div class="filter-row">
@@ -1252,6 +1282,18 @@ function getWarnaMusim(d){
                       Blok penyesuaiannya ada di paling bawah <style> ("TEKS BESAR").
                       ATURAN: teks baru JANGAN di bawah 16px.
 
+   STATUS-SELESAI  : Urutan "Jadwal Bulan Ini" (usulan anggota, TANPA naik versi & tanpa
+                      entri changelog -- menunggu keputusan pemilik): yang AKAN DATANG paling
+                      atas (terdekat duluan, termasuk bulan depan), lalu "Sudah Lewat" di
+                      bawah (yang baru lewat duluan). Lihat urutkanJadwalBulanIni().
+   STATUS-SELESAI  : Perombakan Beranda tahap 1 (nomor 5): enam tombol -- Tim Operator,
+                      Tim Lapangan, Tim Media, Kalender DPP (tiga terakhir bertulisan
+                      "(segera hadir)" & memunculkan toast lewat fiturBelumTersedia()),
+                      Tentang Aplikasi, Kotak Saran. Isi lama (Jadwal Bulan Ini, Rekap
+                      Jadwal, Rekap Absensi) pindah ke panel #homePanel-timOperator.
+   STATUS-BELUM    : Menu bawah jadi Beranda+Profil (nomor 6), tombol Kembali + geser-back
+                      lewat riwayat (nomor 7), hapus duplikat Tentang Aplikasi di ikon
+                      atas & menu Profil (nomor 8), gating "pengembang" (nomor 9).
    ===================================================================================== */
 
 /* ---------------- PEMBARUAN APLIKASI (changelog in-app) ----------------
@@ -3442,32 +3484,61 @@ async function kirimPesanChat(jadwalId){
   }
 }
 
+// Susun jadwal untuk halaman "Jadwal Bulan Ini": yang AKAN DATANG paling atas (yang
+// paling dekat duluan), baru yang SUDAH LEWAT di bawahnya (yang baru lewat duluan).
+// Usulan anggota: dulu urutannya dari tanggal paling awal, jadi yang sudah lewat
+// ada di atas dan yang akan datang harus di-scroll dulu.
+function urutkanJadwalBulanIni(list, nowMs, bln, thn){
+  const hariIni = new Date(nowMs); hariIni.setHours(0,0,0,0);
+  const awalHariIni = hariIni.getTime();
+  const hariDari = (t)=>{ const d = new Date(t); d.setHours(0,0,0,0); return d.getTime(); };
+  const semuaHari = (j)=> (j.slots||[]).map(s=>hariDari(s.tanggal));
+  const tglAwal = (j)=> j.slots && j.slots.length ? Math.min(...semuaHari(j)) : hariDari(j.tglSabtu);
+  const tglAkhir = (j)=> j.slots && j.slots.length ? Math.max(...semuaHari(j)) : hariDari(j.tglSabtu);
+  // Tanggal terdekat yang belum lewat (hari ini ke atas); kalau tidak ada, pakai tanggal awal.
+  const tglTerdekat = (j)=>{
+    const mendatang = semuaHari(j).filter(t=>t>=awalHariIni);
+    return mendatang.length ? Math.min(...mendatang) : tglAwal(j);
+  };
+  const lewat = (j)=> jadwalSudahLewat(j);
+
+  // Jadwal "bulan ini" = yang punya slot di bulan ini (atau tglSabtu-nya di bulan ini).
+  const bulanIni = list.filter(j=>{
+    const d = new Date(j.tglSabtu);
+    if(d.getMonth()===bln && d.getFullYear()===thn) return true;
+    return (j.slots||[]).some(s=>{ const t=new Date(s.tanggal); return t.getMonth()===bln && t.getFullYear()===thn; });
+  });
+  // Jadwal bulan-bulan berikutnya (mis. Misa Jumat Pertama bulan depan) yang belum lewat.
+  const idBulanIni = new Set(bulanIni.map(j=>j.id));
+  const bulanDepan = list.filter(j=> !idBulanIni.has(j.id) && !lewat(j) && tglAwal(j) > awalHariIni - 24*3600*1000);
+
+  const gabungan = bulanIni.concat(bulanDepan);
+  const akan = gabungan.filter(j=>!lewat(j)).sort((a,b)=>tglTerdekat(a)-tglTerdekat(b));
+  const sudahLewat = gabungan.filter(j=>lewat(j)).sort((a,b)=>tglAkhir(b)-tglAkhir(a));
+  return { akan, sudahLewat };
+}
+
 function renderJadwalBulanIni(){
   const area = document.getElementById('jadwalIniListArea');
   if(!area) return;
   const now = new Date();
   const bln = now.getMonth(), thn = now.getFullYear();
-  const tglAwal = (j)=> j.slots && j.slots.length ? Math.min(...j.slots.map(s=>new Date(s.tanggal).getTime())) : new Date(j.tglSabtu).getTime();
-  // Jadwal "bulan ini" = yang punya slot di bulan ini (atau tglSabtu-nya di bulan ini).
-  const bulanIni = jadwalList.filter(j=>{
-    const d = new Date(j.tglSabtu);
-    if(d.getMonth()===bln && d.getFullYear()===thn) return true;
-    return (j.slots||[]).some(s=>{ const t=new Date(s.tanggal); return t.getMonth()===bln && t.getFullYear()===thn; });
-  }).sort((a,b)=>tglAwal(a)-tglAwal(b));
-  // Jadwal mendatang di bulan-bulan berikutnya (mis. Misa Jumat Pertama bulan depan)
-  // yang belum lewat — dulu ini nggak tampil sama sekali sampai bulannya tiba.
-  const idBulanIni = new Set(bulanIni.map(j=>j.id));
-  const mendatang = jadwalList.filter(j=> !idBulanIni.has(j.id) && !jadwalSudahLewat(j) && tglAwal(j) > Date.now() - 24*3600*1000)
-    .sort((a,b)=>tglAwal(a)-tglAwal(b));
+  const { akan, sudahLewat } = urutkanJadwalBulanIni(jadwalList, now.getTime(), bln, thn);
 
-  let html = bulanIni.length>0
-    ? buildJadwalCardsHtml(bulanIni)
-    : `<div class="empty-note">Belum ada jadwal untuk ${BULAN_NAMA[bln]} ${thn}.</div>`;
-  if(mendatang.length>0){
-    html += `<div class="jadwal-sub">Jadwal Mendatang</div>` + buildJadwalCardsHtml(mendatang);
+  let html = '';
+  if(akan.length>0){
+    html += `<div class="jadwal-sub">Jadwal Mendatang</div>` + buildJadwalCardsHtml(akan);
+  }else if(sudahLewat.length>0){
+    html += `<div class="empty-note">Belum ada jadwal mendatang.</div>`;
+  }
+  if(sudahLewat.length>0){
+    html += `<div class="jadwal-sub">Sudah Lewat</div>` + buildJadwalCardsHtml(sudahLewat);
+  }
+  if(!html){
+    html = `<div class="empty-note">Belum ada jadwal untuk ${BULAN_NAMA[bln]} ${thn}.</div>`;
   }
   area.innerHTML = html;
-  const semua = bulanIni.concat(mendatang);
+  const semua = akan.concat(sudahLewat);
   if(semua.length>0) tandaiObrolanAktifDiKartu(semua);
 }
 
@@ -3492,8 +3563,14 @@ function renderRekap(){
   }).join('');
 }
 
+// Dipakai tombol yang fiturnya belum jadi (Tim Lapangan, Tim Media, Kalender DPP).
+function fiturBelumTersedia(nama){
+  showToast(`Fitur ${nama} belum bisa dibuka karena sedang dikerjakan oleh pengembang.`);
+}
+
 function showHomePanel(name){
   document.getElementById('homeMenuWrap').style.display = (name==='menu') ? 'block' : 'none';
+  document.getElementById('homePanel-timOperator').classList.toggle('active', name==='timOperator');
   document.getElementById('homePanel-jadwalIni').classList.toggle('active', name==='jadwalIni');
   document.getElementById('homePanel-rekap').classList.toggle('active', name==='rekap');
   document.getElementById('homePanel-absensi').classList.toggle('active', name==='absensi');
