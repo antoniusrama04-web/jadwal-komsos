@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+const { kirimNotifikasi } = require('./lib/tokens');
 
 // Kredensial diambil dari Environment Variable di Netlify (FIREBASE_SERVICE_ACCOUNT),
 // BUKAN ditulis langsung di kode ini — biar aman.
@@ -85,28 +86,36 @@ exports.handler = async function () {
           const logSnap = await logRef.get();
           if (logSnap.exists) continue; // sudah pernah dikirim, skip
 
-          // Kumpulkan dulu SEMUA token dari semua petugas di slot ini jadi satu
-          // set unik, baru kirim SEKALI per token — supaya kalau ada 1 HP yang
-          // (secara tidak sengaja) tercatat di lebih dari satu akun, dia tetap
-          // cuma dapat SATU notifikasi, bukan dobel.
-          const tokenSet = new Set();
+          // Kumpulkan akun (dokumen user) semua petugas di slot ini, tanpa akun ganda.
+          // Pemilihan perangkat (APK diutamakan, lalu Chrome) dan pembersihan token mati
+          // dikerjakan oleh lib/tokens.js, supaya satu orang cuma dapat SATU notifikasi
+          // dan aturannya sama persis dengan notifikasi uji coba.
+          const akunUnik = new Map();
           for (const pid of s.petugas) {
             const usersSnap = await db.collection(USERS_COLLECTION).where('petugasId', '==', pid).get();
-            usersSnap.forEach((userDoc) => {
-              (userDoc.data().fcmTokens || []).forEach((tok) => tokenSet.add(tok));
-            });
+            usersSnap.forEach((userDoc) => akunUnik.set(userDoc.id, userDoc));
           }
 
-          if (tokenSet.size > 0) {
+          if (akunUnik.size > 0) {
             try {
-              const resp = await admin.messaging().sendEachForMulticast({
-                tokens: [...tokenSet],
-                notification: { title: t.judul, body: t.pesan },
-                android: {
-                  notification: { channelId: 'komsos-pengingat' },
+              const hasil = await kirimNotifikasi({
+                admin,
+                messaging: admin.messaging(),
+                usersSnap: { forEach: (cb) => akunUnik.forEach(cb) },
+                pesan: {
+                  notification: { title: t.judul, body: t.pesan },
+                  android: { notification: { channelId: 'komsos-pengingat' } },
+                  webpush: {
+                    notification: {
+                      requireInteraction: true,
+                      vibrate: [200, 100, 200],
+                      tag: logId, // tiap momen punya tag sendiri, jadi 3 jam & 1 jam sebelum tidak saling menimpa
+                    },
+                  },
                 },
               });
-              terkirim += resp.successCount;
+              terkirim += hasil.terkirim;
+              console.log('[cek-pengingat]', logId, JSON.stringify(hasil));
             } catch (sendErr) {
               console.error('Gagal kirim reminder', logId, sendErr);
             }
